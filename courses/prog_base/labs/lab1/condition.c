@@ -2,10 +2,10 @@
 
 int satisfies(int a, int b, int c) {
    int result;
-   if((a < 0) && (b < 0) && (c < 0)){
+if((a < 0) && (b < 0) && (c < 0)){
 		int modmin;
 		int sum2;
-		if()(a <= b) && (a <= c)){
+		if((a <= b) && (a <= c)){
 			modmin = abs (a);
 			sum2 = b + c;
 		}
@@ -17,8 +17,14 @@ int satisfies(int a, int b, int c) {
 			modmin = abs (c);
 			sum2 = b + c;
 		}
-		result = ((sum2 < -256) && ((modmin == 1)||(modmin == 2)||(modmin == 4)||(modmin == 8)||(modmin == 16)||(modmin == 32)
-		||(modmin == 64)||(modmin == 128))||((abs (sum2)> modmin) && (sum2 > -256)));
+		int power2;
+		if(modmin !=1) {while(modmin>2)
+		{
+			modmin = modmin/2;
+			power2 = modmin%2;
+		}}
+		else power2 =0;
+		result =((modmin < 256) && (power2 == 0) && (sum2 < -256)); 			 
 	}
 	else if((a >= 0) && (b >= 0) && (c >= 0)) {
 		int max;
@@ -45,29 +51,29 @@ int satisfies(int a, int b, int c) {
 				else max = c;
 			}
 		}
-		result = ((max * min) < 256);
+		result =((max * min) < 256);
 	}
 	else {
 		if(a >= 0) {
 			if(b >= 0)
-			result = (c > -256);
+				result =(c > -256);
 			else {
 				if(c >= 0)
-				result = (b > -256);
+					result =(b > -256);
 				else
-					result = ((2 * (b + c)) > -256);
+					result =((2 * (b + c)) > -256);
 			}
 		}
 		else {
 		if(b >= 0) {
 			if(c >= 0)
-				result = (a > -256);
+				result =(a > -256);
 			else
-				result = ((2 * (a + c)) > -256);
+				result =((2 * (a + c)) > -256);
 			}
-		}
 		else
-			result = ((2 * (a + b)) > -256);
+			result =((2 * (a + b)) > -256);
+		}
 	}
    return result;
 }
