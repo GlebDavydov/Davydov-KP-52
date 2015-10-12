@@ -5,10 +5,10 @@ double long2double(long long int);
 
 int main(){
 	long long int a;
-	scanf("%d", &a);
+	scanf("%ll", &a);
 	double b;
 	b = long2double(a);
-	printf(".325lf", &b);
+	printf("%.325lf", &b);
 	return 0;
 }
 
@@ -38,9 +38,9 @@ double long2double(long long int a){
 	if(exponent==2047){
 		if(fraction==0){
 			if(s=1)
-				return +INF;
+				return +INFINITY;
 			else
-				return -INF;
+				return -INFINITY;
 		}
 		else {
 			if(s=1)
