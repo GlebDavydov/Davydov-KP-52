@@ -5,9 +5,9 @@
 int exec(int, int, int);
 
 int main() {
-    int opval = 0, aval = 0, bval = 0; 
+    int opval, aval, bval; 
     int resultVal;
-
+	scanf("%d %d %d", &opval, &aval, &bval);
     resultVal = exec(opval, aval, bval);
 
     printf("%i", resultVal);
@@ -58,13 +58,13 @@ if(op<0) {
 		if(a==b)
 			result =0;
 		else
-			result =max(a, b);
+			result =fmax(a, b);
 		break;
 	case 9:
 		if(a==b)
 			result =0;
 		else
-			result =min(a, b);
+			result =fmin(a, b);
 		break;
 	case 10:
 		switch (abs(b)%8){

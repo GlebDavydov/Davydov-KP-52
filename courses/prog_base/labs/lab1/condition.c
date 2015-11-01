@@ -18,7 +18,8 @@ if((a < 0) && (b < 0) && (c < 0)){
 			sum2 = b + c;
 		}
 		int power2;
-		if(modmin !=1) {while(modmin>2)
+		if(modmin !=1) {
+		while(modmin>2)
 		{
 			modmin = modmin/2;
 			power2 = modmin%2;

@@ -44,13 +44,13 @@ if(op<0) {
 		if(a==b)
 			result =0;
 		else
-			result =max(a, b);
+			result =fmax(a, b);
 		break;
 	case 9:
 		if(a==b)
 			result =0;
 		else
-			result =min(a, b);
+			result =fmin(a, b);
 		break;
 	case 10:
 		switch (abs(b)%8){

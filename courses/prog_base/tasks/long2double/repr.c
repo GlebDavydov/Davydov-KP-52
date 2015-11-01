@@ -5,10 +5,10 @@ double long2double(long long int);
 
 int main(){
 	long long int a;
-	scanf("%ll", &a);
+	scanf("%lld", &a);
 	double b;
 	b = long2double(a);
-	printf("%.325lf", &b);
+	printf("%.325llf", &b);
 	return 0;
 }
 
@@ -33,8 +33,10 @@ double long2double(long long int a){
 			exponent += pow(2, 11-counter);
 	}
 	double fraction=0;
-	for(counter=12; counter<=63; counter++)
-		fraction += pow(2, 11-counter);
+	for(counter=12; counter<=63; counter++){
+		if(bit[counter]==1)
+			fraction += pow(2, 11-counter);
+	}
 	if(exponent==2047){
 		if(fraction==0){
 			if(s=1)
