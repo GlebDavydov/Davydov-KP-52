@@ -7,13 +7,13 @@ int maxIndex(int arr[], int size);
 char * process(char *resultStr, const char *textLines, int linesNum, const char *extraStr){
 	int wordAmount[linesNum];
 	int i;
+	char *tl;
+	const char findit =' ';
+	char *find = &findit;
 	for(i=0; i < linesNum; i++){
-		char findit =' ';
-		char *find = &findit;
 		char temporary[100];
 		char *temp = &temporary[0];
 		wordAmount[i]=0;
-		char *tl;
 		strcpy(tl, &textLines[i]);
 		while(temp!=NULL){
 			char *temp = strstr(tl, find);
@@ -23,9 +23,8 @@ char * process(char *resultStr, const char *textLines, int linesNum, const char 
 	int *wA = &wordAmount[0];
 	int x = maxIndex(wA, linesNum);
 	if(wordAmount[x]==0){
-		char *result;
-		sprintf(result, "0 NULL", extraStr); 
-		return result;
+		sprintf(resultStr, "0 NULL", extraStr); 
+		return resultStr;
 	}
     char *p;
     char *str;
