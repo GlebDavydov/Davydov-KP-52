@@ -19,53 +19,45 @@ int run(int moves[], int movesLen, int res[], int resLen){
 	int i;
 	for(state=0, j=0, i=0; i < movesLen; i++){
 		switch(moves[i]){
-			case 3:{
+			case 3:
 				k = 0;
 				break;
-			}
-			case 5:{
+			case 5:
 				k = 1;
 				break;
-			}
-			case 12:{
+			case 12:
 				k = 2;
 				break;
-			}
-			case 102:{
+			case 102:
 				k = 3;
 				break;
-			}
 			default:
 				return j;
 		}
 		switch (machine[state][k]%1000){
 			case terminal:
 				return j;
-			case pop:{
+			case pop:
 				if(j==0)
 					return j;
 				res[j] = 0;
 				j--;
 				state = machine[state][k]/1000;
 				break;
-			}
-			case blank:{
+			case blank:
 				state = machine[state][k]/1000;
 				break;
-			}
-			case repeat:{
+			case repeat:
 				i--;
 				state = machine[state][k]/1000;
 				break;
-			}
-			default:{
+			default:
 				if(j==resLen)
 					return j;
 				res[j] = machine[state][k]%1000;
 				state = machine[state][k]/1000;
 				j++;
 				break;
-			}
 		}
 	}
 	return j;

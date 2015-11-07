@@ -81,7 +81,7 @@ int maxOccurance(int arr[], int size){
 		}
 		else if((occI[i])==(maxOccI)){
 			maxElem = fmax(arr[i], maxElem);
-		} 
+		}
 	}
 	return maxElem;
 }
@@ -115,9 +115,6 @@ int gt(int arr1[], int arr2[], int size){
 
 void land(int arr1[], int arr2[], int res[], int size){
 	for(int i=0; i < size; i++){
-		if((arr1[i]==1)&&(arr2[i]==1))
-			res[i]=1;
-		else
-			res[i]=0;
+		res[i] = (arr1[i]&&arr2[i]);
 	}
 }
