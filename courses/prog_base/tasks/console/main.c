@@ -5,11 +5,11 @@
 void main(){
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD pos;
-	pos.X=13;
-	pos.Y=13;
+	pos.X=12;
+	pos.Y=12;
 	int background_color;
 	int fmt = background_color | BACKGROUND_INTENSITY;
-	int ctrlUP = 13, ctrlDOWN = 13, ctrlLEFT = 13, ctrlRIGHT=13;
+	int ctrlUP = 12, ctrlDOWN = 12, ctrlLEFT = 12, ctrlRIGHT=12;
 	for(;pos.X<=79 - ctrlRIGHT;pos.X++){
 		if(pos.X+pos.Y==24||pos.X+pos.Y==79)
 				background_color = BACKGROUND_BLUE | BACKGROUND_RED;
