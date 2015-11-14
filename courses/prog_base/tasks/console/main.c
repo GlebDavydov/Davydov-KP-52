@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<windows.h>
 
-void main(){
+int main(){
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD pos;
 	pos.X=12;
@@ -83,4 +83,5 @@ void main(){
 	ctrlRIGHT--;
 	}
 	getchar();
+	return 0;
 }
