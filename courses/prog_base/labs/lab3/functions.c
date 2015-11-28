@@ -92,29 +92,29 @@ int readAsCommand(char *string){
 	enum commands {help, blowup, delete, change, xchange, words, wordnumber, maxword, strsize, straus, letters, shorten, incorrect, fuck};
 	if(strcmp(string, "help"))
 		return help;
-	else if(strcmp(string, "exit"))
+	else if(!strcmp(string, "exit"))
 		return blowup;
-	else if(strcmp(string, "delete"))
+	else if(!strcmp(string, "delete"))
 		return delete;
-	else if(strcmp(string, "replace"))
+	else if(!strcmp(string, "replace"))
 		return change;
-	else if(strcmp(string, "replace and flop"))
+	else if(!strcmp(string, "replace and flop"))
 		return xchange;
-	else if(strcmp(string, "list of words"))
+	else if(!strcmp(string, "list of words"))
 		return words;
-	else if(strcmp(string, "number of words"))
+	else if(!strcmp(string, "number of words"))
 		return wordnumber;
-	else if(strcmp(string, "longest word"))
+	else if(!strcmp(string, "longest word"))
 		return maxword;
-	else if(strcmp (string, "string length"))
+	else if(!strcmp (string, "string length"))
 		return strsize;
-	else if(strcmp (string, "string comparison"))
+	else if(!strcmp (string, "string comparison"))
 		return straus;
-	else if(strcmp (string, "letter number"))
+	else if(!strcmp (string, "letter number"))
 		return letters;
-	else if(strcmp(string, "clear waste"))
+	else if(!strcmp(string, "clear waste"))
 		return shorten;
-	else if(strcmp(string, "fuck you") || strcmp(string, "fuckyou") || strcmp(string, "FUCK YOU") || strcmp(string, "FUCK U") || strcmp(string, "FUCKYOU") || strcmp(string, "fuck u"))
+	else if(!strcmp(string, "fuck you") || !strcmp(string, "fuckyou") || !strcmp(string, "FUCK YOU") || !strcmp(string, "FUCK U") || !strcmp(string, "FUCKYOU") || !strcmp(string, "fuck u"))
 		return fuck;
 	else 
 		return incorrect;

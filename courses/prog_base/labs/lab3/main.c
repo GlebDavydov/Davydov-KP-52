@@ -26,7 +26,7 @@ int main (void){
 		char *tmp;
 		sprintf(tmp, "%d", a);
 		outputAsResult(tmp);
-		/*switch(a){
+		switch(a){
 			case help:{
 					outputAsHelp("delete \nreplace \nreplace and flop \nlist of words \nnumber of words \nlongest word \nstring length \nstring comparison \nletter number \nclear waste \nexit");
 					break;
@@ -133,7 +133,7 @@ int main (void){
 			default:
 				outputAsHelp("system error");
 				return 0;
-		}*/
+		}
 	}
 	getch();
 	return 0;
