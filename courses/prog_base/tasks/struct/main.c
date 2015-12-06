@@ -27,7 +27,7 @@ void printstruct(int size, struct Student gr[size]){
 	}
 }
 
-int lessThen30(int size, struct Student gr[size]){
+int lessThan30(int size, struct Student gr[size]){
 	int pres;
 	pres = 0;
 	for(int i = 0; i < size; i++){
@@ -50,7 +50,7 @@ int main(){
 	{11, "Ivanov Ivan", 30}, {12, "Krysiuk Andriy", 50}, {13, "Kenny", 30}, {14, "Lindemann Tiel", 40}, {15, "Mustaine David", 99}, 
 	{16, "Neo", 65535}, {17, "Salenko Anton", 100}, {18, "Sharovarsky Konstantine", 100}, {19, "Urukov Dmitro", 101}, {20, "Zerg Rush", 6}};
 	printstruct(20, group);
-	int res = lessThen30(20, group);
+	int res = lessThan30(20, group);
 	printf("H\\A y %d\n", res);
 	int index = 0;
 	printf("input number\n");
