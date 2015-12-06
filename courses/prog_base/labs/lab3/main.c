@@ -13,19 +13,22 @@ int main (void){
 	int check = readString(defaultString);
 	if(check == 0){
 		outputAsHelp("Sorry, too long");
+		getch();
 		return 0;
 	}
-	while(checkForDouble(defaultString))
+	if(0){
+N1:
 		readString(defaultString);
+	}
+	if(checkForDouble(defaultString)){
+		goto N1;
+		}
 	outputAsResult(defaultString);
 	outputAsHelp("type 'help' for list of commands");
 	char command[80];
 	int a;
 	while(1){
 		a = readAsCommand(command);
-		char *tmp;
-		sprintf(tmp, "%d", a);
-		outputAsResult(tmp);
 		switch(a){
 			case help:{
 					outputAsHelp("delete \nreplace \nreplace and flop \nlist of words \nnumber of words \nlongest word \nstring length \nstring comparison \nletter number \nclear waste \nexit");
@@ -37,28 +40,44 @@ int main (void){
 				}
 			case change:{
 					deleteString(defaultString);
-					readString(defaultString);
+					outputAsHelp("Input new string");
+					check = readString(defaultString);
+					if(check == 0){
+						outputAsHelp("Sorry, too long");
+						getch();
+						return 0;
+					}
 					outputAsResult(defaultString);
-					while(checkForDouble(defaultString))
+					if(checkForDouble(defaultString))
+						goto N2;
+					if(0){
+						N2:
 						readString(defaultString);
+					}
+					outputAsHelp("delete \nreplace \nreplace and flop \nlist of words \nnumber of words \nlongest word \nstring length \nstring comparison \nletter number \nclear waste \nexit");
 					break;
 				}
 			case xchange:{
 					char new[80];
-					readString(new);
+					outputAsHelp("Input new string");
+					check = readString(new);
+					if(check == 0){
+						outputAsHelp("Sorry, too long");
+						return 0;
+					}
 					xchangeString(new, defaultString);
 					outputAsResult(defaultString);
-					while(checkForDouble(defaultString))
+					if(checkForDouble(defaultString))
+						goto N3;
+					if(0){
+						N3:
 						readString(defaultString);
+					}
+					outputAsHelp("delete \nreplace \nreplace and flop \nlist of words \nnumber of words \nlongest word \nstring length \nstring comparison \nletter number \nclear waste \nexit");
 					break;
 				}
 			case words:{
-					int lnght = (strlen(defaultString)) + (2 * wordAmount(defaultString));
-					if(lnght > 80){
-					outputAsHelp("sorry, too many words");
-					break;
-				}
-					char *result;
+					char result[80];
 					wordOutput(defaultString, result);
 					outputAsResult(result);
 					getch();
@@ -67,7 +86,7 @@ int main (void){
 				}
 			case wordnumber:{
 				int result = wordAmount(defaultString);
-				char * tmp;
+				char tmp[80];
 				sprintf(tmp, "String contains %d words", result);
 				outputAsResult(tmp);
 				getch();
@@ -75,12 +94,13 @@ int main (void){
 				break;
 				}
 			case maxword:{
-				char *result;
+				char result[80];
 				int lnght = longestWord(defaultString, result);
 				if(lnght == 0)
 					break;
-				sprintf(result, "longest word is '%c' and has &d letters", result, lnght);
-				outputAsResult(result);
+				char output[80];
+				sprintf(output, "longest word is '%s' and has %d letters", result, lnght);
+				outputAsResult(output);
 				getch();
 				outputAsResult(defaultString);
 				break;
@@ -95,19 +115,25 @@ int main (void){
 					break;
 				}
 			case straus:{
-					char *tok;
-					readString(tok);
+					char tok[80];
+					outputAsHelp("Input the sub string");
+					check = readString(tok);
+					if(check == 0){
+						outputAsHelp("Sorry, too long");
+						return 0;
+					}
 					int result = strAus(defaultString, tok);
 					char *res2;
 					sprintf(res2, "this string is met %d times", result);
 					outputAsResult(res2);
 					getch();
 					outputAsResult(defaultString);
+					outputAsHelp("delete \nreplace \nreplace and flop \nlist of words \nnumber of words \nlongest word \nstring length \nstring comparison \nletter number \nclear waste \nexit");
 					break;
 				}
 			case letters:{
 					int ln = letterNumber(defaultString);
-					char *result;
+					char result[80];
 					sprintf(result, "String contains %d letters", ln);
 					outputAsResult(result);
 					getch();

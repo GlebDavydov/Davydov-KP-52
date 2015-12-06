@@ -90,31 +90,31 @@ int readAsCommand(char *string){
 	SetConsoleCursorPosition(hConsole, pos);
 	fgets(string, 80, stdin);
 	enum commands {help, blowup, delete, change, xchange, words, wordnumber, maxword, strsize, straus, letters, shorten, incorrect, fuck};
-	if(strcmp(string, "help"))
+	if(!strcmp(string, "help\n"))
 		return help;
-	else if(!strcmp(string, "exit"))
+	else if(!strcmp(string, "exit\n"))
 		return blowup;
-	else if(!strcmp(string, "delete"))
+	else if(!strcmp(string, "delete\n"))
 		return delete;
-	else if(!strcmp(string, "replace"))
+	else if(!strcmp(string, "replace\n"))
 		return change;
-	else if(!strcmp(string, "replace and flop"))
+	else if(!strcmp(string, "replace and flop\n"))
 		return xchange;
-	else if(!strcmp(string, "list of words"))
+	else if(!strcmp(string, "list of words\n"))
 		return words;
-	else if(!strcmp(string, "number of words"))
+	else if(!strcmp(string, "number of words\n"))
 		return wordnumber;
-	else if(!strcmp(string, "longest word"))
+	else if(!strcmp(string, "longest word\n"))
 		return maxword;
-	else if(!strcmp (string, "string length"))
+	else if(!strcmp (string, "string length\n"))
 		return strsize;
-	else if(!strcmp (string, "string comparison"))
+	else if(!strcmp (string, "string comparison\n"))
 		return straus;
-	else if(!strcmp (string, "letter number"))
+	else if(!strcmp (string, "letter number\n"))
 		return letters;
-	else if(!strcmp(string, "clear waste"))
+	else if(!strcmp(string, "clear waste\n"))
 		return shorten;
-	else if(!strcmp(string, "fuck you") || !strcmp(string, "fuckyou") || !strcmp(string, "FUCK YOU") || !strcmp(string, "FUCK U") || !strcmp(string, "FUCKYOU") || !strcmp(string, "fuck u"))
+	else if(!strcmp(string, "fuck you\n") || !strcmp(string, "fuckyou\n") || !strcmp(string, "FUCK YOU\n") || !strcmp(string, "FUCK U\n") || !strcmp(string, "FUCKYOU\n") || !strcmp(string, "fuck u\n"))
 		return fuck;
 	else 
 		return incorrect;
@@ -124,28 +124,67 @@ int checkForDouble(const char *string){
 	int counter = 0;
 	int arr[strlen(string)];
 	int i;
-	for(i=0; isdigit(string[i]) || string[i] == '.' ; i++){
-		if(isdigit(string[i]))
-			arr[i] = string[i];
+	for(i=0; isdigit(string[i]) || string[i] == '.'; i++){
+		if(isdigit(string[i])){
+			switch(string[i]){
+			case 48:
+				arr[i] = 0;
+				break;
+			case 49:
+				arr[i] = 1;
+				break;
+			case 50:
+				arr[i] = 2;
+				break;
+			case 51:
+				arr[i] = 3;
+				break;
+			case 52:
+				arr[i] = 4;
+				break;
+			case 53:
+				arr[i] = 5;
+				break;
+			case 54:
+				arr[i] = 6;
+				break;
+			case 55:
+				arr[i] = 7;
+				break;
+			case 56:
+				arr[i] = 8;
+				break;
+			case 57:
+				arr[i] = 9;
+				break;
+			}
+		}
 		else{
+			if(counter != 0)
+				return 0;
 			counter = i;
 			arr[i] = 0;
 		}
 	}
-	i++;
-	if(string[i] != '\n' && string[i] != '\0' || counter == 0)
+	if((string[i] != '\n' && string[i] != '\0') || counter == 0)
 		return 0;
 	else {
 			double res = 0;
 			int power;
 			for(int j=0; j < i; j++){
-				res += arr[j] * pow(10, counter - (1+j));
+				if(j < counter)
+					res += arr[j] * pow(10, counter - (1+j));
+				else
+					res += arr[j] * pow(10, counter - j);
 			}
-			outputAsHelp("You have input a real number. Give me its power!");
-			scanf("%f", &power);
+			getch();
+			outputAsHelp("You have input a real number. Input the power for calculation");
+			char tmp[80];
+			readString(tmp);
+			sscanf(tmp, "%d", &power);
 			res = pow(res, power);
 			char *result;
-			sprintf(result, "%lf", &res);
+			sprintf(result, "%lf", res);
 			outputAsResult(result);
 			outputAsHelp("Input new starting string");
 		return 1;
@@ -154,53 +193,71 @@ int checkForDouble(const char *string){
 
 void deleteString(char *string){
 	string = NULL;
-	outputAsResult(" ");
+	outputAsResult(NULL);
 }
 
 void xchangeString(char *string, char *result){
 	char tmp;
-	for(int i = 0; i <= strlen(string)/2; i++){
+	for(int i = 0; i < (strlen(string)/2); i++){
 		tmp = string[i];
-		string[i] = string[(strlen(string)/2) - i];
-		string[(strlen(string)/2) - i] = tmp;
+		string[i] = string[strlen(string) - (2 + i)];
+		string[strlen(string) - (2+i)] = tmp;
 	}
 	strcpy(result, string);
 	string = NULL;
 }
 
-void wordOutput(const char *string, char *result){
-	char *p;
-	strcpy(p, string);
-	p = strtok(p, " \n\r\t");
-	sprintf(result, "'%c'", p);
-	while(p != NULL){
-		p = strtok(NULL, " ");
-		sprintf(result, "%c,'%c'", result, p);
+
+void oddClean(char *string){
+	for(int i = 0; string[i] != '\n'; i++){
+		if(string[i] == ' ' || string[i] == '\r' || string[i] == '\t'){
+			if(string[i] != ' ')
+				string[i] = ' ';
+			while(string[i+1] == ' ' || string[i+1] == '\r' || string[i+1] == '\t'){
+				int j;
+				for(j = i+1; string[j] != '\n'; j++){
+					string[j] = string[j+1];
+				}
+				string[j+1] = '\0';
+			}
+		}
 	}
 }
 
 int wordAmount(const char * string){
-	char* p;
+	char p[strlen(string)];
 	int wA = 0;
 	strcpy(p, string);
-	p = strtok(p, " \r\t");
-	if(p != 0)
-		wA++;
-	else
-		return 0;
-	while(p!= NULL){
-		wA++;
-		p = strtok(NULL, " \r\t");
+	oddClean(p);
+	for(int i = 0; p[i] != '\n'; i++){
+		if(p[i] == ' ')
+			wA++;
 	}
 	return wA;
 }
 
-int longestWord(const char * string, char * resWord){
-	char *p;
+void wordOutput(char *string, char *result){
+	char temp[80];
+	char *p = &temp[0];
 	strcpy(p, string);
+	oddClean(p);
+	p = strtok(p, " ");
+	sprintf(result, "%s", p);
+	while(p != NULL){
+		p = strtok(NULL, " ");
+		if(p != NULL)
+			sprintf(result, "%s,%s", result, p);
+	}
+}
+
+int longestWord(char * string, char * resWord){
+	char temp[80];
+	char *p = &temp[0];
+	strcpy(p, string);
+	oddClean(p);
 	int wLen;
 	int wMaxLen;
-	p = strtok(p, " \r\t");
+	p = strtok(p, " ");
 	if(p == NULL){
 		sprintf(resWord, "Error reading your message");
 		outputAsHelp(resWord);
@@ -210,26 +267,24 @@ int longestWord(const char * string, char * resWord){
 	strcpy(resWord, p);
 	while(p!=NULL){
 		p = strtok(NULL, " \r\t");
-		wLen = strlen(p);
-		if(wLen >= wMaxLen){
-			wMaxLen = wLen;
-			strcpy(resWord, p);
+		if(p != NULL){
+			wLen = strlen(p);
+			if(wLen >= wMaxLen){
+				wMaxLen = wLen;
+				strcpy(resWord, p);
+			}
 		}
 	}
 	return wMaxLen;
 }
 
-int strAus(const char * string, const char * interjection){
+int strAus(const char * string, const char * pfind){
 	char *p;
-	strcpy(p, string);
 	int a = 0;
-	p = strtok(p, interjection);
-	if(p == NULL)
-		return 0;
-	a++;
+	p = strstr(string, pfind);
 	while(p != NULL){
 		a++;
-		p = strtok(NULL, interjection);
+		p = strstr(p+(strlen(pfind)), pfind);
 	}
 	return a;
 }
@@ -241,19 +296,4 @@ int letterNumber(const char * string){
 			res++;
 	}
 	return res;
-}
-
-void oddClean(char *string){
-	for(int i = 0; string[i] != '\n'; i++){
-		if(string[i] == ' '){
-			while(string[i+1] == ' '){
-				int j;
-				char tmp;
-				for(j = i+1; string[j] == '\n'; j++){
-					string[j] = string[j+1];
-				}
-				string[j+1] = '\0';
-			}
-		}
-	}
 }
