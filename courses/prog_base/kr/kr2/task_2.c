@@ -100,5 +100,4 @@ void scoreBreakerOutput(int size, *student stud[size]){
 	else if(score < 95)
 		zlk1->mark = 'B';
 	else zlk1->mark = 'A';
-	
 }

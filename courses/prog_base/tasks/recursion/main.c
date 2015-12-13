@@ -4,25 +4,22 @@
 
 int calc(char* str){
 	int a = 0;
-	int b;
 	if(isalpha(*str))
 		a++;
-	if(*(str+1) != '\n'){
-		char *pstr = str+1;
-		b = calc(pstr);
-	}
+	if(*(str+1) != '\n')
+		return a+calc(str+1);
 	else
 		return a;
-	return a+b;
 }
 
 int main(){
 	char string[160];
+	puts("input any string");
 	fflush(stdin);
 	fgets(string, 160, stdin);
 	fclose(stdin);
 	int res;
-	res = calc(string);
+	res = calc(string) > 5;
 	printf("%d", res);
 	return 0;
 }
