@@ -6,7 +6,7 @@ int calc(char* str){
 	int a = 0;
 	if(isalpha(*str))
 		a++;
-	if(*(str+1) != '\n')
+	if(*(str+1) != '\0')
 		return a+calc(str+1);
 	else
 		return a;
