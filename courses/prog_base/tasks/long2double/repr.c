@@ -5,10 +5,11 @@ double long2double(long long int);
 
 int main(){
 	long long int a;
+	printf("Input an integer\n");
 	scanf("%lld", &a);
 	double b;
 	b = long2double(a);
-	printf("%.325llf", &b);
+	printf("%.325lf", b);
 	return 0;
 }
 

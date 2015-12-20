@@ -1,10 +1,6 @@
-#include"functions.c"
-#include"Robot.c"
+#include"advancedInterface.c"
 
 int main(){
-	startConsole;
-	int a = menuMain;
-	printf("%d", a);
-	getch();
+	menuMain();
 	return 0;
 }
