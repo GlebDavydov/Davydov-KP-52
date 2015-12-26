@@ -1,2 +1,4 @@
 Player 1 (level: 3) 1 
 Player 1 (level: 7) 7 
+ArmoredBoss (level: 9) 1 
+ArmoredBoss (level: 5) 11 
