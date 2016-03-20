@@ -4,11 +4,6 @@
 typedef char *sentence_t;
 typedef struct text_s text_t;
 
-struct text_s {
-    int count;
-	sentence_t  st[1024];
-};
-
 text_t *text_new(void); //text.c
 void text_free(text_t *ptext);
 int text_isempty(text_t *ptext);
