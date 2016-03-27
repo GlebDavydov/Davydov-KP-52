@@ -9,6 +9,7 @@
 
 void *readerFunc(void *args){
      shared_t * shared = (shared_t *)args;
+     char *str = get_string(shared);
      while(1){
         shared_lock(shared);
         char a = get_symbol(shared);
@@ -16,7 +17,7 @@ void *readerFunc(void *args){
             || a == 'U' || a == 'e' || a == 'E' || a == 'i' || a == 'I' || a == 'y' || a == 'Y')
             printf("%c; ", a);
         shared_unlock(shared);
-        Sleep(20);
+        Sleep(10 + strlen(str)/3);
      }
      return NULL;
 }
