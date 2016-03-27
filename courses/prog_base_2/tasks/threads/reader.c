@@ -17,7 +17,7 @@ void *readerFunc(void *args){
             || a == 'U' || a == 'e' || a == 'E' || a == 'i' || a == 'I' || a == 'y' || a == 'Y')
             printf("%c; ", a);
         shared_unlock(shared);
-        Sleep(10 + strlen(str)/3);
+        //Sleep(10 + strlen(str)/3);
      }
      return NULL;
 }

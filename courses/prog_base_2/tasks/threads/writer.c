@@ -20,7 +20,7 @@ void *writerFunc(void *args){
         else
             change_symbol(shared, '0');
         shared_unlock(shared);
-        Sleep(9 + (strlen(str)/3));
+        //Sleep(9 + (strlen(str)/3));
     }
     return NULL;
 }
