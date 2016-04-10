@@ -1,0 +1,5 @@
+Name, Surname, Pension, Hours, Rating, "cathedra: name, speciality, groups"
+Ruslan, Hadyniak, 2051-08-31, 30, 9.99, "PZKS, Programming, KP-51, KP-52"
+Helen, Avramenko, 2030-08-31, 22, 5.0, "PZKS, ASD, KM-51, KP-42"
+Victoria, Sushchuck-Slusarenko, 2022-08-31, 45, 10.0, "Maths, Linear algebra, KM-53, KV-52"
+Victor, Legeza, 9001-12-31, 12, 3.14, "Maths, Calculus, KP-51, KP-52"

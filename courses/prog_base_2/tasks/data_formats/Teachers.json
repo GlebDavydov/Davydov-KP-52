@@ -1,0 +1,63 @@
+[
+    {
+        "name" : "Ruslan",
+        "surname" : "Hadyniak",
+        "pension" : "2051-08-31",
+        "hours" : 30,
+        "rating" : 9.99,
+        "cathedra" : {
+            "name" : "PZKS",
+            "speciality" : "Programming",
+            "groups" : [
+                "KP-51",
+                "KP-52"
+            ]
+        }
+
+    },
+    {
+        "name" : "Helen",
+        "surname" : "Avramenko",
+        "pension" : "2030-08-31",
+        "hours" : 15,
+        "rating" : 5.0,
+        "cathedra" : {
+            "name" : "PZKS",
+            "speciality" : "ASD",
+            "groups" : [
+                "KM-51",
+                "KP-42"
+            ]
+        }
+    },
+    {
+        "name" : "Victoria",
+        "surname" : "Sushchuck-Slusarenko",
+        "pension" : "2022-08-31",
+        "hours" : 45,
+        "rating" : 10.0,
+        "cathedra" : {
+            "name" : "Maths",
+            "speciality" : "Linear algebra",
+            "groups" : [
+                "KM-53",
+                "KV-52"
+            ]
+        }
+    },
+    {
+        "name" : "Victor",
+        "surname" : "Legeza",
+        "pension" : "9001-12-31",
+        "hours" : 12,
+        "rating" : 3.14,
+        "cathedra" : {
+            "name" : "Maths",
+            "speciality" : "Calculus",
+            "groups" : [
+                "KP-51",
+                "KP-52"
+            ]
+        }
+    }
+]
