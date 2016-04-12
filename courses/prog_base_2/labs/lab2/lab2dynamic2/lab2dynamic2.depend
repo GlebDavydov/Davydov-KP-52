@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1460499181 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab2\lab2dynamic2\main.cpp
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	"main.h"
+
+1460498646 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab2\lab2dynamic2\main.h
+	<windows.h>
+
