@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1460501725 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab2\lab2app\main.c
+	<stdlib.h>
+	<stdio.h>
+	<time.h>
+	<windows.h>
+	"array.h"
+
+1460492654 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab2\lab2app\array.h
+
