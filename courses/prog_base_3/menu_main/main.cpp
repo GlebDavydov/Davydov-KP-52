@@ -1,4 +1,4 @@
-int main_menu(void);
+#include "menus.h"
 
 int main(void){
     main_menu();
