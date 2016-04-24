@@ -9,6 +9,8 @@ int err_proc(int *err){
             printf("\nError: invalid request.");
         } else if(*err == STEP_ERROR){
             printf("\nStep error.");
+        } else if(*err == PROCESS_FAILURE){
+            printf("\nProcess failed.");
         }
         return(1);
     }
@@ -29,9 +31,9 @@ int main(void){
     t1->Passport = 1010;
     t1->fname = "Donkey";
     t1->lname = "Kong";
-    t1->salary = 0;
+    t1->salary = 1000;
     t1->exp = 2.1;
-    t1->birthdate = "1969.01.01";
+    t1->birthdate = "1961.01.01";
     create_teacher(db, t1, err);
     if(err_proc(err))
         return(1);
@@ -47,7 +49,10 @@ int main(void){
         return(1);
     print_teacher(t2);
     t1->salary += 2000;
-    update_teacher(db, 1, t1, err);
+    update_teacher(db, 1010, t1, err);
+    if(err_proc(err))
+        return(1);
+    select_teachers(db, 3367, 0.0, err);
     if(err_proc(err))
         return(1);
     delete_teacher(db, 1, err);
@@ -61,9 +66,6 @@ int main(void){
     free(t2->lname);
     free(t2->birthdate);
     free(t2);
-    select_teachers(db, 3367, 0.0, err);
-    if(err_proc(err))
-        return(1);
     sqlite3_close(db);
     free(db);
     return 0;

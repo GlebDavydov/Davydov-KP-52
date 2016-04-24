@@ -26,7 +26,7 @@ void read_teacher(sqlite3 *db, int id, teacher_t *self, int *err){
         }
         else {
             if(SQLITE_DONE == rc){
-                printf("\nRequest processed.");
+                printf("\nRead request processed.");
                 break;
             }
             self->Passport = sqlite3_column_int(stmt, 0);
@@ -55,8 +55,11 @@ int create_teacher(sqlite3 *db, teacher_t *self, int *err){
     if(SQLITE_OK != rc){
         *err = INVALID_REQUEST;
         return 0;
+    } else if (SQLITE_DONE != (rc = sqlite3_step(stmt))){
+        *err = PROCESS_FAILURE;
+        return 0;
     }
-    printf("\nRequest processed.");
+    printf("\nCreate request processed.");
     sqlite3_finalize(stmt);
     return 1;
 }
@@ -70,8 +73,11 @@ int delete_teacher(sqlite3 *db, int id, int *err){
     if(SQLITE_OK != rc){
         *err = INVALID_REQUEST;
         return 0;
+    } else if (SQLITE_DONE != (rc = sqlite3_step(stmt))){
+        *err = PROCESS_FAILURE;
+        return 0;
     }
-    printf("\nRequest processed.");
+    printf("\nDelete request processed.");
     sqlite3_finalize(stmt);
     return 1;
 }
@@ -90,8 +96,11 @@ int update_teacher(sqlite3 *db, int id, teacher_t *self, int *err){
     if(SQLITE_OK != rc){
         *err = INVALID_REQUEST;
         return 0;
+    } else if (SQLITE_DONE != (rc = sqlite3_step(stmt))){
+        *err = PROCESS_FAILURE;
+        return 0;
     }
-    printf("\nRequest processed.");
+    printf("\nUpdate request processed.");
     sqlite3_finalize(stmt);
     return 1;
 }
@@ -116,7 +125,7 @@ void select_teachers(sqlite3 *db, int filter1, double filter2, int *err){
         else {
             teacher_t *self = malloc(sizeof(struct teacher_s));
             if(SQLITE_DONE == rc){
-                printf("\nRequest processed.");
+                printf("\nSelect request processed.");
                 break;
             }
             self->Passport = sqlite3_column_int(stmt, 0);
@@ -150,7 +159,7 @@ int teachers_count(sqlite3 *db, int *err){
         }
         else {
             if(SQLITE_DONE == rc){
-                printf("\nRequest processed.");
+                printf("\nCount request processed.");
                 break;
             }
             count++;
