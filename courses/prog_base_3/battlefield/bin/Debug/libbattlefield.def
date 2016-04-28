@@ -1,3 +1,3 @@
 EXPORTS
     DllMain@12 @1
-    _Z11battlefieldN2sf12RenderWindowE @2
+    battlefield @2

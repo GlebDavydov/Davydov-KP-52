@@ -51,7 +51,7 @@ int singleplayer_menu(RenderWindow &window, Sprite menu_back){
                         case EXIT:
                             return 0;
                         case BATTLE:
-                            //bf(window);
+                            bf(window);
                             break;
                         default:
                             break;

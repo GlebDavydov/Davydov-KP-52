@@ -45,7 +45,7 @@ class map_point{
 
 //int star_distance_count(map bf, map_point start, map_point dest);
 
-int DLL_EXPORT battlefield(RenderWindow window){
+int DLL_EXPORT battlefield(RenderWindow& window){
     window.clear(Color::Black);
     Texture land, obst; // allowed, restricted, pers, bn, bne, be, bse, bs, bsw, bw, bnw;
     land.loadFromFile("land.png");
@@ -64,17 +64,17 @@ int DLL_EXPORT battlefield(RenderWindow window){
     map_point point[30][30];
     for(int i = 0; i < 30*30; i++){
         if(i % 43 != 0 && i != 0){
-                point[i/30][i%30] = new map_point(i/30, i%30, 0);
-                point[i/30][i%30].setTexture(land);
+                point[i/30][i%30] = *(new map_point(i/30, i%30, 0));
+                point[i/30][i%30].textureSet(land);
         } else {
-                point[i/30][i%30] = new map_point(i/30, i%30, 1);
-                point[i/30][i%30].setTexture(obst);
+                point[i/30][i%30] = *(new map_point(i/30, i%30, 1));
+                point[i/30][i%30].textureSet(obst);
         }
     }
     Event event;
     while(window.pollEvent(event)){
         for(int i = 0; i < 30*30; i++){
-            window.draw(point[i/30][i%30]);
+            window.draw(point[i/30][i%30].sp);
         }
         if (event.type == Event::KeyPressed){
             if (event.key.code == sf::Keyboard::Escape){

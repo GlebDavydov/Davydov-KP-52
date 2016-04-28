@@ -393,15 +393,15 @@
 	<GLES/gl.h>
 	<GLES/glext.h>
 
-1460920980 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\main_menu.cpp
+1461598324 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\main_menu.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	"menus.h"
 
-1460920557 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\menus.h
+1461600082 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\menus.h
 	<SFML/Graphics.hpp>
 
-1460921351 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\singleplayer_menu.cpp
+1461598277 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\singleplayer_menu.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	"menus.h"

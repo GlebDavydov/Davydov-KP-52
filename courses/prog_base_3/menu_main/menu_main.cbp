@@ -43,6 +43,9 @@
 		</Unit>
 		<Unit filename="main_menu.cpp" />
 		<Unit filename="menus.h" />
+		<Unit filename="singleplayer_menu.cpp">
+			<Option target="Debug" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

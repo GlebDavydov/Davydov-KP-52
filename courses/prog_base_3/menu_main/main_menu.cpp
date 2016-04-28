@@ -20,7 +20,6 @@ int main_menu(void){
 
     Sprite menu_back(bckgrnd), menu_exit(ex_1), menu_singleplayer(singl_1);
 
-    //menu_singleplayer.setTextureRect(IntRect(520, 440, 255, 60));
     menu_back.setPosition(0, 0);
     menu_exit.setPosition(580, 540);
     menu_singleplayer.setPosition(430, 440);
