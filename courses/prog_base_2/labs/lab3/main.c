@@ -5,6 +5,9 @@
 
 #include "earthquake.h"
 
+void calm(listener_t *self, callback_args args);
+void panic(listener_t *self, callback_args args);
+
 void hide(double n){
     Sleep(100);
 } //damn good callback
@@ -15,20 +18,16 @@ void show(double n){
 }
 
 int main(void){
-    //unit_test_run();
+    unit_test_run();
     srand(time(NULL));
     seismometer_t *lab = ssm_new("Explorer");
-    ssm_add_listener(lab, listener_new("Michigan"));
-    ssm_add_listener(lab, listener_new("Yellowstone"));
-    ssm_add_listener(lab, listener_new("Carolina"));
-    ssm_add_listener(lab, listener_new("North Georgia"));
+    ssm_add_listener(lab, listener_new("Michigan"), calm);
+    ssm_add_listener(lab, listener_new("Yellowstone"), panic);
+    ssm_add_listener(lab, listener_new("Carolina"), calm);
+    ssm_add_listener(lab, listener_new("North Georgia"), panic);
     ssm_turn_on(lab);
-    ssm_send_event(lab);
     ssm_cycle(lab, show);
     ssm_turn_off(lab);
-    ssm_send_event(lab);
-    while(ssm_get_count(lab)){
-        listener_delete(ssm_remove_listener(lab, 0));
-    }
     ssm_delete(lab);
+    return 0;
 }

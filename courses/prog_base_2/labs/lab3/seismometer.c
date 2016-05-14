@@ -5,48 +5,32 @@
 #include <string.h>
 #include <windows.h>
 
-#include <stddef.h>
-#include <setjmp.h>
-#include <cmocka.h>
-
 #include "earthquake.h"
 
-#define OFF 0
-#define ON 1
-#define ESCAPE 27
-
-enum events{NOTHING, SWITCHED_OFF, SWITCHED_ON, ZERO_ACTIVITY, EARTHQUAKE, CRITICAL_EARHQUAKE};
-enum status{CLEAR, ZEROS, HIGHS, VHIGHS};
 
 
 double get_random_number(void);
-listener_t *listener_get_next(listener_t *self);
-void listener_set_next(listener_t *self, listener_t *next); // for linked list
 
 struct seismometer_s{
     int status;
     int count;
-    int event;
     char name[50];
-    listener_t *first;
+    event_t *first;
 };
 
-void swon(callback_args args){
-    char *sendername = args;
-    printf("\n\"%s\" switched seismometer on. System on full alert", sendername);}
-void swoff(callback_args args){
-    char *sendername = args;
-    printf("\n\"%s\" switched seismometer off. Monitoring over", sendername);}
-void zeroact(callback_args args){
-    char *sendername = args;
-printf("\n\"%s\" registering no seismic activity", sendername);}
-void earthquake(callback_args args){
-    char *sendername = args;
-printf("\n\"%s\" registering high seismic activity warning! Earthquake possible. Evacuation recommended!", sendername);}
-void earthquake_critical(callback_args args){
-    char *sendername = args;
-printf("\n\t\t\t******WARNING!!!******\n\"%s\" registering extreme seismic activity! Earthquake is imminent! Evacuation is NECESSARY!", sendername);}
+struct event_s{
+    event_t *next;
+    listener_t *self;
+    message_callback cb;
+};
 
+event_t *event_new(listener_t *self, message_callback cb){
+    event_t *eve = malloc(sizeof(struct event_s));
+    eve->cb = cb;
+    eve->self = self;
+    eve->next = NULL;
+    return eve;
+}
 
 seismometer_t *ssm_new(char *name){
     seismometer_t *newSsm = malloc(sizeof(struct seismometer_s));
@@ -61,102 +45,82 @@ void ssm_delete(seismometer_t *self){
     free(self);
 }
 
-int ssm_add_listener(seismometer_t *base, listener_t *self){
+int ssm_add_listener(seismometer_t *base, listener_t *self, message_callback cb){
     if(base->count > 256){
         printf("\nToo many listeners at this seismo!");
         return 0;
     }
     if(!self)
         return 0;
+    event_t *eve = event_new(self, cb);
     if(base->count == 0){
-        base->first = self;
-        listener_set_next(self, NULL);
+        base->first = eve;
         base->count++;
     }
     else{
-        listener_t *temp = base->first;
+        event_t *temp = base->first;
         char *name = listener_get_name(self);
-        if(!strcmp(name, listener_get_name(temp))){
+        if(!strcmp(name, listener_get_name(temp->self))){
             printf("\nListener with such a name already exists!");
             return 0;
         }
-        while(listener_get_next(temp)){
-        temp = listener_get_next(temp);
-            if(!strcmp(name, listener_get_name(temp))){
+        while(temp->next){
+        temp = temp->next;
+            if(!strcmp(name, listener_get_name(temp->self))){
                 printf("\nListener with such a name already exists!");
                 return 0;
             }
         }
-        listener_set_next(temp, self);
-        listener_set_next(self, NULL);
+        temp->next = eve;
         base->count++;
     }
     return 1;
 }
 
 int ssm_get_listener_index(seismometer_t * self, char * name){
-    listener_t *temp = self->first;
+    event_t *temp = self->first;
     for(int i = 0; temp; i++){
-        if(!strcmp(name, listener_get_name(temp))){
+        if(!strcmp(name, listener_get_name(temp->self))){
             return i;
         }
-        temp = listener_get_next(temp);
+        temp = temp->next;
     }
     return ERR_INDEX;
 }
 
-listener_t *ssm_remove_listener(seismometer_t *self, int index){
-    if(index < 0 || index >= self->count){
+listener_t *ssm_remove_listener(seismometer_t *self, listener_t *lis){
+    int index = ssm_get_listener_index(self, listener_get_name(lis));
+    if(index == ERR_INDEX){
         printf("\nNo such index!");
         return NULL;
     }
-    listener_t *temp1 = self->first;
+    event_t *temp1 = self->first;
     if(!temp1){
         return NULL;
     }
     if(index == 0){
-        self->first = listener_get_next(temp1);
+        self->first = temp1->next;
         self->count--;
-        return temp1;
+        listener_t *list1 = temp1->self;
+        free(temp1);
+        return list1;
     }
     for(int i = 1; i < index; i++){
-        temp1 = listener_get_next(temp1);
+        temp1 = temp1->next;
     }
-    listener_t *temp2 = listener_get_next(temp1);
-    listener_set_next(temp1, listener_get_next(temp2));
+    event_t *temp2 = temp1->next;
+    temp1->next = temp2->next;
     self->count--;
-    return temp2;
+    listener_t *list1 = temp2->self;
+    free(temp2);
+    return list1;
 }
 
 void ssm_send_event(seismometer_t *self){
-    if(self->count == 0){
-        return;
-    }
-    message_callback cb;
-    switch(self->event){
-        case SWITCHED_ON:
-            cb = swon;
-            break;
-        case SWITCHED_OFF:
-            cb = swoff;
-            break;
-        case ZERO_ACTIVITY:
-            cb = zeroact;
-            break;
-        case EARTHQUAKE:
-            cb = earthquake;
-            break;
-        case CRITICAL_EARHQUAKE:
-            cb = earthquake_critical;
-            break;
-        case NOTHING:
-        default:
-            return;
-    }
-    listener_t *temp = self->first;
-    while(temp){
-        listener_react_event(temp, cb, self->name);
-        temp = listener_get_next(temp);
+    event_t *eve = self->first;
+    while(eve){
+        eve->cb(eve->self, self->name);
+        eve = eve->next;
     }
 }
 
@@ -173,48 +137,19 @@ void ssm_cycle(seismometer_t *self, ssm_mode cb){
         while(!kbhit()){
             random = get_random_number();
             cb(random);
-            if(random <= 2.0){
-                if(status != ZEROS){
-                    status = ZEROS;
-                    counter = 1;
-                }
-                else{
-                    counter++;
-                }
-            }
-            else if(random >= 5.0){
-                if(status != HIGHS && status != VHIGHS){
-                    counter = 0;
-                }
-                if(random >= 8.5){
-                    status = VHIGHS;
-                }
-                if(status != VHIGHS){
+            if(random >= 5.0){
+                if(status != HIGHS){
                     status = HIGHS;
-                }
-                counter++;
+                    counter = 1;
+                } else
+                    counter++;
             } else {
                 counter = 0;
                 status = CLEAR;
             }
             if(counter == 3){
-                switch(status){
-                    case ZEROS:
-                        self->event = ZERO_ACTIVITY;
-                        break;
-                    case HIGHS:
-                        self->event = EARTHQUAKE;
-                        break;
-                    case VHIGHS:
-                        self->event = CRITICAL_EARHQUAKE;
-                        break;
-                    default:
-                        self->event = NOTHING;
-                        break;
-                }
-                counter = 0;
                 ssm_send_event(self);
-                self->event = NOTHING;
+                counter = 0;
             }
         }
         if(ESCAPE == getch())
@@ -224,13 +159,13 @@ void ssm_cycle(seismometer_t *self, ssm_mode cb){
 }
 
 void ssm_turn_on(seismometer_t *self){
+    printf("\nSeismo \"%s\" on alert", self->name);
     self->status = ON;
-    self->event = SWITCHED_ON;
 }
 
 void ssm_turn_off(seismometer_t *self){
+    printf("\nSeismo \"%s\" deactivated", self->name);
     self->status = OFF;
-    self->event = SWITCHED_OFF;
 }
 
 double get_random_number(void){
@@ -251,99 +186,3 @@ char *ssm_get_name(seismometer_t *self){
     return self->name;
 }
 
-//!*******************************************************************************************************************************
-//!                                                     UNIT TESTS
-//!*******************************************************************************************************************************
-
-
-static void newSeismo_void_countZero(void **state){
-    seismometer_t *self = ssm_new("Explorer");
-    assert_int_equal(self->count, 0);
-    ssm_delete(self);
-};//1
-
-static void seismoAddListener_byName_indexZero(void**state){
-    seismometer_t *self = ssm_new("Explorer");
-    listener_t *me = listener_new("Me");
-    ssm_add_listener(self, me);
-    assert_int_equal(ssm_get_listener_index(self, "Me"), 0);
-    ssm_remove_listener(self, 0);
-    listener_delete(me);
-    ssm_delete(self);
-};//2
-
-static void newSeismo_deleteEmpty_False(void**state){
-    seismometer_t *self = ssm_new("Explorer");
-    assert_false(ssm_remove_listener(self, 0));
-    ssm_delete(self);
-};//3
-
-static void seismoAddTwoListeners_sameName_False(void**state){
-    seismometer_t *self = ssm_new("Explorer");
-    listener_t *me1 = listener_new("Me");
-    listener_t *me2 = listener_new("Me");
-    ssm_add_listener(self, me2);
-    assert_false(ssm_add_listener(self, me1));
-    ssm_remove_listener(self, 0);
-    listener_delete(me1);
-    listener_delete(me2);
-    ssm_delete(self);
-};//4
-
-static void seismoAddThreeListeners_deleteLast_countTwo(void**state){
-    seismometer_t *self = ssm_new("Explorer");
-    listener_t *me1 = listener_new("Hello");
-    listener_t *me2 = listener_new("earthquake");
-    listener_t *me3 = listener_new("hide");
-    ssm_add_listener(self, me1);
-    ssm_add_listener(self, me2);
-    ssm_add_listener(self, me3);
-    ssm_remove_listener(self, 2);
-    assert_int_equal(self->count, 2);
-    ssm_remove_listener(self, 0);
-    ssm_remove_listener(self, 0);
-    listener_delete(me1);
-    listener_delete(me2);
-    listener_delete(me3);
-    ssm_delete(self);
-};//5
-
-static void seismoAddListener_remove_removedName(void **state){
-    seismometer_t *self = ssm_new("Explorer");
-    char *name = "Name";
-    ssm_add_listener(self, listener_new(name));
-    listener_t *me = ssm_remove_listener(self, 0);
-    assert_string_equal(listener_get_name(me), name);
-    listener_delete(me);
-    ssm_delete(self);
-};//6
-
-static void newSeismo_switchOn_statusON(void**state){
-    seismometer_t *self = ssm_new("Explorer");
-    ssm_turn_on(self);
-    assert_int_equal(self->status, ON);
-    ssm_delete(self);
-};//7
-
-static void seismoSwitchedOn_switchOff_eventOFF(void**state){
-    seismometer_t *self = ssm_new("Explorer");
-    ssm_turn_on(self);
-    ssm_turn_off(self);
-    assert_int_equal(self->event, SWITCHED_OFF);
-    ssm_delete(self);
-};//8
-
-int unit_test_run(void) {
-    const struct CMUnitTest tests[] =
-    {
-        cmocka_unit_test(newSeismo_void_countZero),
-        cmocka_unit_test(seismoAddListener_byName_indexZero),
-        cmocka_unit_test(newSeismo_deleteEmpty_False),
-        cmocka_unit_test(seismoAddTwoListeners_sameName_False),
-        cmocka_unit_test(seismoAddThreeListeners_deleteLast_countTwo),
-        cmocka_unit_test(seismoAddListener_remove_removedName),
-        cmocka_unit_test(newSeismo_switchOn_statusON),
-        cmocka_unit_test(seismoSwitchedOn_switchOff_eventOFF)
-    };
-    return cmocka_run_group_tests(tests, NULL, NULL);
-}
