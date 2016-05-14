@@ -1,0 +1,23 @@
+# depslib dependency file v1.0
+1463175699 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab3\listener.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	"earthquake.h"
+
+1463201867 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab3\earthquake.h
+
+1463210076 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab3\seismometer.c
+	<stdlib.h>
+	<ctype.h>
+	<conio.h>
+	<stdio.h>
+	<string.h>
+	<windows.h>
+	<stddef.h>
+	<setjmp.h>
+	<cmocka.h>
+	"earthquake.h"
+
+1424096216 c:\program files (x86)\cmocka\include\cmocka.h
+
