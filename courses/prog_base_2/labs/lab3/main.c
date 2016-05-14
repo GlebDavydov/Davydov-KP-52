@@ -17,7 +17,7 @@ void show(double n){
 int main(void){
     //unit_test_run();
     srand(time(NULL));
-    seismometer_t *lab = ssm_new();
+    seismometer_t *lab = ssm_new("Explorer");
     ssm_add_listener(lab, listener_new("Michigan"));
     ssm_add_listener(lab, listener_new("Yellowstone"));
     ssm_add_listener(lab, listener_new("Carolina"));

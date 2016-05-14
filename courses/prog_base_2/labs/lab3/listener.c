@@ -40,10 +40,10 @@ char *listener_get_name(listener_t *self){
     return self->name;
 }
 
-void listener_react_event(listener_t *self, message_callback cb){
+void listener_react_event(listener_t *self, message_callback cb, callback_args args){
     self->events++;
     printf("\n%s reports:", self->name);
-    cb();
+    cb(args);
     printf("\n%s responded %d events", self->name, self->events);
 }
 
