@@ -1,0 +1,64 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<teachers>
+    <teacher>
+        <name>Ruslan</name>
+        <surname>Hadyniak</surname>
+        <pension>2051-08-31</pension>
+        <hours>30</hours>
+        <rating>9.99</rating>
+        <cathedra name = "PZKS">
+            <speciality>Programming</speciality>
+            <groups>
+                <group>KP-51</group>
+                <group>KP-52</group>
+            </groups>
+        </cathedra>
+    </teacher>
+
+    <teacher>
+        <name>Helen</name>
+        <surname>Avramenko</surname>
+        <pension>2030-08-31</pension>
+        <hours>15</hours>
+        <rating>5.0</rating>
+        <cathedra name = "PZKS">
+            <speciality>ADS</speciality>
+            <groups>
+                <group>KM-51</group>
+                <group>KP-42</group>
+            </groups>
+        </cathedra>
+    </teacher>
+
+    <teacher>
+        <name>Victoria</name>
+        <surname>Sushchuck-Slusarenko</surname>
+        <pension>2022-08-31</pension>
+        <hours>45</hours>
+        <rating>10.0</rating>
+        <cathedra name = "Maths">
+            <speciality>Linear algebra</speciality>
+            <groups>
+                <group>KM-53</group>
+                <group>KV-52</group>
+            </groups>
+        </cathedra>
+    </teacher>
+
+    <teacher>
+        <name>Victor</name>
+        <surname>Legeza</surname>
+        <pension>9001-12-31</pension>
+        <hours>12</hours>
+        <rating>3.14</rating>
+        <cathedra name = "Maths">
+            <speciality>Calculus</speciality>
+            <groups>
+                <group>KP-51</group>
+                <group>KP-52</group>
+            </groups>
+        </cathedra>
+    </teacher>
+
+
+</teachers>
