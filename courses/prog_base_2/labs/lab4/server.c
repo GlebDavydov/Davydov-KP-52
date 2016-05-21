@@ -199,7 +199,8 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
             "<h3>ALL TEACHERS</h3>"
             "%s"
             "</table>"
-            "<a href=\"/teachers/new\"></a>"
+            "<br>"
+            "<a href=\"/teachers/new\">New person</a>"
 
 
     "</body>"
@@ -398,6 +399,7 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
     "</head>"
     "<body>"
         "<p>ID %d successfully added</p>"
+        "<a href=\"/\">Home</a>"
     "</body>"
 "</html>"
 
@@ -451,6 +453,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
   "<br>"
   "<input type=\"submit\" value=\"Submit\">"
 "</form>"
+
+    "<br>"
+    "<a href=\"/\">Home</a>"
 
     "</body>"
 "</html>");
@@ -514,6 +519,8 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
             "</tr>"
         "</table>"
         "<a href=\"#\" onclick=\"doDelete()\">Delete</a>"
+        "<br>"
+        "<a href=\"/\">Home</a>"
         "<script>"
             "function doDelete() {"
                 "var xhttp = new XMLHttpRequest();"
@@ -548,6 +555,7 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
     "</head>"
     "<body>"
         "<p>%d successfully deleted</p>"
+        "<a href=\"/\">Home</a>"
     "</body>"
 "</html>",/*
                             "<message>\n"
