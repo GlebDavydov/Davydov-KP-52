@@ -138,10 +138,24 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
     if(!strcmp(req.uri, "/"))
         {
         char msg[MSG_LENGTH];
-        sprintf(msg, "<message>\n"
+        sprintf(msg,
+                    "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+
+            "<h1>KPI FPM TEACHERS DATABASE</h1>"
+            "<p>Welcome user! </p>"
+            "<a href=\"/teachers\">All teachers</a>"
+
+    "</body>"
+"</html>"
+                    /*"<message>\n"
                     "\t<status>ok</status>\n"
                     "\t<text>HELLO, USER!</text>\n"
-                    "</message>\n");
+                    "</message>\n"*/);
         socket_write_string(clientSocket, msg);
         }
     /*else if (!strcmp(req.uri, "/teachers"))
@@ -156,25 +170,64 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
     else
         if (strcmp(req.uri, "/teachers") == 0)
         {
-            if(strcmp(req.method, "GET") == 0)
-                {
+            if(strcmp(req.method, "GET") == 0){
+                char tempBuff[MSG_LENGTH];
+                sprintf(tempBuff, "<table>"
+                        "<caption>OUR BEST</caption>"
+        "<tr>"
+            "<th>Id</th>"
+            "<th>First Name</th>"
+            "<th>Last Name</th>"
+	"</tr>");
+                for(int i = 0; i < list_count(list); i++){
+                    sprintf(tempBuff, "%s"
+    "<tr>"
+		"<th><a href=\"/teachers/%d\">%d</a></th>"
+		"<th>%s</th>"
+		"<th>%s</th>"
+	"</tr>", tempBuff, list_id(list, i), list_id(list, i), list_get(list, i)->name, list_get(list, i)->surname);
+                }
                     char result[10000];
                     sprintf(result,
-                        "HTTP/1.1 200 OK\n"
+                        "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+
+            "<h3>ALL TEACHERS</h3>"
+            "%s"
+            "</table>"
+            "<a href=\"/teachers/new\"></a>"
+
+
+    "</body>"
+"</html>"
+                        /*"HTTP/1.1 200 OK\n"
                         "Content-length: %zu\n"
                         "Content-type: application/xml\n"
                         "\n"
                         "%s\0",
-                        strlen(all_teachers_to_message(list)), all_teachers_to_message(list));
+                        strlen(all_teachers_to_message(list)), all_teachers_to_message(list)*/, tempBuff);
                     socket_write_string(clientSocket, result);
                 }
             else {
                 char result_msg[MSG_LENGTH];
                 sprintf(result_msg,
-                        "<message>\n"
+                        "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not allowed</p>"
+    "</body>"
+"</html>"
+                        /*"<message>\n"
                         "\t<status>error</status>\n"
                         "\t<text>NOT ALLOWED</text>\n"
-                        "</message>\n");
+                        "</message>\n"*/);
                 socket_write_string(clientSocket, result_msg);
             }
         }
@@ -193,66 +246,122 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                     const char * g2Name = http_request_getArg(&req, "group2");
                     if(!fName || !lName || !pensDate ||
                        !cName || !sName || !g1Name || !g2Name){
-                        sprintf(result,
-                            "<message>\n"
+                        sprintf(result,"<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: empty argument</p>"
+    "</body>"
+"</html>"
+                            /*"<message>\n"
                             "\t<status>error</status>\n"
                             "\t<text>Empty argument(s)</text>\n"
-                            "</message>\n");
+                            "</message>\n"*/);
                             socket_write_string(clientSocket, result);
                             return 1;
                        }
                     else if(strlen(fName) == 0 || strlen(fName) > WORD_LENGTH || strlen(lName) == 0 || strlen(lName) > WORD_LENGTH){
-                            sprintf(result,
-                            "<message>\n"
+                            sprintf(result,"<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not allowed</p>"
+    "</body>"
+"</html>"
+                            /*"<message>\n"
                             "\t<status>error</status>\n"
                             "\t<text>Invalid name</text>\n"
-                            "</message>\n");
+                            "</message>\n"*/);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(!checkDate(pensDate)){
-                        sprintf(result,
-                            "<message>\n"
+                        sprintf(result,"<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not allowed</p>"
+    "</body>"
+"</html>"
+                            /*"<message>\n"
                             "\t<status>error</status>\n"
                             "\t<text>Invalid pension date</text>\n"
-                            "</message>\n");
+                            "</message>\n"*/);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(strlen(cName) == 0 || strlen(cName) > WORD_LENGTH){
-                        sprintf(result,
+                        sprintf(result,"<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not allowed</p>"
+    "</body>"
+"</html>"/*
                             "<message>\n"
                             "\t<status>error</status>\n"
                             "\t<text>Invalid cathedra</text>\n"
-                            "</message>\n");
+                            "</message>\"n*/);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(rating < 0 || rating > 10.0){
-                        sprintf(result,
+                        sprintf(result,"<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not allowed</p>"
+    "</body>"
+"</html>"/*
                             "<message>\n"
                             "\t<status>error</status>\n"
                             "\t<text>Invalid score</text>\n"
-                            "</message>\n");
+                            "</message>\n"*/);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(strlen(sName) == 0 || strlen(sName) > WORD_LENGTH){
-                        sprintf(result,
+                        sprintf(result,"<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not allowed</p>"
+    "</body>"
+"</html>"/*
                             "<message>\n"
                             "\t<status>error</status>\n"
                             "\t<text>Invalid speciality</text>\n"
-                            "</message>\n");
+                            "</message>\n"*/);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(strlen(g1Name) == 0 || strlen(g1Name) > WORD_LENGTH || strlen(g2Name) == 0 || strlen(g2Name) > WORD_LENGTH){
-                        sprintf(result,
-                            "<message>\n"
+                        sprintf(result,"<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not allowed</p>"
+    "</body>"
+"</html>"
+                            /*"<message>\n"
                             "\t<status>error</status>\n"
                             "\t<text>Invalid group</text>\n"
-                            "</message>\n");
+                            "</message>\n"*/);
                             socket_write_string(clientSocket, result);
                             return 1;
                      }else {
                     int this = list_add(list, new_teacher());
                     teacher_update(list_get(list, list_find_id(list, this)), fName, lName, pensDate, hours, rating, cName, sName, g1Name, g2Name);
-                       printf("New:\n"
+                      /*printf("New:\n"
                            "<teacher>\n"
                             "\t<id>%i</id>\n"
                             "\t<firstName>%s</firstName>\n"
@@ -281,19 +390,91 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                                 "\t\t<group2>%s</group2>\n"
                                 "\t</cathedra>\n"
                                 "</teacher>\n\n",
-                               this, fName, lName, pensDate, hours, rating, cName, sName, g1Name, g2Name);
-                        sprintf(result,
+                               this, fName, lName, pensDate, hours, rating, cName, sName, g1Name, g2Name);*/
+                        sprintf(result,"<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>ID %d successfully added</p>"
+    "</body>"
+"</html>"
+
+                                , /*
                                 "HTTP/1.1 200 OK\n"
                                 "Content-length: %zu\n"
                                 "Content-type: application/xml\n"
                                 "\n"
                                 "%s\0",
-                                strlen(res), res);
+                                strlen(res), res*/this);
                         socket_write_string(clientSocket, result);
                         return 1;
                         }
                     }
-        else{
+        else if(!strcmp(req.uri, "/teachers/new")){
+            if(!strcmp(req.method, "GET")){
+                    char result_msg[MSG_LENGTH];
+                    sprintf(result_msg, "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<h3>New person</h3>"
+        "<form action=\"/teachers/\" method=\"POST\">"
+  "First name:<br>"
+  "<input type=\"text\" name=\"firstName\"><br>"
+  "Last name:<br>"
+  "<input type=\"text\" name=\"lastName\">"
+  "<br>"
+  "Pension date:<br>"
+  "<input type=\"text\" name=\"pensionDate\">"
+  "<br>"
+  "Hours:<br>"
+  "<input type=\"text\" name=\"hours\">"
+  "<br>"
+  "Rating:<br>"
+  "<input type=\"text\" name=\"rating\">"
+  "<br>"
+  "Cathedra:<br>"
+  "<input type=\"text\" name=\"cathedra\">"
+  "<br>"
+  "Speciality:<br>"
+  "<input type=\"text\" name=\"speciality\">"
+  "<br>"
+  "Group 1:<br>"
+  "<input type=\"text\" name=\"group1\">"
+  "<br>"
+  "Group 2:<br>"
+  "<input type=\"text\" name=\"group2\">"
+  "<br>"
+  "<input type=\"submit\" value=\"Submit\">"
+"</form>"
+
+    "</body>"
+"</html>");
+                    socket_write_string(clientSocket, result_msg);
+                }else {
+                    char result_msg[MSG_LENGTH];
+                    sprintf(result_msg,
+                            "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not allowed</p>"
+    "</body>"
+"</html>"
+                            /*"<message>\n"
+                            "\t<status>error</status>\n"
+                            "\t<text>NOT ALLOWED</text>\n"
+                            "</message>\n"*/);
+                    socket_write_string(clientSocket, result_msg);
+                    return 1;
+                }
+        }else{
         int id = atoi(strtok(req.uri, "/teachers"));
         if(list_find_id(list, id) != -1)
             {
@@ -302,13 +483,55 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                 if(teacher_to_message(list_get(list, list_find_id(list, id)), id) != NULL)
                     {
                         char result[BUFFER_LENGTH];
-                        sprintf(result,
-                            "HTTP/1.1 200 OK\n"
+                        teacher_t *t = list_get(list, list_find_id(list, id));
+                        sprintf(result, "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<h3>%s %s</h3>"
+        "<table>"
+            "<tr>"
+                "<th>ID:</th>"
+                "<th>hours:</th>"
+                "<th>rating:</th>"
+                "<th>cathedra:</th>"
+                "<th>speciality</th>"
+                "<th>group 1:</th>"
+                "<th>group 2:</th>"
+                "<th>pension date:</th>"
+            "</tr>"
+            "<tr>"
+                "<th>%d</th>"
+                "<th>%d</th>"
+                "<th>%.2f</th>"
+                "<th>%s</th>"
+                "<th>%s</th>"
+                "<th>%s</th>"
+                "<th>%s</th>"
+                "<th>%s</th>"
+            "</tr>"
+        "</table>"
+        "<a href=\"#\" onclick=\"doDelete()\">Delete</a>"
+        "<script>"
+            "function doDelete() {"
+                "var xhttp = new XMLHttpRequest();"
+                "xhttp.open(\"DELETE\", \"http://127.0.0.1:5000/teachers/%d\", true);"
+                "xhttp.send();"
+            "}"
+        "</script>"
+    "</body>"
+"</html>"
+                            /*"HTTP/1.1 200 OK\n"
                             "Content-length: %zu\n"
                             "Content-type: application/xml\n"
                             "\n"
                             "%s\0",
-                            strlen(teacher_to_message(list_get(list, list_find_id(list, id)), id)), teacher_to_message(list_get(list, list_find_id(list, id)), id));
+                            strlen(teacher_to_message(t, id)), teacher_to_message(t, id)*/
+                            , t->name, t->surname,
+                             id, t->hours, t->rating, t->cathedra->name, t->cathedra->speciality, t->cathedra->groups[0],
+                             t->cathedra->groups[1], t->date, id);
                         socket_write_string(clientSocket, result);
                         return 1;
                     }
@@ -318,19 +541,37 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                     free_teacher(list_remove(list, list_find_id(list, id)));
                     char result_msg[MSG_LENGTH];
                     sprintf(result_msg,
+                            "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>%d successfully deleted</p>"
+    "</body>"
+"</html>",/*
                             "<message>\n"
                             "\t<status>ok</status>\n"
                             "\t<text>Teacher (id%i) has been deleted</text>\n"
-                            "</message>\n", id);
+                            "</message>\n",*/ id);
                     socket_write_string(clientSocket, result_msg);
                     return 1;
                 }else {
                     char result_msg[MSG_LENGTH];
                     sprintf(result_msg,
-                            "<message>\n"
+                            "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not allowed</p>"
+    "</body>"
+"</html>"
+                            /*"<message>\n"
                             "\t<status>error</status>\n"
                             "\t<text>NOT ALLOWED</text>\n"
-                            "</message>\n");
+                            "</message>\n"*/);
                     socket_write_string(clientSocket, result_msg);
                     return 1;
                 }
@@ -338,10 +579,20 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
             else {
                 char result_msg[MSG_LENGTH];
                 sprintf(result_msg,
+                        "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: %d not found</p>"
+    "</body>"
+"</html>"
+                        /*
                         "<message>\n"
                         "\t<status>error</status>\n"
                         "\t<text>Teacher (id%i) not found</text>\n"
-                        "</message>\n", id);
+                        "</message>\n",*/, id);
                 socket_write_string(clientSocket, result_msg);
                 return 1;
             }
@@ -352,10 +603,19 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
     {
             char result_msg[MSG_LENGTH];
             sprintf(result_msg,
-                            "<message>\n"
+                    "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: not found</p>"
+    "</body>"
+"</html>"
+                            /*"<message>\n"
                             "\t<status>error</status>\n"
                             "\t<text>Not Found</text>\n"
-                            "</message>\n");
+                            "</message>\n"*/);
             socket_write_string(clientSocket, result_msg);
             return 1;
     }
