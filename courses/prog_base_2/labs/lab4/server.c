@@ -215,8 +215,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                 }
             else {
                 char result_msg[MSG_LENGTH];
-                sprintf(result_msg,
-                        "<!DOCTYPE html>"
+            char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
@@ -225,10 +226,17 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
         "<p>Error: not allowed</p>"
     "</body>"
 "</html>"
-                        /*"<message>\n"
-                        "\t<status>error</status>\n"
-                        "\t<text>NOT ALLOWED</text>\n"
-                        "</message>\n"*/);
+                            /*"<message>\n"
+                            "\t<status>error</status>\n"
+                            "\t<text>Not Allowed</text>\n"
+                            "</message>\n"*/);
+                sprintf(result_msg,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                 socket_write_string(clientSocket, result_msg);
             }
         }
@@ -247,7 +255,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                     const char * g2Name = http_request_getArg(&req, "group2");
                     if(!fName || !lName || !pensDate ||
                        !cName || !sName || !g1Name || !g2Name){
-                        sprintf(result,"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
@@ -258,105 +268,164 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
 "</html>"
                             /*"<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Empty argument(s)</text>\n"
+                            "\t<text>Empty argument</text>\n"
                             "</message>\n"*/);
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                        }
                     else if(strlen(fName) == 0 || strlen(fName) > WORD_LENGTH || strlen(lName) == 0 || strlen(lName) > WORD_LENGTH){
-                            sprintf(result,"<!DOCTYPE html>"
+                            char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: invalid name/surname</p>"
     "</body>"
 "</html>"
                             /*"<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid name</text>\n"
+                            "\t<text>invalid name/surname</text>\n"
                             "</message>\n"*/);
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(!checkDate(pensDate)){
-                        sprintf(result,"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: invalid pension date</p>"
     "</body>"
 "</html>"
                             /*"<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid pension date</text>\n"
+                            "\t<text>invalid pension date</text>\n"
                             "</message>\n"*/);
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(strlen(cName) == 0 || strlen(cName) > WORD_LENGTH){
-                        sprintf(result,"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: invalid cathedra</p>"
     "</body>"
-"</html>"/*
-                            "<message>\n"
+"</html>"
+         /*                   "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid cathedra</text>\n"
-                            "</message>\"n*/);
+                            "\t<text>invalid cathedra</text>\n"
+                            "</message>\n"*/);
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(rating < 0 || rating > 10.0){
-                        sprintf(result,"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: rating</p>"
     "</body>"
-"</html>"/*
-                            "<message>\n"
+"</html>"
+ /*                           "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid score</text>\n"
+                            "\t<text>Invalid Rating</text>\n"
                             "</message>\n"*/);
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(strlen(sName) == 0 || strlen(sName) > WORD_LENGTH){
-                        sprintf(result,"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
-    "</body>"
-"</html>"/*
-                            "<message>\n"
-                            "\t<status>error</status>\n"
-                            "\t<text>Invalid speciality</text>\n"
-                            "</message>\n"*/);
-                            socket_write_string(clientSocket, result);
-                            return 1;
-                    } else if(strlen(g1Name) == 0 || strlen(g1Name) > WORD_LENGTH || strlen(g2Name) == 0 || strlen(g2Name) > WORD_LENGTH){
-                        sprintf(result,"<!DOCTYPE html>"
-"<html>"
-    "<head>"
-        "<title>KPI FPM TDB</title>"
-    "</head>"
-    "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: invalid speciality</p>"
     "</body>"
 "</html>"
                             /*"<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid group</text>\n"
+                            "\t<text>invalid speciality</text>\n"
                             "</message>\n"*/);
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
+                    } else if(strlen(g1Name) == 0 || strlen(g1Name) > WORD_LENGTH || strlen(g2Name) == 0 || strlen(g2Name) > WORD_LENGTH){
+            char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<p>Error: invalid group</p>"
+    "</body>"
+"</html>"
+                            /*"<message>\n"
+                            "\t<status>error</status>\n"
+                            "\t<text>invalid group</text>\n"
+                            "</message>\n"*/);
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                      }else {
@@ -462,8 +531,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                     socket_write_string(clientSocket, result_msg);
                 }else {
                     char result_msg[MSG_LENGTH];
-                    sprintf(result_msg,
-                            "<!DOCTYPE html>"
+            char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
@@ -474,8 +544,15 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
 "</html>"
                             /*"<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>NOT ALLOWED</text>\n"
+                            "\t<text>Not Allowed</text>\n"
                             "</message>\n"*/);
+                sprintf(result_msg,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                     socket_write_string(clientSocket, result_msg);
                     return 1;
                 }
@@ -566,8 +643,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                     return 1;
                 }else {
                     char result_msg[MSG_LENGTH];
-                    sprintf(result_msg,
-                            "<!DOCTYPE html>"
+            char res[MSG_LENGTH];
+            sprintf(res,
+                    "<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
@@ -578,15 +656,23 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
 "</html>"
                             /*"<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>NOT ALLOWED</text>\n"
+                            "\t<text>Not Allowed</text>\n"
                             "</message>\n"*/);
+                sprintf(result_msg,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                     socket_write_string(clientSocket, result_msg);
                     return 1;
                 }
             }
             else {
                 char result_msg[MSG_LENGTH];
-                sprintf(result_msg,
+                char res[MSG_LENGTH];
+                sprintf(res,
                         "<!DOCTYPE html>"
 "<html>"
     "<head>"
@@ -596,11 +682,17 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
         "<p>Error: %d not found</p>"
     "</body>"
 "</html>"
-                        /*
-                        "<message>\n"
+                        /*"<message>\n"
                         "\t<status>error</status>\n"
                         "\t<text>Teacher (id%i) not found</text>\n"
-                        "</message>\n",*/, id);
+                        "</message>\n"*/, id);
+                sprintf(result_msg,
+                                "HTTP/1.1 404 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: text/html\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                 socket_write_string(clientSocket, result_msg);
                 return 1;
             }
@@ -688,8 +780,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                 }
             else {
                 char result_msg[MSG_LENGTH];
-                sprintf(result_msg,
-                        /*"<!DOCTYPE html>"
+            char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
@@ -698,10 +791,17 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
         "<p>Error: not allowed</p>"
     "</body>"
 "</html>"*/
-                        "<message>\n"
-                        "\t<status>error</status>\n"
-                        "\t<text>NOT ALLOWED</text>\n"
-                        "</message>\n");
+                            "<message>\n"
+                            "\t<status>error</status>\n"
+                            "\t<text>Not Allowed</text>\n"
+                            "</message>\n");
+                sprintf(result_msg,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                 socket_write_string(clientSocket, result_msg);
             }
         }
@@ -720,7 +820,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                     const char * g2Name = http_request_getArg(&req, "group2");
                     if(!fName || !lName || !pensDate ||
                        !cName || !sName || !g1Name || !g2Name){
-                        sprintf(result,/*"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
@@ -731,105 +833,164 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
 "</html>"*/
                             "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Empty argument(s)</text>\n"
+                            "\t<text>Empty argument</text>\n"
                             "</message>\n");
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                        }
                     else if(strlen(fName) == 0 || strlen(fName) > WORD_LENGTH || strlen(lName) == 0 || strlen(lName) > WORD_LENGTH){
-                            sprintf(result,/*"<!DOCTYPE html>"
+                            char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: invalid name/surname</p>"
     "</body>"
 "</html>"*/
                             "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid name</text>\n"
+                            "\t<text>invalid name/surname</text>\n"
                             "</message>\n");
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(!checkDate(pensDate)){
-                        sprintf(result,/*"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: invalid pension date</p>"
     "</body>"
 "</html>"*/
                             "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid pension date</text>\n"
+                            "\t<text>invalid pension date</text>\n"
                             "</message>\n");
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(strlen(cName) == 0 || strlen(cName) > WORD_LENGTH){
-                        sprintf(result,/*"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: invalid cathedra</p>"
     "</body>"
 "</html>"*/
                             "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid cathedra</text>\n"
+                            "\t<text>invalid cathedra</text>\n"
                             "</message>\n");
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(rating < 0 || rating > 10.0){
-                        sprintf(result,/*"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: rating</p>"
     "</body>"
 "</html>"*/
                             "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid score</text>\n"
+                            "\t<text>Invalid Rating</text>\n"
                             "</message>\n");
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                     } else if(strlen(sName) == 0 || strlen(sName) > WORD_LENGTH){
-                        sprintf(result,/*"<!DOCTYPE html>"
+                        char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: invalid speciality</p>"
     "</body>"
 "</html>"*/
                             "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid speciality</text>\n"
+                            "\t<text>invalid speciality</text>\n"
                             "</message>\n");
-                            socket_write_string(clientSocket, result);
-                            return 1;
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                     } else if(strlen(g1Name) == 0 || strlen(g1Name) > WORD_LENGTH || strlen(g2Name) == 0 || strlen(g2Name) > WORD_LENGTH){
-                        sprintf(result,/*"<!DOCTYPE html>"
+            char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
     "</head>"
     "<body>"
-        "<p>Error: not allowed</p>"
+        "<p>Error: invalid group</p>"
     "</body>"
 "</html>"*/
                             "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>Invalid group</text>\n"
+                            "\t<text>invalid group</text>\n"
                             "</message>\n");
+                sprintf(result,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                             socket_write_string(clientSocket, result);
                             return 1;
                      }else {
@@ -1021,8 +1182,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                 }
                 else {
                     char result_msg[MSG_LENGTH];
-                    sprintf(result_msg,
-                            /*"<!DOCTYPE html>"
+            char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
@@ -1033,14 +1195,22 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
 "</html>"*/
                             "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>NOT ALLOWED</text>\n"
+                            "\t<text>Not Allowed</text>\n"
                             "</message>\n");
+                sprintf(result_msg,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                     socket_write_string(clientSocket, result_msg);
                     return 1;
                 }
            } else {
                 char result_msg[MSG_LENGTH];
-                sprintf(result_msg,
+                char res[MSG_LENGTH];
+                sprintf(res,
                         /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
@@ -1054,6 +1224,13 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                         "\t<status>error</status>\n"
                         "\t<text>Teacher (id%i) not found</text>\n"
                         "</message>\n", id);
+                sprintf(result_msg,
+                                "HTTP/1.1 404 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                 socket_write_string(clientSocket, result_msg);
                 return 1;
             }
@@ -1061,8 +1238,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
         }
         }  else {
                     char result_msg[MSG_LENGTH];
-                    sprintf(result_msg,
-                            /*"<!DOCTYPE html>"
+            char res[MSG_LENGTH];
+            sprintf(res,
+                    /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
         "<title>KPI FPM TDB</title>"
@@ -1073,15 +1251,23 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
 "</html>"*/
                             "<message>\n"
                             "\t<status>error</status>\n"
-                            "\t<text>NOT ALLOWED</text>\n"
+                            "\t<text>Not Allowed</text>\n"
                             "</message>\n");
+                sprintf(result_msg,
+                                "HTTP/1.1 403 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
                     socket_write_string(clientSocket, result_msg);
                     return 1;
                 }
         }
         else {
             char result_msg[MSG_LENGTH];
-            sprintf(result_msg,
+            char res[MSG_LENGTH];
+            sprintf(res,
                     /*"<!DOCTYPE html>"
 "<html>"
     "<head>"
@@ -1095,6 +1281,13 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
                             "\t<status>error</status>\n"
                             "\t<text>Not Found</text>\n"
                             "</message>\n");
+                sprintf(result_msg,
+                                "HTTP/1.1 404 ERROR\n"
+                                "Content-length: %zu\n"
+                                "Content-type: application/xml\n"
+                                "\n"
+                                "%s\0",
+                                strlen(res), res);
             socket_write_string(clientSocket, result_msg);
             return 1;
     }

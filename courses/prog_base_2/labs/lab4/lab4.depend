@@ -13,7 +13,7 @@
 
 1461534148 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab4\socket.h
 
-1463811811 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab4\server.c
+1463836237 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab4\server.c
 	<stdio.h>
 	<stdlib.h>
 	<stddef.h>
@@ -30,7 +30,7 @@
 	<string.h>
 	"teahers.h"
 
-1463777680 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab4\xmlprocess.c
+1463832479 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab4\xmlprocess.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>

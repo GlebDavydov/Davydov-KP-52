@@ -146,22 +146,38 @@ void xml_extract(char *text, list_t *list){
 }
 
 char *teacher_to_message(teacher_t *self, int id){
-    char buff[MSG_LENGTH] = {"\0"};
-    sprintf(buff, "<teacher>\n"
-                "\t<id>%i</id>\n"
-                "\t<firstName>%s</firstName>\n"
-                "\t<lastName>%s</lastName>\n"
-                "\t<pensionDate>%s</pensionDate>\n"
-                "\t<hours>%d</hours>\n"
-                "\t<rating>%.2f</rating>\n"
-                "\t<cathedra nameCathedra=\"%s\">\n"
-                "\t\t<speciality>%s</speciality>\n"
-                "\t\t<group1>%s</group1>\n"
-                "\t\t<group2>%s</group2>\n"
-                "\t</cathedra>\n"
-                "</teacher>\n\n",
-                id, self->name, self->surname, self->date, self->hours, self->rating,
-                self->cathedra->name, self->cathedra->speciality, self->cathedra->groups[0], self->cathedra->groups[1]);
+    if(!self)
+        return NULL;
+    char buff[MSG_LENGTH];
+    xmlDoc * doc = NULL;
+	xmlNode * rootNode = NULL;
+	xmlNode * teacherNode = NULL;
+	xmlNode * cathedraNode = NULL;
+    doc = xmlNewDoc("1.0");
+	rootNode = xmlNewNode(NULL, "teachers");
+	xmlDocSetRootElement(doc, rootNode);
+	char strBuf[100];
+	teacherNode = xmlNewChild(rootNode, NULL, "teacher", NULL);
+	sprintf(strBuf, "%i", id);
+	xmlNewChild(teacherNode, NULL, "id", strBuf);
+	xmlNewChild(teacherNode, NULL, "firstName", self->name);
+	xmlNewChild(teacherNode, NULL, "lastName", self->surname);
+	xmlNewChild(teacherNode, NULL, "pensionDate", self->date);
+	sprintf(strBuf, "%i", self->hours);
+	xmlNewChild(teacherNode, NULL, "hours", strBuf);
+	sprintf(strBuf, "%f", self->rating);
+	xmlNewChild(teacherNode, NULL, "rating", strBuf);
+	cathedraNode = xmlNewChild(teacherNode, NULL, "cathedra", NULL);
+	xmlNewProp(cathedraNode, "name", self->cathedra->name);
+	xmlNewChild(cathedraNode, NULL, "speciality", self->cathedra->speciality);
+	xmlNewChild(cathedraNode, NULL, "group", self->cathedra->groups[0]);
+	xmlNewChild(cathedraNode, NULL, "group", self->cathedra->groups[1]);
+	xmlBuffer * bufferPtr = xmlBufferCreate();
+	xmlNodeDump(bufferPtr, NULL, (xmlNode *)doc, 0, 1);
+	sprintf(buff, "%s", (const char*)bufferPtr->content);
+    xmlFreeDoc(doc);
+	xmlCleanupParser();
+	xmlBufferFree(bufferPtr);
     return buff;
 }
 
@@ -169,10 +185,36 @@ char *all_teachers_to_message(list_t *list){
     if(list_count(list) == 0){
         return NULL;
     }
-    char buff[MSG_LENGTH] = {"<teachers>"};
+    char buff[MSG_LENGTH];
+    xmlDoc * doc = NULL;
+	xmlNode * rootNode = NULL;
+    doc = xmlNewDoc("1.0");
+	rootNode = xmlNewNode(NULL, "teachers");
+	xmlDocSetRootElement(doc, rootNode);
+	char strBuf[100];
     for(int i = 0; i  < list_count(list); i++){
-        sprintf(buff, "%s%s", buff, teacher_to_message(list_get(list, i), list_id(list, i)));
+        teacher_t *self = list_get(list, i);
+        int id = list_id(list, i);
+        xmlNode * teacherNode = NULL;
+        xmlNode * cathedraNode = NULL;
+        teacherNode = xmlNewChild(rootNode, NULL, "teacher", NULL);
+        sprintf(strBuf, "%i", id);
+        xmlNewChild(teacherNode, NULL, "id", strBuf);
+        xmlNewChild(teacherNode, NULL, "firstName", self->name);
+        xmlNewChild(teacherNode, NULL, "lastName", self->surname);
+        xmlNewChild(teacherNode, NULL, "pensionDate", self->date);
+        sprintf(strBuf, "%i", self->hours);
+        xmlNewChild(teacherNode, NULL, "hours", strBuf);
+        sprintf(strBuf, "%f", self->rating);
+        xmlNewChild(teacherNode, NULL, "rating", strBuf);
+        cathedraNode = xmlNewChild(teacherNode, NULL, "cathedra", NULL);
+        xmlNewProp(cathedraNode, "name", self->cathedra->name);
+        xmlNewChild(cathedraNode, NULL, "speciality", self->cathedra->speciality);
+        xmlNewChild(cathedraNode, NULL, "group", self->cathedra->groups[0]);
+        xmlNewChild(cathedraNode, NULL, "group", self->cathedra->groups[1]);
     }
-    sprintf(buff, "%s</teachers>\n\n", buff);
+	xmlBuffer * bufferPtr = xmlBufferCreate();
+	xmlNodeDump(bufferPtr, NULL, (xmlNode *)doc, 0, 1);
+	sprintf(buff, "%s", (const char*)bufferPtr->content);
     return buff;
 }
