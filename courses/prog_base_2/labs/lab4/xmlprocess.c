@@ -151,11 +151,11 @@ char *teacher_to_message(teacher_t *self, int id){
                 "\t<id>%i</id>\n"
                 "\t<firstName>%s</firstName>\n"
                 "\t<lastName>%s</lastName>\n"
-                "\t<pensionDate>%s</penstionDate>\n"
+                "\t<pensionDate>%s</pensionDate>\n"
                 "\t<hours>%d</hours>\n"
                 "\t<rating>%.2f</rating>\n"
                 "\t<cathedra nameCathedra=\"%s\">\n"
-                "\t\t<speciality>%s<speciality>\n"
+                "\t\t<speciality>%s</speciality>\n"
                 "\t\t<group1>%s</group1>\n"
                 "\t\t<group2>%s</group2>\n"
                 "\t</cathedra>\n"
@@ -166,13 +166,13 @@ char *teacher_to_message(teacher_t *self, int id){
 }
 
 char *all_teachers_to_message(list_t *list){
-    char buff[MSG_LENGTH] = {"\0"};
     if(list_count(list) == 0){
-        return buff;
+        return NULL;
     }
-    sprintf(buff, "%s", teacher_to_message(list_get(list, 0), list_id(list, 0)));
-    for(int i = 1; i  < list_count(list); i++){
-        sprintf(buff, "%s\n%s", buff, teacher_to_message(list_get(list, i), list_id(list, i)));
+    char buff[MSG_LENGTH] = {"<teachers>"};
+    for(int i = 0; i  < list_count(list); i++){
+        sprintf(buff, "%s%s", buff, teacher_to_message(list_get(list, i), list_id(list, i)));
     }
+    sprintf(buff, "%s</teachers>\n\n", buff);
     return buff;
 }
