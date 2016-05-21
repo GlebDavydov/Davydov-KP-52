@@ -1,0 +1,14 @@
+# depslib dependency file v1.0
+1463856365 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tasks\nlp\main.c
+	"nlp.h"
+
+1463856959 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tasks\nlp\nlp.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<ctype.h>
+	"nlp.h"
+
+1463854505 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tasks\nlp\nlp.h
+	<stdlib.h>
+
