@@ -40,5 +40,8 @@ void user_free(user_t *user);
 char *user_get_name(user_t *user);
 void prog_user_launchProgram(user_t *user, prog_t *prog);
 user_t *prog_user_exitProgram(prog_t *prog);
+//void event_f
+
+event_t *event_new(user_t *user, message_callback cb);
 
 #endif // MODULE_H_INCLUDED

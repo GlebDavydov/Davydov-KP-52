@@ -5,7 +5,7 @@
 struct list_node_s{
     struct list_node_s * next;
     struct list_node_s * prev;
-    int data;
+    void *data;
 };
 
 struct list_s{
@@ -14,7 +14,7 @@ struct list_s{
     int size;
 };
 
-list_t list_new ()
+list_t list_new()
 {
     list_t list = malloc(sizeof(struct list_s));
     list->head = malloc(sizeof(struct list_node_s));
@@ -27,7 +27,17 @@ list_t list_new ()
     return list;
 }
 
-void list_add(list_t list, int data, int pos)
+int list_find(list_t *list, void *data){
+    struct list_node_s *curr = list->head;
+    for(int i = 0; i < list_size; i++){
+        curr = curr->next;
+        if(curr->data == data)
+            return i;
+    }
+    return -1;
+}
+
+void list_add(list_t list, void *data, int pos)
 {
     struct list_node_s * new_node = malloc(sizeof(struct list_node_s));
     struct list_node_s * cur_node = list->head;
@@ -45,9 +55,9 @@ void list_add(list_t list, int data, int pos)
     list->size++;
 }
 
-int list_del(list_t list, int pos)
+void* list_del(list_t list, int pos)
 {
-    int data;
+    void *data;
     struct list_node_s * cur_node = list->head->next;
     if (list->tail == cur_node)
         return INT_MIN;
@@ -65,9 +75,9 @@ int list_del(list_t list, int pos)
     return data;
 }
 
-int list_change(list_t list, int data, int pos)
+int list_change(list_t list, void *data, int pos)
 {
-    int tmp_data;
+    void *tmp_data;
     struct list_node_s * cur_node = list->head->next;
     if (list->tail == cur_node)
         return INT_MIN;
@@ -94,6 +104,16 @@ void list_free(list_t list)
     free(list->tail);
     free(list->head);
     free(list);
+}
+
+void *list_get(list_t *list, int pos){
+    struct list_node_s *curr = list->head;
+    if (list->size < pos)
+        pos = list->size-1;
+    for (int i = 0; i < pos; i++){
+        curr =curr->next;
+    }
+    return curr->data;
 }
 
 

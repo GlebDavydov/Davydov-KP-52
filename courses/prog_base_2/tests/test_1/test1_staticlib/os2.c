@@ -110,10 +110,12 @@ prog_t *prog_new(char *name){
 }
 
 void prog_free(prog_t *prog){
-
+    free(prog);
 }
-char *prog_get_name(prog_t *prog);
 
+char *prog_get_name(prog_t *prog){
+    return prog->name;
+}
 
 void prog_user_launchProgram(os_t *base, user_t *user, prog_t *prog){
     if(prog->state == ON){
