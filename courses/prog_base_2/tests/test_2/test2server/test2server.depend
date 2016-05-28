@@ -58,7 +58,7 @@
 
 1415109076 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\include\curl\typecheck-gcc.h
 
-1464438943 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\server.c
+1464441698 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\server.c
 	<stdio.h>
 	<stdlib.h>
 	<stddef.h>
@@ -66,6 +66,7 @@
 	<ctype.h>
 	<time.h>
 	"server.h"
+	"FS_module.h"
 
 1461534192 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\socket.c
 	<winsock2.h>
@@ -280,4 +281,16 @@
 	<unicode/utf16.h>
 	<ctype.h>
 	<math.h>
+
+1464440768 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\fs_module.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<string.h>
+	<sys/stat.h>
+	<sys/types.h>
+	<dirent.h>
+	<windows.h>
+
+1464440930 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\fs_module.h
 

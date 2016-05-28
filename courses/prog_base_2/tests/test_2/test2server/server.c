@@ -6,7 +6,7 @@
 #include <time.h>
 
 #include "server.h"
-#include "FS_module.c"
+#include "FS_module.h"
 
 typedef enum resp_s{HTML, XML}resp_t;
 
@@ -315,14 +315,59 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
         sqlite3_close(db);
         free(db);
     } else if(!strcmp(req.uri, "/file-remove")){
-
-    }else{
+        char formMessage[MSG_LENGTH];
+        sprintf(formMessage, "<!DOCTYPE html>"
+"<html>"
+    "<head>"
+        "<title>KPI FPM TDB</title>"
+    "</head>"
+    "<body>"
+        "<h3>New person</h3>"
+        "<form action=\"/filesystem/\" method=\"POST\">"
+  "Enter file name:<br>"
+  "<input type=\"text\" name=\"filename\"><br>"
+  "<input type=\"submit\" value=\"Submit\">"
+"</form>"
+    "</body>"
+"</html>");
+        socket_write_string(clientSocket, formMessage);
+    }else if(!strcmp(req.uri, "/filesystem/")){
+        char result_msg[MSG_LENGTH];
+        resp_form(XML, NULL, 403, result_msg);
+        socket_write_string(clientSocket, result_msg);
+        return;
+    }else {
         char result_msg[MSG_LENGTH];
         resp_form(XML, NULL, 404, result_msg);
         socket_write_string(clientSocket, result_msg);
         return;
-    }
-    }else{
+    }}
+    else if(!strcmp(req.method, "POST")){
+    if(!strcmp(req.uri, "/filesystem/")){
+        char result_msg[MSG_LENGTH];
+        char *filename = http_request_getArg(&req, "filename");
+        if(!filename){
+            resp_form(XML, NULL, 404, result_msg);
+            socket_write_string(clientSocket, result_msg);
+            return;
+        }
+        if(!file_exists(filename)){
+            resp_form(XML, NULL, 404, result_msg);
+            socket_write_string(clientSocket, result_msg);
+            return;
+        }
+        if(!strcmp(filename, "teachers.db")){
+            char result_msg[MSG_LENGTH];
+        resp_form(XML, NULL, 403, result_msg);
+        socket_write_string(clientSocket, result_msg);
+        return;
+        }
+        file_remove(filename);
+        char *msg = "<message><status>OK</status><text>File deleion done</text></message>";
+        resp_form(XML, msg, 200, result_msg);
+        socket_write_string(clientSocket, result_msg);
+
+    }}else{
         char result_msg[MSG_LENGTH];
         resp_form(XML, NULL, 403, result_msg);
         socket_write_string(clientSocket, result_msg);
