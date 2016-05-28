@@ -40,6 +40,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="FS_module.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FS_module.h" />
 		<Unit filename="database.c">
 			<Option compilerVar="CC" />
 		</Unit>
