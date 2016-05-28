@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include "server.h"
+#include "FS_module.c"
 
 typedef enum resp_s{HTML, XML}resp_t;
 
@@ -313,7 +314,9 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
         free(err);
         sqlite3_close(db);
         free(db);
-    } else{
+    } else if(!strcmp(req.uri, "/file-remove")){
+
+    }else{
         char result_msg[MSG_LENGTH];
         resp_form(XML, NULL, 404, result_msg);
         socket_write_string(clientSocket, result_msg);

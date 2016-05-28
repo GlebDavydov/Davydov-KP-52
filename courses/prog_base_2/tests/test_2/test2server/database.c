@@ -53,11 +53,11 @@ void read_all_teachers(sqlite3 *db, list_t *list, int *err){
             return;
         }
         else {
-            teacher_t *self = new_teacher();
             if(SQLITE_DONE == rc){
                 printf("\nRead request processed.");
                 break;
             }
+            teacher_t *self = new_teacher();
             self->Passport = sqlite3_column_int(stmt, 0);
             strcpy(self->fname, (const char *)sqlite3_column_text(stmt, 1));
             strcpy(self->lname, (const char *)sqlite3_column_text(stmt, 2));
