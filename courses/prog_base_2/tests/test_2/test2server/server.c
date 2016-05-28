@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "server.h"
 
@@ -182,7 +183,7 @@ char *resp_form(resp_t type, char *usermsg, int code, char *buffer){
                 sprintf(msg, "<!DOCTYPE html>"
                         "<html>"
                         "<head>"
-                            "<title></title>" //!REMEMBER TO SET YOUR TITLE!
+                            "<title>Davydov KP-52 Var24</title>"
                         "</title>"
                         "</head>"
                         "<body>"
@@ -200,7 +201,7 @@ char *resp_form(resp_t type, char *usermsg, int code, char *buffer){
                 sprintf(msg, "<!DOCTYPE html>"
                         "<html>"
                         "<head>"
-                            "<title>403 forbidden</title>" //!REMEMBER TO SET YOUR TITLE!
+                            "<title>403 forbidden</title>"
                         "</title>"
                         "</head>"
                         "<body>"
@@ -218,7 +219,7 @@ char *resp_form(resp_t type, char *usermsg, int code, char *buffer){
                 sprintf(msg, "<!DOCTYPE html>"
                         "<html>"
                         "<head>"
-                            "<title>404 not found</title>" //!REMEMBER TO SET YOUR TITLE!
+                            "<title>404 not found</title>"
                         "</title>"
                         "</head>"
                         "<body>"
@@ -236,7 +237,7 @@ char *resp_form(resp_t type, char *usermsg, int code, char *buffer){
                 sprintf(msg, "<!DOCTYPE html>"
                         "<html>"
                         "<head>"
-                            "<title>502 bad gateway</title>" //!REMEMBER TO SET YOUR TITLE!
+                            "<title>502 bad gateway</title>"
                         "</title>"
                         "</head>"
                         "<body>"
@@ -266,6 +267,29 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
     else if(!strcmp(req.uri, "/info")){
         char result_msg[MSG_LENGTH];
         resp_form(XML, me_to_message(), 200, result_msg);
+        socket_write_string(clientSocket, result_msg);
+    }else if(!strcmp(req.uri, "/external")){
+        static const char * requestFormat =
+        "%s %s HTTP/1.1\r\n"
+        "Content-Type: text\r\n"
+        "Content-Length: %zu\r\n\r\n"
+        "%s";
+        socket_t* serverSock = socket_new ();
+        socket_connect(serverSock, "216.58.209.49", 80);
+        char uri [256];
+        strcpy (uri, "http://pb-homework.appspot.com/test/var/32?format=xml");
+        char req [1024];
+        sprintf (req, requestFormat, "GET", uri, NULL, NULL, NULL);
+        socket_write(serverSock, req, strlen (req));
+        char responce [1024];
+        socket_read (serverSock, responce, 1024);
+        int contentLength = 0;
+        sscanf (strstr(responce, "Content-Length: ") + strlen ("Content-Length: "), "%d", &contentLength);
+        char* data = strstr (responce, "\r\n\r\n") + 4;
+        socket_free(serverSock);
+        data = parse_response(data);
+        char result_msg[MSG_LENGTH];
+        resp_form(XML, data, 200, result_msg);
         socket_write_string(clientSocket, result_msg);
     }else{
         char result_msg[MSG_LENGTH];

@@ -1,6 +1,5 @@
 #ifndef SERVER_H_INCLUDED
 #define SERVER_H_INCLUDED
-
 #include "teahers.h"
 #include "socket.h"
 #include "database.h"

@@ -33,9 +33,10 @@ int list_find_id(list_t *self, int id);
 int list_id(list_t *self, int index);
 
 //xmlproces
-char* teacher_to_message(teacher_t *self, int id);
-char* all_teachers_to_message(list_t *list);
+char *teacher_to_message(teacher_t *self, int id);
+char *all_teachers_to_message(list_t *list);
 char *me_to_message(void);
+char *parse_response(char *stuff);
 
 
 #endif // TEAHERS_H_INCLUDED

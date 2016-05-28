@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -29,6 +30,26 @@ char *me_to_message(void){
     return buff;
 }
 
+char *parse_response(char *stuff){
+    char author[100];
+    char book[100];
+    xmlDoc *rcv = xmlReadMemory(stuff, strlen(stuff), NULL, NULL, 0);
+    xmlDoc *rst = xmlNewDoc("1.0");
+    xmlNode respRootNode = xmlNewNode(NULL, "message");
+    xmlDocSetRootElement(rst, respRootNode);
+    char buff[1000];
+    xmlNewChild(respRootNode, NULL, "status", "OK");
+    textNode = xmlNewChild(respRootNode, NULL, "text", NULL);
+
+    xmlNode * xRootEl;
+    xRootEl = xmlDocGetRootElement(rcv);
+    for(xmlNode * xCur = xRootEl->children; NULL != xCur ;xCur = xCur->next){
+        const char *name = xCur->name;
+        const char *content = xmlNodeGetContent(xCur);
+        xmlNewChild(textNode, NULL, name, content);
+    }
+    xmlNewChild(textNode, NULL, "recieving_time", )
+}
 
 /*char *teacher_to_message(teacher_t *self, int id){
     if(!self)

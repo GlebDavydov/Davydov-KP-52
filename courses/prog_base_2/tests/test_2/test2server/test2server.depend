@@ -5,12 +5,12 @@
 	<string.h>
 	"server.h"
 
-1464368635 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\server.h
+1464433309 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\server.h
 	"teahers.h"
 	"socket.h"
 	"database.h"
 
-1464428278 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\teahers.h
+1464430148 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\teahers.h
 
 1461534148 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\socket.h
 
@@ -58,12 +58,13 @@
 
 1415109076 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\include\curl\typecheck-gcc.h
 
-1464428684 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\server.c
+1464432421 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\server.c
 	<stdio.h>
 	<stdlib.h>
 	<stddef.h>
 	<string.h>
 	<ctype.h>
+	<time.h>
 	"server.h"
 
 1461534192 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\socket.c
@@ -206,4 +207,12 @@
 	<libxml/tree.h>
 	<libxml/parser.h>
 	<libxml/encoding.h>
+
+1464431516 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\client.h
+	<stdio.h>
+	<winsock2.h>
+	<windows.h>
+
+1464431847 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\client.c
+	"client.h"
 

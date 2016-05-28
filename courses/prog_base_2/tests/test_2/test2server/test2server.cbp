@@ -19,7 +19,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-llibxml2" />
-					<Add option="-lsw2_32" />
+					<Add option="-lws2_32" />
 					<Add directory="../../../../../../../Downloads/libxml2-2.7.8.win32/libxml2-2.7.8.win32/lib" />
 					<Add directory="lib64" />
 				</Linker>
@@ -40,6 +40,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="client.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="client.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
