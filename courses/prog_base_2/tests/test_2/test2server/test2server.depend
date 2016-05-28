@@ -1,0 +1,209 @@
+# depslib dependency file v1.0
+1464429396 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\main.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	"server.h"
+
+1464368635 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\server.h
+	"teahers.h"
+	"socket.h"
+	"database.h"
+
+1464428278 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\teahers.h
+
+1461534148 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\socket.h
+
+1464429069 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\database.h
+	"sqlite3.h"
+	"teahers.h"
+
+1460798695 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\sqlite3.h
+	<stdarg.h>
+
+1464380004 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\requests.c
+	<curl/curl.h>
+
+1419777365 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\include\curl\curl.h
+	"curlver.h"
+	"curlbuild.h"
+	"curlrules.h"
+	<stdio.h>
+	<limits.h>
+	<osreldate.h>
+	<sys/types.h>
+	<time.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<sys/select.h>
+	<sys/socket.h>
+	<sys/time.h>
+	<support/SupportDefs.h>
+	"easy.h"
+	"multi.h"
+	"typecheck-gcc.h"
+
+1420708698 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\include\curl\curlver.h
+
+1420708698 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\include\curl\curlbuild.h
+	<sys/types.h>
+	<sys/socket.h>
+
+1415109076 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\include\curl\curlrules.h
+
+1402512749 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\include\curl\easy.h
+
+1415109076 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\include\curl\multi.h
+	"curl.h"
+
+1415109076 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\include\curl\typecheck-gcc.h
+
+1464428684 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\server.c
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<string.h>
+	<ctype.h>
+	"server.h"
+
+1461534192 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\socket.c
+	<winsock2.h>
+	"socket.h"
+
+1464428684 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\teachers_list.c
+	<stdlib.h>
+	<string.h>
+	"teahers.h"
+
+1464428713 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tests\test_2\test2server\xmlprocess.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<libxml/parser.h>
+	<libxml/tree.h>
+	"teahers.h"
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\parser.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+	<libxml/hash.h>
+	<libxml/valid.h>
+	<libxml/entities.h>
+	<libxml/xmlerror.h>
+	<libxml/xmlstring.h>
+	<libxml/encoding.h>
+	<libxml/xmlIO.h>
+	<libxml/globals.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlversion.h
+	<libxml/xmlexports.h>
+	<ansidecl.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlexports.h
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\tree.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/xmlstring.h>
+	<libxml/xmlregexp.h>
+	<libxml/xmlmemory.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlstring.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlregexp.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\dict.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlmemory.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/threads.h>
+	<libxml/globals.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\threads.h
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\globals.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xmlerror.h>
+	<libxml/SAX.h>
+	<libxml/SAX2.h>
+	<libxml/xmlmemory.h>
+	<libxml/threads.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlerror.h
+	<libxml/parser.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\sax.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xlink.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\sax2.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\hash.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/dict.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\valid.h
+	<libxml/xmlversion.h>
+	<libxml/xmlerror.h>
+	<libxml/tree.h>
+	<libxml/list.h>
+	<libxml/xmlautomata.h>
+	<libxml/xmlregexp.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\list.h
+	<libxml/xmlversion.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlautomata.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/xmlregexp.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\entities.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\encoding.h
+	<libxml/xmlversion.h>
+	<iconv.h>
+	<unicode/ucnv.h>
+	<libxml/tree.h>
+
+1459586001 c:\users\Глеб\downloads\iconv-1.9.2.win32\iconv-1.9.2.win32\include\iconv.h
+	"iconv.h"
+	<stddef.h>
+	<errno.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlio.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/encoding.h>
+
