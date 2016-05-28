@@ -6,7 +6,7 @@
 
 enum errors{STEP_ERROR, INVALID_REQUEST, PROCESS_FAILURE};
 
-void read_all_teachers(sqlite3 *db, list_t *list, int *err);
+void read_all_teachers(sqlite3 *db, list_t *list);
 void read_teacher(sqlite3 *db, int id, teacher_t *self, int *err);
 int create_teacher(sqlite3 *db, teacher_t *self, int *err);
 int delete_teacher(sqlite3 *db, int id, int *err);

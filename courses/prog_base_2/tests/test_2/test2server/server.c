@@ -303,15 +303,11 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
             socket_write_string(clientSocket, result_msg);
             return;
         }
-        int *err = malloc(sizeof(int));
-        read_all_teachers(db, list, err);
-        if(*err)
-            return;
+        read_all_teachers(db, list);
         char SomeMsg[MSG_LENGTH];
         strcpy(SomeMsg, all_teachers_to_message(list));
         resp_form(XML, SomeMsg, 200, result_msg);
         socket_write_string(clientSocket, result_msg);
-        free(err);
         sqlite3_close(db);
         free(db);
     } else if(!strcmp(req.uri, "/file-remove")){

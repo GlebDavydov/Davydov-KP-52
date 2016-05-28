@@ -37,19 +37,19 @@ void read_teacher(sqlite3 *db, int id, teacher_t *self, int *err){
     sqlite3_finalize(stmt);
 }
 
-void read_all_teachers(sqlite3 *db, list_t *list, int *err){
-    *err = 0;
+void read_all_teachers(sqlite3 *db, list_t *list){//, int *err){
+    //*err = 0;
     sqlite3_stmt *stmt = NULL;
     const char *sql = "SELECT * FROM teachers;";
     int rc = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
     if(SQLITE_OK != rc){
-        *err = INVALID_REQUEST;
+        //*err = INVALID_REQUEST;
         return;
     }
     while(1){
         rc = sqlite3_step(stmt);
         if(SQLITE_ERROR == rc){
-            *err = STEP_ERROR;
+            //*err = STEP_ERROR;
             return;
         }
         else {
