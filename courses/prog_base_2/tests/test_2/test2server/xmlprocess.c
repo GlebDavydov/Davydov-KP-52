@@ -98,40 +98,35 @@ char *parse_response(char *stuff){
     return buff;
 }*/
 
-/*char *all_teachers_to_message(list_t *list){
+
+char *all_teachers_to_message(list_t *list){
     if(list_count(list) == 0){
         return NULL;
     }
     char buff[MSG_LENGTH];
     xmlDoc * doc = NULL;
 	xmlNode * rootNode = NULL;
+	xmlNode *textNode = NULL;
     doc = xmlNewDoc("1.0");
-	rootNode = xmlNewNode(NULL, "teachers");
+	rootNode = xmlNewNode(NULL, "Message");
 	xmlDocSetRootElement(doc, rootNode);
-	char strBuf[100];
+	textNode = xmlNewChild(rootNode, NULL, "text", NULL);
+	char strbuf[100];
     for(int i = 0; i  < list_count(list); i++){
         teacher_t *self = list_get(list, i);
-        int id = list_id(list, i);
         xmlNode * teacherNode = NULL;
-        xmlNode * cathedraNode = NULL;
         teacherNode = xmlNewChild(rootNode, NULL, "teacher", NULL);
-        sprintf(strBuf, "%i", id);
-        xmlNewChild(teacherNode, NULL, "id", strBuf);
-        xmlNewChild(teacherNode, NULL, "firstName", self->name);
-        xmlNewChild(teacherNode, NULL, "lastName", self->surname);
-        xmlNewChild(teacherNode, NULL, "pensionDate", self->date);
-        sprintf(strBuf, "%i", self->hours);
-        xmlNewChild(teacherNode, NULL, "hours", strBuf);
-        sprintf(strBuf, "%f", self->rating);
-        xmlNewChild(teacherNode, NULL, "rating", strBuf);
-        cathedraNode = xmlNewChild(teacherNode, NULL, "cathedra", NULL);
-        xmlNewProp(cathedraNode, "name", self->cathedra->name);
-        xmlNewChild(cathedraNode, NULL, "speciality", self->cathedra->speciality);
-        xmlNewChild(cathedraNode, NULL, "group", self->cathedra->groups[0]);
-        xmlNewChild(cathedraNode, NULL, "group", self->cathedra->groups[1]);
+        xmlNewChild(teacherNode, NULL, "Passport", self->Passport);
+        xmlNewChild(teacherNode, NULL, "Name", self->fname);
+        xmlNewChild(teacherNode, NULL, "Surname", self->fname);
+        sprintf(strbuf, "%d", self->salary);
+        xmlNewChild(teacherNode, NULL, "Salary", strbuf);
+        sprintf(strbuf, "%.2f", self->exp);
+        xmlNewChild(teacherNode, NULL, "Experience", strbuf);
+        xmlNewChild(teacherNode, NULL, "birthdate", self->birthdate);
     }
 	xmlBuffer * bufferPtr = xmlBufferCreate();
 	xmlNodeDump(bufferPtr, NULL, (xmlNode *)doc, 0, 1);
 	sprintf(buff, "%s", (const char*)bufferPtr->content);
     return buff;
-}*/
+}

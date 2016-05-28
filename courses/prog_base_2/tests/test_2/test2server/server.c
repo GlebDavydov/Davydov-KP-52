@@ -257,6 +257,7 @@ char *resp_form(resp_t type, char *usermsg, int code, char *buffer){
 }
 
 void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list_t *list){
+    if(!strcmp(req.method, "GET")){
     if(!strcmp(req.uri, "/")){
         char smallMSG[100];
         sprintf(smallMSG, "<h1>HELLO!!!</h1>");
@@ -291,9 +292,36 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
         char result_msg[MSG_LENGTH];
         resp_form(XML, data, 200, result_msg);
         socket_write_string(clientSocket, result_msg);
-    }else{
+    }else if(!strcmp(req.uri, "/database")){
+        char result_msg[MSG_LENGTH];
+        sqlite3 *db;
+        int rc = 0;
+        rc = sqlite3_open("teachers.db", &db);
+        if(SQLITE_OK != rc){
+            resp_form(XML, NULL, 404, result_msg);
+            socket_write_string(clientSocket, result_msg);
+            return;
+        }
+        int *err = malloc(sizeof(int));
+        read_all_teachers(db, list, err);
+        if(*err)
+            return;
+        char SomeMsg[MSG_LENGTH];
+        strcpy(SomeMsg, all_teachers_to_message(list));
+        resp_form(XML, SomeMsg, 200, result_msg);
+        socket_write_string(clientSocket, result_msg);
+        free(err);
+        sqlite3_close(db);
+        free(db);
+    } else{
         char result_msg[MSG_LENGTH];
         resp_form(XML, NULL, 404, result_msg);
+        socket_write_string(clientSocket, result_msg);
+        return;
+    }
+    }else{
+        char result_msg[MSG_LENGTH];
+        resp_form(XML, NULL, 403, result_msg);
         socket_write_string(clientSocket, result_msg);
         return;
     }
