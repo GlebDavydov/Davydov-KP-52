@@ -17,6 +17,6 @@ const char *
 keyvalue_toString(keyvalue_t * self);
 
 void http_request_startServer(list_t *list);
-void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list_t *list);
+void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list_t *list, sqlite3 *db);
 
 #endif // SERVER_H_INCLUDED

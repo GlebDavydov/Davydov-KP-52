@@ -85,6 +85,12 @@ const char * keyvalue_toString(keyvalue_t * self) {
 
 void http_request_startServer(list_t *list){
     lib_init();
+    sqlite3 *db;
+    int rc = 0;
+    rc = sqlite3_open("teachers.db", &db);
+    if(SQLITE_OK != rc){
+        return;
+    }
     socket_t * serverSocket = socket_new();
     socket_bind(serverSocket, 5000);
     socket_listen(serverSocket);
@@ -112,12 +118,14 @@ void http_request_startServer(list_t *list){
             printf("\t%s\n", kvStr);
             free(kvStr);
         }
-        http_request_chooseMethod(req, clientSocket, list);
+        http_request_chooseMethod(req, clientSocket, list, db);
         socket_close(clientSocket);
         socket_free(clientSocket);
     }
     socket_close(serverSocket);
     socket_free(serverSocket);
+    sqlite3_close(db);
+    free(db);
     lib_free();
 }
 
@@ -257,7 +265,7 @@ char *resp_form(resp_t type, char *usermsg, int code, char *buffer){
     return buffer;
 }
 
-void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list_t *list){
+void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list_t *list, sqlite3 *db){
     if(!strcmp(req.method, "GET")){
     if(!strcmp(req.uri, "/")){
         char smallMSG[100];
@@ -295,21 +303,11 @@ void http_request_chooseMethod(http_request_t req, socket_t * clientSocket, list
         socket_write_string(clientSocket, result_msg);
     }else if(!strcmp(req.uri, "/database")){
         char result_msg[MSG_LENGTH];
-        sqlite3 *db;
-        int rc = 0;
-        rc = sqlite3_open("teachers.db", &db);
-        if(SQLITE_OK != rc){
-            resp_form(XML, NULL, 404, result_msg);
-            socket_write_string(clientSocket, result_msg);
-            return;
-        }
         read_all_teachers(db, list);
         char SomeMsg[MSG_LENGTH];
         strcpy(SomeMsg, all_teachers_to_message(list));
         resp_form(XML, SomeMsg, 200, result_msg);
-        socket_write_string(clientSocket, result_msg);
-        sqlite3_close(db);
-        free(db);
+        socket_write_string(clientSocket, result_msg);;
     } else if(!strcmp(req.uri, "/file-remove")){
         char formMessage[MSG_LENGTH];
         sprintf(formMessage, "<!DOCTYPE html>"
