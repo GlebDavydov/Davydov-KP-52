@@ -2,6 +2,37 @@
 1460840845 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\main.cpp
 	"menus.h"
 
+1461600082 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\menus.h
+	<SFML/Graphics.hpp>
+
+1459448199 c:\program files (x86)\codeblocks\sfml\include\sfml\graphics.hpp
+	<SFML/Window.hpp>
+	<SFML/Graphics/BlendMode.hpp>
+	<SFML/Graphics/CircleShape.hpp>
+	<SFML/Graphics/Color.hpp>
+	<SFML/Graphics/ConvexShape.hpp>
+	<SFML/Graphics/Drawable.hpp>
+	<SFML/Graphics/Font.hpp>
+	<SFML/Graphics/Glyph.hpp>
+	<SFML/Graphics/Image.hpp>
+	<SFML/Graphics/PrimitiveType.hpp>
+	<SFML/Graphics/Rect.hpp>
+	<SFML/Graphics/RectangleShape.hpp>
+	<SFML/Graphics/RenderStates.hpp>
+	<SFML/Graphics/RenderTarget.hpp>
+	<SFML/Graphics/RenderTexture.hpp>
+	<SFML/Graphics/RenderWindow.hpp>
+	<SFML/Graphics/Shader.hpp>
+	<SFML/Graphics/Shape.hpp>
+	<SFML/Graphics/Sprite.hpp>
+	<SFML/Graphics/Text.hpp>
+	<SFML/Graphics/Texture.hpp>
+	<SFML/Graphics/Transform.hpp>
+	<SFML/Graphics/Transformable.hpp>
+	<SFML/Graphics/Vertex.hpp>
+	<SFML/Graphics/VertexArray.hpp>
+	<SFML/Graphics/View.hpp>
+
 1459448199 c:\program files (x86)\codeblocks\sfml\include\sfml\window.hpp
 	<SFML/System.hpp>
 	<SFML/Window/Context.hpp>
@@ -197,34 +228,6 @@
 
 1459448203 c:\program files (x86)\codeblocks\sfml\include\sfml\window\windowstyle.hpp
 
-1459448199 c:\program files (x86)\codeblocks\sfml\include\sfml\graphics.hpp
-	<SFML/Window.hpp>
-	<SFML/Graphics/BlendMode.hpp>
-	<SFML/Graphics/CircleShape.hpp>
-	<SFML/Graphics/Color.hpp>
-	<SFML/Graphics/ConvexShape.hpp>
-	<SFML/Graphics/Drawable.hpp>
-	<SFML/Graphics/Font.hpp>
-	<SFML/Graphics/Glyph.hpp>
-	<SFML/Graphics/Image.hpp>
-	<SFML/Graphics/PrimitiveType.hpp>
-	<SFML/Graphics/Rect.hpp>
-	<SFML/Graphics/RectangleShape.hpp>
-	<SFML/Graphics/RenderStates.hpp>
-	<SFML/Graphics/RenderTarget.hpp>
-	<SFML/Graphics/RenderTexture.hpp>
-	<SFML/Graphics/RenderWindow.hpp>
-	<SFML/Graphics/Shader.hpp>
-	<SFML/Graphics/Shape.hpp>
-	<SFML/Graphics/Sprite.hpp>
-	<SFML/Graphics/Text.hpp>
-	<SFML/Graphics/Texture.hpp>
-	<SFML/Graphics/Transform.hpp>
-	<SFML/Graphics/Transformable.hpp>
-	<SFML/Graphics/Vertex.hpp>
-	<SFML/Graphics/VertexArray.hpp>
-	<SFML/Graphics/View.hpp>
-
 1459448199 c:\program files (x86)\codeblocks\sfml\include\sfml\graphics\blendmode.hpp
 	<SFML/Graphics/Export.hpp>
 
@@ -380,26 +383,10 @@
 	<string>
 	<vector>
 
-1459448199 c:\program files (x86)\codeblocks\sfml\include\sfml\opengl.hpp
-	<SFML/Config.hpp>
-	<windows.h>
-	<GL/gl.h>
-	<GLES/gl.h>
-	<GLES/glext.h>
-	<GL/gl.h>
-	<OpenGL/gl.h>
-	<OpenGLES/ES1/gl.h>
-	<OpenGLES/ES1/glext.h>
-	<GLES/gl.h>
-	<GLES/glext.h>
-
 1461598324 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\main_menu.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	"menus.h"
-
-1461600082 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\menus.h
-	<SFML/Graphics.hpp>
 
 1464507436 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\singleplayer_menu.cpp
 	<windows.h>

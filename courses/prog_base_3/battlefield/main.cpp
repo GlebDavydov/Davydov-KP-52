@@ -5,9 +5,15 @@
 #include <string.h>
 #define DC 4 //"D"istance "C"onstant
 
+#define TS 5 //"T"eam "S"ize
+
+#define RDP 1000 //"R"obot "D"is"p"osition
+
 #include "main.h"
 
 typedef enum direction{N, NE, E, SE, S, SW, W, NW}direction;
+
+typedef enum cell{REST = 0, FREE, BOT}cell;
 
 using namespace sf;
 
@@ -27,7 +33,23 @@ class battle_robot{
         int currAp;
         direction dir;
         position pos;
+        battle_robot(){
+            maxAp = 100;
+            currAp = 100;
+            pos.x = 0;
+            pos.y = 0;
+        }
 };
+
+cell check_walkable(land bf[15][15], int px, int py, battle_robot* team, int rcount){
+    if(bf[px][py] == WALL){
+        return REST;
+    } else for(int i = 0; i < rcount; i ++){
+        if(team[i].pos.x == px && team[i].pos.y == py)
+            return BOT;
+    }
+    return FREE;
+}
 
 //int star_distance_count(map bf, map_point start, map_point dest);
 
@@ -58,7 +80,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     stone.loadFromFile("obst.png");
     allowed.loadFromFile("allowed.png");
     restricted.loadFromFile("restricted.png");
-    /*pers.loadFromFile("personel.png");
+    pers.loadFromFile("personel.png");
     bn.loadFromFile("bot_n.png");
     bne.loadFromFile("bot_ne.png");
     be.loadFromFile("bot_e.png");
@@ -66,7 +88,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     bs.loadFromFile("bot_s.png");
     bsw.loadFromFile("bot_sw.png");
     bw.loadFromFile("bot_w.png");
-    bnw.loadFromFile("bot_nw.png");*/
+    bnw.loadFromFile("bot_nw.png");
     Sprite bfback(bfbg);
     Sprite mouseCurrSprite;
     bfback.setPosition(0,0);
@@ -75,7 +97,16 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     font.loadFromFile("arial.ttf");
 
     //Drawing&preparing
-    //battle_robot robot_team[6];
+    battle_robot bot[TS];
+    for(int i = 0; i < TS; i++){
+        bot[i] = *(new battle_robot());
+        bot[i].pos.x = i*2 + 1;
+        bot[i].pos.y = i%2 + 1;
+    }
+    Sprite botsprite[TS];
+    for(int i = 0; i < TS; i++){
+        botsprite[i].setTexture(bs);
+    }
     for(int i = 0; i < 15*15; i++){
         bfsprite[i/15][i%15].setPosition(433+30*(i/15), 133+30*(i%15));
         switch(battlefield[i/15][i%15]){
@@ -95,12 +126,21 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         int ycoord;
         Event event;
         while(window.pollEvent(event)){
+
+            //initial drawing
             window.clear(Color::Black);
             st = 0;
             window.draw(bfback);
             for(int i = 0; i < 15*15; i++){
                 window.draw(bfsprite[i/15][i%15]);
             }
+            for(int i = 0; i < TS; i++){
+                botsprite[i].setPosition(433 + 30*bot[i].pos.x, 133 + 30 * bot[i].pos.y);
+                window.draw(botsprite[i]);
+            }
+
+
+            //polling events
             switch(event.type){
             case Event::KeyPressed:
                 if (event.key.code == sf::Keyboard::Escape){
@@ -117,12 +157,13 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     text.setPosition(100, 100);
                     window.draw(text);*/
                     st = 1;
-                    if(battlefield[xcoord][ycoord] == GRSS){
+                    cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
+                    if(c == FREE){
                         mouseCurrSprite.setTexture(allowed);
-                    }else if(battlefield[xcoord][ycoord] == WALL){
+                    }else if (c == BOT){
+                        mouseCurrSprite.setTexture(pers);
+                    }else {
                         mouseCurrSprite.setTexture(restricted);
-                    } else {
-                        mouseCurrSprite.setColor(Color::Transparent);
                     }
                 }
                 break;
