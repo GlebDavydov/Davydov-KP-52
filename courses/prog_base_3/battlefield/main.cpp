@@ -36,6 +36,7 @@ class battle_robot{
         battle_robot(){
             maxAp = 100;
             currAp = 100;
+            dir = S;
             pos.x = 0;
             pos.y = 0;
         }
@@ -54,7 +55,7 @@ cell check_walkable(land bf[15][15], int px, int py, battle_robot* team, int rco
 //int star_distance_count(map bf, map_point start, map_point dest);
 
 int DLL_EXPORT battlefield(RenderWindow& window){
-    land battlefield[15][15]{
+     land battlefield[15][15]{
         {WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL},//1
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//2
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//3
@@ -72,7 +73,10 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         {WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL}//15
     };
     window.clear(Color::Black);
-    Texture grass, stone, bfbg, allowed, restricted, pers, bn, bne, be, bse, bs, bsw, bw, bnw;
+    Texture bfbg,
+    grass, stone,
+    allowed, restricted, pers, that,
+    bn, bne, be, bse, bs, bsw, bw, bnw;
 
     //Initial sprites&textures&etc load
     bfbg.loadFromFile("bfbg.jpg");
@@ -89,23 +93,24 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     bsw.loadFromFile("bot_sw.png");
     bw.loadFromFile("bot_w.png");
     bnw.loadFromFile("bot_nw.png");
+    that.loadFromFile("chosen.png");
     Sprite bfback(bfbg);
     Sprite mouseCurrSprite;
     bfback.setPosition(0,0);
     Sprite bfsprite[15][15];
     Font font;
     font.loadFromFile("arial.ttf");
+    Sprite botsprite[TS];
+    Sprite selectedSprite;
+    selectedSprite.setTexture(that);
 
-    //Drawing&preparing
+    //objects preparing
+    int selected = 0;
     battle_robot bot[TS];
     for(int i = 0; i < TS; i++){
         bot[i] = *(new battle_robot());
         bot[i].pos.x = i*2 + 1;
         bot[i].pos.y = i%2 + 1;
-    }
-    Sprite botsprite[TS];
-    for(int i = 0; i < TS; i++){
-        botsprite[i].setTexture(bs);
     }
     for(int i = 0; i < 15*15; i++){
         bfsprite[i/15][i%15].setPosition(433+30*(i/15), 133+30*(i%15));
@@ -121,7 +126,6 @@ int DLL_EXPORT battlefield(RenderWindow& window){
 
     //Main loop
     while(window.isOpen()){
-        int st;
         int xcoord;
         int ycoord;
         Event event;
@@ -129,14 +133,44 @@ int DLL_EXPORT battlefield(RenderWindow& window){
 
             //initial drawing
             window.clear(Color::Black);
-            st = 0;
             window.draw(bfback);
             for(int i = 0; i < 15*15; i++){
                 window.draw(bfsprite[i/15][i%15]);
             }
             for(int i = 0; i < TS; i++){
                 botsprite[i].setPosition(433 + 30*bot[i].pos.x, 133 + 30 * bot[i].pos.y);
+                Texture curr;
+                switch(bot[i].dir){
+                case N:
+                    curr = bn;
+                    break;
+                case NE:
+                    curr = bne;
+                    break;
+                case E:
+                    curr = be;
+                    break;
+                case SE:
+                    curr = bse;
+                    break;
+                case SW:
+                    curr = bsw;
+                    break;
+                case W:
+                    curr = bw;
+                    break;
+                case NW:
+                    curr = bnw;
+                    break;
+                case S:
+                default:
+                    curr = bs;
+                    break;
+                }
+                botsprite[i].setTexture(curr);
                 window.draw(botsprite[i]);
+                if(i == selected)
+                    selectedSprite.setPosition(433 + 30*bot[i].pos.x, 133 + 30 * bot[i].pos.y);
             }
 
 
@@ -147,7 +181,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     return 0;
                 }
                 break;
-            case Event::MouseMoved:
+            case Event::MouseMoved:{
                 if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
                     xcoord = ((int)Mouse::getPosition(window).x-433)/30;
                     ycoord = ((int)Mouse::getPosition(window).y-133)/30;
@@ -156,7 +190,6 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     Text text(buf, font, 24);
                     text.setPosition(100, 100);
                     window.draw(text);*/
-                    st = 1;
                     cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
                     if(c == FREE){
                         mouseCurrSprite.setTexture(allowed);
@@ -165,15 +198,29 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     }else {
                         mouseCurrSprite.setTexture(restricted);
                     }
+                    mouseCurrSprite.setPosition(433+30*xcoord, 133+30*ycoord);
+                    window.draw(mouseCurrSprite);
                 }
                 break;
+            }
+            case Event::MouseButtonPressed:{
+                if(event.mouseButton.button == Mouse::Left){
+                    if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
+                    xcoord = ((int)Mouse::getPosition(window).x-433)/30;
+                    ycoord = ((int)Mouse::getPosition(window).y-133)/30;
+                    if(check_walkable(battlefield, xcoord, ycoord, bot, TS) == BOT){
+                        for(int i = 0; i < TS; i++){
+                            if(bot[i].pos.x == xcoord && bot[i].pos.y == ycoord)
+                                selected = i;
+                        }
+                    }
+                }}
+                break;
+            }
             default:
                 break;
             }
-            if(st){
-                mouseCurrSprite.setPosition(433+30*xcoord, 133+30*ycoord);
-                window.draw(mouseCurrSprite);
-            }
+            window.draw(selectedSprite);
             window.display();
         }
     }
