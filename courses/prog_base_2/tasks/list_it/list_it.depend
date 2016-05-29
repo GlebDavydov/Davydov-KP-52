@@ -1,0 +1,23 @@
+# depslib dependency file v1.0
+1464463094 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tasks\list_it\list.c
+	<stdlib.h>
+	"list.h"
+
+1464463094 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tasks\list_it\list.h
+	<stdlib.h>
+
+1464536919 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tasks\list_it\list_it.c
+	<stdlib.h>
+	"list_it.h"
+	"list.h"
+
+1464524543 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tasks\list_it\list_it.h
+	"list.h"
+
+1464538694 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\tasks\list_it\main.c
+	<stdlib.h>
+	<stdio.h>
+	<time.h>
+	"list.h"
+	"list_it.h"
+
