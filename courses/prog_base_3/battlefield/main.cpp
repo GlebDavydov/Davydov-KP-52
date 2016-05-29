@@ -1,6 +1,8 @@
 #include <windows.h>
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include <stdio.h>
+#include <string.h>
 #define DC 4 //"D"istance "C"onstant
 
 #include "main.h"
@@ -35,11 +37,11 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//2
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//3
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//4
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//5
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//6
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//7
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//8
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//9
+        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//5
+        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//6
+        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//7
+        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//8
+        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//9
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//10
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//11
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//12
@@ -48,13 +50,15 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         {WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL}//15
     };
     window.clear(Color::Black);
-    Texture grass, stone, bfbg;
+    Texture grass, stone, bfbg, allowed, restricted, pers, bn, bne, be, bse, bs, bsw, bw, bnw;
+
+    //Initial sprites&textures&etc load
     bfbg.loadFromFile("bfbg.jpg");
     grass.loadFromFile("land.png");
     stone.loadFromFile("obst.png");
-    /*allowed.loadFromFile("allowed.png");
+    allowed.loadFromFile("allowed.png");
     restricted.loadFromFile("restricted.png");
-    pers.loadFromFile("personel.png");
+    /*pers.loadFromFile("personel.png");
     bn.loadFromFile("bot_n.png");
     bne.loadFromFile("bot_ne.png");
     be.loadFromFile("bot_e.png");
@@ -64,8 +68,14 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     bw.loadFromFile("bot_w.png");
     bnw.loadFromFile("bot_nw.png");*/
     Sprite bfback(bfbg);
+    Sprite mouseCurrSprite;
     bfback.setPosition(0,0);
     Sprite bfsprite[15][15];
+    Font font;
+    font.loadFromFile("arial.ttf");
+
+    //Drawing&preparing
+    //battle_robot robot_team[6];
     for(int i = 0; i < 15*15; i++){
         bfsprite[i/15][i%15].setPosition(433+30*(i/15), 133+30*(i%15));
         switch(battlefield[i/15][i%15]){
@@ -77,17 +87,51 @@ int DLL_EXPORT battlefield(RenderWindow& window){
             bfsprite[i/15][i%15].setTexture(grass);
         }
     }
-    while(1){
+
+    //Main loop
+    while(window.isOpen()){
+        int st;
+        int xcoord;
+        int ycoord;
         Event event;
         while(window.pollEvent(event)){
+            window.clear(Color::Black);
+            st = 0;
             window.draw(bfback);
             for(int i = 0; i < 15*15; i++){
                 window.draw(bfsprite[i/15][i%15]);
             }
-            if (event.type == Event::KeyPressed){
+            switch(event.type){
+            case Event::KeyPressed:
                 if (event.key.code == sf::Keyboard::Escape){
                     return 0;
                 }
+                break;
+            case Event::MouseMoved:
+                if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
+                    xcoord = ((int)Mouse::getPosition(window).x-433)/30;
+                    ycoord = ((int)Mouse::getPosition(window).y-133)/30;
+                    /*char buf[100];
+                    sprintf(buf, "X:%d\tY:%d", xcoord, ycoord);
+                    Text text(buf, font, 24);
+                    text.setPosition(100, 100);
+                    window.draw(text);*/
+                    st = 1;
+                    if(battlefield[xcoord][ycoord] == GRSS){
+                        mouseCurrSprite.setTexture(allowed);
+                    }else if(battlefield[xcoord][ycoord] == WALL){
+                        mouseCurrSprite.setTexture(restricted);
+                    } else {
+                        mouseCurrSprite.setColor(Color::Transparent);
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+            if(st){
+                mouseCurrSprite.setPosition(433+30*xcoord, 133+30*ycoord);
+                window.draw(mouseCurrSprite);
             }
             window.display();
         }
