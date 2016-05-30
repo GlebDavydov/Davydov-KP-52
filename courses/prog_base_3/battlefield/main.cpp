@@ -3,6 +3,8 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+#include <conio.h>
 #define DC 4 //"D"istance "C"onstant
 
 #define TS 5 //"T"eam "S"ize
@@ -11,7 +13,7 @@
 
 #include "main.h"
 
-typedef enum direction{N, NE, E, SE, S, SW, W, NW}direction;
+typedef enum direction{NODIR = 0, N = 1, NE, E, SE, S, SW, W, NW}direction;
 
 typedef enum cell{REST = 0, FREE, BOT}cell;
 
@@ -52,7 +54,11 @@ cell check_walkable(land bf[15][15], int px, int py, battle_robot* team, int rco
     return FREE;
 }
 
-//int star_distance_count(map bf, map_point start, map_point dest);
+int walk_distance_count(direction dsourse, int sx, int sy, int dx, int dy, int count, direction *sequence);
+
+int star_distance_count(land bf, int px, int py, battle_robot *team, int rcount, battle_robot walker, direction *sequence){
+
+}
 
 int DLL_EXPORT battlefield(RenderWindow& window){
      land battlefield[15][15]{
@@ -98,6 +104,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     Sprite mouseCurrSprite;
     bfback.setPosition(0,0);
     Sprite bfsprite[15][15];
+    Text tdist;
     Font font;
     font.loadFromFile("arial.ttf");
     Sprite botsprite[TS];
@@ -107,6 +114,10 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     //objects preparing
     int selected = 0;
     battle_robot bot[TS];
+    direction seq[225] = {NODIR};
+    tdist.setCharacterSize(20);
+    tdist.setColor(Color::Magenta);
+    tdist.setFont(font);
     for(int i = 0; i < TS; i++){
         bot[i] = *(new battle_robot());
         bot[i].pos.x = i*2 + 1;
@@ -185,14 +196,15 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                 if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
                     xcoord = ((int)Mouse::getPosition(window).x-433)/30;
                     ycoord = ((int)Mouse::getPosition(window).y-133)/30;
-                    /*char buf[100];
-                    sprintf(buf, "X:%d\tY:%d", xcoord, ycoord);
-                    Text text(buf, font, 24);
-                    text.setPosition(100, 100);
-                    window.draw(text);*/
                     cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
                     if(c == FREE){
                         mouseCurrSprite.setTexture(allowed);
+                        int dist = walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
+                        char str[10];
+                        sprintf(str, "%d", dist);
+                        tdist.setString(str);
+                        tdist.setPosition(438 + 30*xcoord, 138 + 30 *ycoord);
+                        window.draw(tdist);
                     }else if (c == BOT){
                         mouseCurrSprite.setTexture(pers);
                     }else {
@@ -249,4 +261,50 @@ extern "C" DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
             break;
     }
     return TRUE; // succesful
+}
+
+
+int walk_distance_count(direction dsourse, int sx, int sy, int dx, int dy, int count, direction *sequence){
+    direction newDir;
+    int newx, newy;
+    if(dx > sx){
+        newx = sx + 1;
+        if(dy > sy){
+            newDir = SE;
+            newy = sy + 1;
+        }else if(dy < sy){
+            newDir = NE;
+            newy = sy - 1;
+        } else{
+            newy = sy;
+            newDir = E;
+        }
+    }else if(dx < sx){
+        newx = sx - 1;
+        if(dy > sy){
+            newDir = SW;
+            newy = sy + 1;
+        }else if(dy < sy){
+            newDir = NW;
+            newy = sy - 1;
+        }else{
+            newy = sy;
+            newDir = W;
+        }
+    }else{
+        newx = sx;
+        if(dy > sy){
+            newDir = S;
+            newy = sy + 1;
+        }else if(dy < sy){
+            newDir = N;
+            newy = sy - 1;
+        } else
+            return 0;
+    }
+    sequence[count] = newDir;
+    int ddf = abs(newDir - dsourse);
+    if(ddf != 4)
+        ddf %= 4;
+    return ddf + 4 + walk_distance_count(newDir, newx, newy, dx, dy, ++count, sequence);
 }
