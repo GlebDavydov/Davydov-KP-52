@@ -202,7 +202,14 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             root_to_direction(route, seq);
                             moves = 1;
                         }
-                    }}
+                    }} else if(event.mouseButton.button == Mouse::Right){
+                        if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
+                            xcoord = ((int)Mouse::getPosition(window).x-433)/30;
+                            ycoord = ((int)Mouse::getPosition(window).y-133)/30;
+                            cell c;
+                            bot_turn(bot[selected], xcoord, ycoord);
+                        }
+                    }
                     break;
                 }
                 default:

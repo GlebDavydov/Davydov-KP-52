@@ -6,6 +6,8 @@
 #include <ctime>
 #include "bf.h"
 
+#define PI 3.141593
+
 using namespace std;
 
 cell check_walkable(land bf[n][m], int px, int py, battle_robot* team, int rcount){
@@ -335,3 +337,33 @@ void bot_walk(battle_robot &bot, int count, direction *sequence){
     }
 }
 
+
+void bot_turn(battle_robot &bot, int x, int y){
+    direction dir = belongs_to_sector(bot, x, y);
+    if(dir != NODIR)
+        bot.dir = dir;
+}
+
+direction belongs_to_sector(battle_robot &bot, int x, int y){
+    double angle = atan((double)(y - bot.pos.y)/(x - bot.pos.x));
+    if(angle >= -PI/2.0 && angle < -3.0*PI/8.0)
+            return N;
+    if(angle <= PI/2.0 && angle > 3.0*PI/8.0)
+            return S;
+    if(x > bot.pos.x){
+        if(angle >= PI/8.0 && angle < 3.0*PI/8.0)
+            return SE;
+        if(angle >= -PI/8.0 && angle <= PI/8.0)
+            return E;
+        if(angle >= -3.0*PI/8.0 && angle < -PI/8.0)
+            return NE;
+    } else {
+        if(angle >= PI/8.0 && angle < 3.0*PI/8.0)
+            return NW;
+        if(angle >= -PI/8.0 && angle <= PI/8.0)
+            return W;
+        if(angle >= -3.0*PI/8.0 && angle < -PI/8.0)
+            return SW;
+    }
+    return NODIR;
+}

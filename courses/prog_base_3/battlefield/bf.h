@@ -46,5 +46,8 @@ std::string pathFind( const int & xStart, const int & yStart,
                  const int & xFinish, const int & yFinish, land bf[n][m], battle_robot *bot);
 void root_to_direction(std::string &route, direction *sequence);
 void bot_walk(battle_robot &bot, int count, direction *sequence);
+void bot_turn(battle_robot &bot, int x, int y);
+direction belongs_to_sector(battle_robot &bot, int x, int y);
+
 
 #endif // BF_H_INCLUDED
