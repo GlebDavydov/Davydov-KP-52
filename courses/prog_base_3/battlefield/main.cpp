@@ -96,17 +96,67 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         int xcoord;
         int ycoord;
         Event event;
+        nextturn.setColor(Color::Red);
+        while(moves){
+        window.clear(Color::Black);
+        window.draw(bfback);
 
+        bot_walk(bot[selected], moves - 1, seq);
+        moves++;
+        if(moves > 255)
+            moves = 0;
+
+        for(int i = 0; i < n*m; i++){
+            window.draw(bfsprite[i/n][i%m]);
+        }
+        for(int i = 0; i < TS; i++){
+            botsprite[i].setPosition(433 + 30*bot[i].pos.x, 133 + 30 * bot[i].pos.y);
+            Texture curr;
+            switch(bot[i].dir){
+            case N:
+                curr = bn;
+                break;
+            case NE:
+                curr = bne;
+                break;
+            case E:
+                curr = be;
+                break;
+            case SE:
+                curr = bse;
+                break;
+            case SW:
+                curr = bsw;
+                break;
+            case W:
+                curr = bw;
+                break;
+            case NW:
+                curr = bnw;
+                break;
+            case S:
+            default:
+                curr = bs;
+                break;
+            }
+            botsprite[i].setTexture(curr);
+            window.draw(botsprite[i]);
+            if(i == selected)
+                selectedSprite.setPosition(433 + 30*bot[i].pos.x, 133 + 30 * bot[i].pos.y);
+            }
+            Sleep(100); //!temp plug until the animation is rdy
+            if(seq[moves - 1] == NODIR)
+                moves = 0;
+            window.draw(nextturn);
+            window.draw(selectedSprite);
+            window.display();
+        }
         while(window.pollEvent(event)){
             //initial drawing
             window.clear(Color::Black);
             window.draw(bfback);
-            if(moves){
-                bot_walk(bot[selected], moves - 1, seq);
-                moves++;
-                if(moves > 255)
-                    moves = 0;
-            }
+
+            nextturn.setColor(Color::White);
             for(int i = 0; i < n*m; i++){
                 window.draw(bfsprite[i/n][i%m]);
             }
@@ -146,11 +196,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     selectedSprite.setPosition(433 + 30*bot[i].pos.x, 133 + 30 * bot[i].pos.y);
                 }
 
-                if(moves){
-                    Sleep(100); //!temp plug until the animation is rdy
-                    if(seq[moves - 1] == NODIR)
-                        moves = 0;
-                }else{
+
                 //polling events
                 switch(event.type){
                 case Event::KeyPressed:
@@ -192,7 +238,8 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                         }
                         mouseCurrSprite.setPosition(433+30*xcoord, 133+30*ycoord);
                         window.draw(mouseCurrSprite);
-                    }
+                    } else if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window)))
+                        nextturn.setColor(Color::Red);
                     break;
                 }
                 case Event::MouseButtonPressed:{
@@ -233,10 +280,9 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                 default:
                     break;
                 }
-            }
-        window.draw(nextturn);
-        window.draw(selectedSprite);
-        window.display();
+            window.draw(nextturn);
+            window.draw(selectedSprite);
+            window.display();
         }
     }
     return 1;
