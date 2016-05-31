@@ -1,13 +1,12 @@
 # depslib dependency file v1.0
-1464586783 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\main.cpp
+1464672741 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\main.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
-	<time.h>
 	<stdio.h>
+	<iostream>
 	<string.h>
-	<math.h>
-	<conio.h>
 	"main.h"
+	"bf.h"
 
 1459448199 c:\program files (x86)\codeblocks\sfml\include\sfml\graphics.hpp
 	<SFML/Window.hpp>
@@ -390,4 +389,15 @@
 1460895323 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\main.h
 	<SFML/Graphics.hpp>
 	<windows.h>
+
+1464672719 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.cpp
+	<windows.h>
+	<iomanip>
+	<queue>
+	<string>
+	<math.h>
+	<ctime>
+	"bf.h"
+
+1464647955 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.h
 

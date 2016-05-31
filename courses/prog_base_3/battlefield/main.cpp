@@ -1,76 +1,25 @@
 #include <windows.h>
 #include <SFML/Graphics.hpp>
-#include <time.h>
 #include <stdio.h>
+#include <iostream>
 #include <string.h>
-#include <math.h>
-#include <conio.h>
-#define DC 4 //"D"istance "C"onstant
-
-#define TS 5 //"T"eam "S"ize
-
-#define RDP 1000 //"R"obot "D"is"p"osition
 
 #include "main.h"
-
-typedef enum direction{NODIR = 0, N = 1, NE, E, SE, S, SW, W, NW}direction;
-
-typedef enum cell{REST = 0, FREE, BOT}cell;
+#include "bf.h"
 
 using namespace sf;
 
-typedef enum land_type_s{
-    GRSS = 1,
-    WALL
-}land;
-
-typedef struct position{
-    int x;
-    int y;
-}position;
-
-class battle_robot{
-    public:
-        int maxAp;
-        int currAp;
-        direction dir;
-        position pos;
-        battle_robot(){
-            maxAp = 100;
-            currAp = 100;
-            dir = S;
-            pos.x = 0;
-            pos.y = 0;
-        }
-};
-
-cell check_walkable(land bf[15][15], int px, int py, battle_robot* team, int rcount){
-    if(bf[px][py] == WALL){
-        return REST;
-    } else for(int i = 0; i < rcount; i ++){
-        if(team[i].pos.x == px && team[i].pos.y == py)
-            return BOT;
-    }
-    return FREE;
-}
-
-int walk_distance_count(direction dsourse, int sx, int sy, int dx, int dy, int count, direction *sequence);
-
-int star_distance_count(land bf, int px, int py, battle_robot *team, int rcount, battle_robot walker, direction *sequence){
-
-}
-
 int DLL_EXPORT battlefield(RenderWindow& window){
-     land battlefield[15][15]{
+     land battlefield[n][m]{
         {WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL},//1
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//2
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//3
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//4
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//5
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//6
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//7
+        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//7
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//8
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//9
+        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,WALL,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//9
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//10
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//11
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//12
@@ -103,7 +52,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     Sprite bfback(bfbg);
     Sprite mouseCurrSprite;
     bfback.setPosition(0,0);
-    Sprite bfsprite[15][15];
+    Sprite bfsprite[n][m];
     Text tdist;
     Font font;
     font.loadFromFile("arial.ttf");
@@ -123,15 +72,15 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         bot[i].pos.x = i*2 + 1;
         bot[i].pos.y = i%2 + 1;
     }
-    for(int i = 0; i < 15*15; i++){
-        bfsprite[i/15][i%15].setPosition(433+30*(i/15), 133+30*(i%15));
-        switch(battlefield[i/15][i%15]){
+    for(int i = 0; i < n*m; i++){
+        bfsprite[i/n][i%m].setPosition(433+30*(i/n), 133+30*(i%m));
+        switch(battlefield[i/n][i%m]){
         case WALL:
-            bfsprite[i/15][i%15].setTexture(stone);
+            bfsprite[i/n][i%m].setTexture(stone);
             break;
         case GRSS:
         default:
-            bfsprite[i/15][i%15].setTexture(grass);
+            bfsprite[i/n][i%m].setTexture(grass);
         }
     }
 
@@ -145,8 +94,8 @@ int DLL_EXPORT battlefield(RenderWindow& window){
             //initial drawing
             window.clear(Color::Black);
             window.draw(bfback);
-            for(int i = 0; i < 15*15; i++){
-                window.draw(bfsprite[i/15][i%15]);
+            for(int i = 0; i < n*m; i++){
+                window.draw(bfsprite[i/n][i%m]);
             }
             for(int i = 0; i < TS; i++){
                 botsprite[i].setPosition(433 + 30*bot[i].pos.x, 133 + 30 * bot[i].pos.y);
@@ -199,6 +148,14 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
                     if(c == FREE){
                         mouseCurrSprite.setTexture(allowed);
+                        std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
+                        root_to_direction(route, seq);
+                        /*std::cout << route << std::endl;
+                        int i = 0;
+                        while(seq[i] != NODIR){
+                            std::cout << i << ". " << seq[i] << std::endl;
+                            i++;
+                        };*/
                         int dist = walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
                         char str[10];
                         sprintf(str, "%d", dist);
@@ -261,50 +218,4 @@ extern "C" DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
             break;
     }
     return TRUE; // succesful
-}
-
-
-int walk_distance_count(direction dsourse, int sx, int sy, int dx, int dy, int count, direction *sequence){
-    direction newDir;
-    int newx, newy;
-    if(dx > sx){
-        newx = sx + 1;
-        if(dy > sy){
-            newDir = SE;
-            newy = sy + 1;
-        }else if(dy < sy){
-            newDir = NE;
-            newy = sy - 1;
-        } else{
-            newy = sy;
-            newDir = E;
-        }
-    }else if(dx < sx){
-        newx = sx - 1;
-        if(dy > sy){
-            newDir = SW;
-            newy = sy + 1;
-        }else if(dy < sy){
-            newDir = NW;
-            newy = sy - 1;
-        }else{
-            newy = sy;
-            newDir = W;
-        }
-    }else{
-        newx = sx;
-        if(dy > sy){
-            newDir = S;
-            newy = sy + 1;
-        }else if(dy < sy){
-            newDir = N;
-            newy = sy - 1;
-        } else
-            return 0;
-    }
-    sequence[count] = newDir;
-    int ddf = abs(newDir - dsourse);
-    if(ddf != 4)
-        ddf %= 4;
-    return ddf + 4 + walk_distance_count(newDir, newx, newy, dx, dy, ++count, sequence);
 }
