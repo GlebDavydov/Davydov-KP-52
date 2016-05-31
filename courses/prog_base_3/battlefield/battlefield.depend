@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1464681787 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\main.cpp
+1464689328 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\main.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	<stdio.h>
@@ -390,7 +390,7 @@
 	<SFML/Graphics.hpp>
 	<windows.h>
 
-1464676599 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.cpp
+1464687485 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.cpp
 	<windows.h>
 	<iomanip>
 	<queue>
@@ -399,5 +399,5 @@
 	<ctime>
 	"bf.h"
 
-1464682733 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.h
+1464689510 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.h
 

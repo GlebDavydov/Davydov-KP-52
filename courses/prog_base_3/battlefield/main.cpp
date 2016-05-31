@@ -53,6 +53,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     Sprite mouseCurrSprite;
     bfback.setPosition(0,0);
     Sprite bfsprite[n][m];
+    Text nextturn; //!@todo button
     Text tdist;
     Font font;
     font.loadFromFile("arial.ttf");
@@ -68,6 +69,11 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     tdist.setCharacterSize(20);
     tdist.setColor(Color::Magenta);
     tdist.setFont(font);
+    nextturn.setCharacterSize(30);
+    nextturn.setFont(font);
+    nextturn.setColor(Color::White);
+    nextturn.setString("END TURN");
+    nextturn.setPosition(1136, 638);
     for(int i = 0; i < TS; i++){
         bot[i] = *(new battle_robot());
         bot[i].pos.x = i*2 + 1;
@@ -159,8 +165,6 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                         cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
                         if(c == FREE){
 
-                            //!@todo check for AP
-                            mouseCurrSprite.setTexture(allowed);
                             std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
                             root_to_direction(route, seq);
                             /*std::cout << route << std::endl;
@@ -170,11 +174,17 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                                 i++;
                             };*/
                             int dist = walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
-                            char str[10];
-                            sprintf(str, "%d", dist);
-                            tdist.setString(str);
-                            tdist.setPosition(438 + 30*xcoord, 138 + 30 *ycoord);
-                            window.draw(tdist);
+                            if(dist <= bot[selected].currAp){
+                                char str[10];
+                                sprintf(str, "%d", dist);
+                                tdist.setString(str);
+                                tdist.setPosition(438 + 30*xcoord, 138 + 30 *ycoord);
+                                window.draw(tdist);
+                                mouseCurrSprite.setTexture(allowed);
+                            } else {
+                                mouseCurrSprite.setTexture(restricted);
+                                //!@todo special texture for insuff AP
+                            }
                         }else if (c == BOT){
                             mouseCurrSprite.setTexture(pers);
                         }else {
@@ -198,9 +208,17 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                                     selected = i;
                             }
                         } else if (c==FREE){
-                            std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
-                            root_to_direction(route, seq);
-                            moves = 1;
+                                std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
+                                root_to_direction(route, seq);
+                            if(walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq) <= bot[selected].currAp){
+                                bot[selected].currAp -= walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
+                                moves = 1;
+                            }//!@todo message if insuff AP
+                        }
+                    }else if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
+                        //!@todo team switch
+                        for(int i = 0; i < TS; i++){
+                            bot[i].currAp = bot[i].maxAp;
                         }
                     }} else if(event.mouseButton.button == Mouse::Right){
                         if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
@@ -216,6 +234,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     break;
                 }
             }
+        window.draw(nextturn);
         window.draw(selectedSprite);
         window.display();
         }
