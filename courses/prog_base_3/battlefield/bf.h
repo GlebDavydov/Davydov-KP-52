@@ -45,6 +45,6 @@ cell check_walkable(land bf[n][m], int px, int py, battle_robot* team, int rcoun
 std::string pathFind( const int & xStart, const int & yStart,
                  const int & xFinish, const int & yFinish, land bf[n][m], battle_robot *bot);
 void root_to_direction(std::string &route, direction *sequence);
-
+void bot_walk(battle_robot &bot, int count, direction *sequence);
 
 #endif // BF_H_INCLUDED

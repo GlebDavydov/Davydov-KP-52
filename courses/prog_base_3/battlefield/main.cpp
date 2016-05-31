@@ -62,6 +62,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
 
     //objects preparing
     int selected = 0;
+    int moves = 0;
     battle_robot bot[TS];
     direction seq[225] = {NODIR};
     tdist.setCharacterSize(20);
@@ -89,11 +90,17 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         int xcoord;
         int ycoord;
         Event event;
-        while(window.pollEvent(event)){
 
+        while(window.pollEvent(event)){
             //initial drawing
             window.clear(Color::Black);
             window.draw(bfback);
+            if(moves){
+                bot_walk(bot[selected], moves - 1, seq);
+                moves++;
+                if(moves > 255)
+                    moves = 0;
+            }
             for(int i = 0; i < n*m; i++){
                 window.draw(bfsprite[i/n][i%m]);
             }
@@ -131,66 +138,79 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                 window.draw(botsprite[i]);
                 if(i == selected)
                     selectedSprite.setPosition(433 + 30*bot[i].pos.x, 133 + 30 * bot[i].pos.y);
-            }
+                }
 
-
-            //polling events
-            switch(event.type){
-            case Event::KeyPressed:
-                if (event.key.code == sf::Keyboard::Escape){
+                if(moves){
+                    Sleep(100); //!temp plug until the animation is rdy
+                    if(seq[moves - 1] == NODIR)
+                        moves = 0;
+                }else{
+                //polling events
+                switch(event.type){
+                case Event::KeyPressed:
+                    if (event.key.code == sf::Keyboard::Escape){
                     return 0;
-                }
-                break;
-            case Event::MouseMoved:{
-                if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
-                    xcoord = ((int)Mouse::getPosition(window).x-433)/30;
-                    ycoord = ((int)Mouse::getPosition(window).y-133)/30;
-                    cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
-                    if(c == FREE){
-                        mouseCurrSprite.setTexture(allowed);
-                        std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
-                        root_to_direction(route, seq);
-                        /*std::cout << route << std::endl;
-                        int i = 0;
-                        while(seq[i] != NODIR){
-                            std::cout << i << ". " << seq[i] << std::endl;
-                            i++;
-                        };*/
-                        int dist = walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
-                        char str[10];
-                        sprintf(str, "%d", dist);
-                        tdist.setString(str);
-                        tdist.setPosition(438 + 30*xcoord, 138 + 30 *ycoord);
-                        window.draw(tdist);
-                    }else if (c == BOT){
-                        mouseCurrSprite.setTexture(pers);
-                    }else {
-                        mouseCurrSprite.setTexture(restricted);
                     }
-                    mouseCurrSprite.setPosition(433+30*xcoord, 133+30*ycoord);
-                    window.draw(mouseCurrSprite);
-                }
-                break;
-            }
-            case Event::MouseButtonPressed:{
-                if(event.mouseButton.button == Mouse::Left){
+                    break;
+                case Event::MouseMoved:{
                     if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
-                    xcoord = ((int)Mouse::getPosition(window).x-433)/30;
-                    ycoord = ((int)Mouse::getPosition(window).y-133)/30;
-                    if(check_walkable(battlefield, xcoord, ycoord, bot, TS) == BOT){
-                        for(int i = 0; i < TS; i++){
-                            if(bot[i].pos.x == xcoord && bot[i].pos.y == ycoord)
-                                selected = i;
+                        xcoord = ((int)Mouse::getPosition(window).x-433)/30;
+                        ycoord = ((int)Mouse::getPosition(window).y-133)/30;
+                        cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
+                        if(c == FREE){
+
+                            //!@todo check for AP
+                            mouseCurrSprite.setTexture(allowed);
+                            std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
+                            root_to_direction(route, seq);
+                            /*std::cout << route << std::endl;
+                            int i = 0;
+                            while(seq[i] != NODIR){
+                                std::cout << i << ". " << seq[i] << std::endl;
+                                i++;
+                            };*/
+                            int dist = walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
+                            char str[10];
+                            sprintf(str, "%d", dist);
+                            tdist.setString(str);
+                            tdist.setPosition(438 + 30*xcoord, 138 + 30 *ycoord);
+                            window.draw(tdist);
+                        }else if (c == BOT){
+                            mouseCurrSprite.setTexture(pers);
+                        }else {
+                            mouseCurrSprite.setTexture(restricted);
                         }
+                        mouseCurrSprite.setPosition(433+30*xcoord, 133+30*ycoord);
+                        window.draw(mouseCurrSprite);
                     }
-                }}
-                break;
+                    break;
+                }
+                case Event::MouseButtonPressed:{
+                    if(event.mouseButton.button == Mouse::Left){
+                        if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
+                        xcoord = ((int)Mouse::getPosition(window).x-433)/30;
+                        ycoord = ((int)Mouse::getPosition(window).y-133)/30;
+                        cell c;
+                        c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
+                        if(c == BOT){
+                            for(int i = 0; i < TS; i++){
+                                if(bot[i].pos.x == xcoord && bot[i].pos.y == ycoord)
+                                    selected = i;
+                            }
+                        } else if (c==FREE){
+                            std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
+                            root_to_direction(route, seq);
+                            moves = 1;
+                        }
+                    }}
+                    break;
+                }
+                default:
+                    break;
+                }
             }
-            default:
-                break;
-            }
-            window.draw(selectedSprite);
-            window.display();
+        window.draw(selectedSprite);
+        window.display();
         }
     }
     return 1;

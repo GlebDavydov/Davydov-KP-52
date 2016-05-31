@@ -299,5 +299,39 @@ int walk_distance_count(direction dsourse, int sx, int sy, int dx, int dy, int c
     return ddf + DC + walk_distance_count(newDir, newx, newy, dx, dy, newc, sequence);
 }
 
-
+void bot_walk(battle_robot &bot, int count, direction *sequence){
+    bot.dir = sequence[count];
+    switch(bot.dir){
+    case N:
+        bot.pos.y -= 1;
+        break;
+    case NE:
+        bot.pos.x += 1;
+        bot.pos.y -= 1;
+        break;
+    case E:
+        bot.pos.x += 1;
+        break;
+    case SE:
+        bot.pos.x += 1;
+        bot.pos.y += 1;
+        break;
+    case S:
+        bot.pos.y += 1;
+        break;
+    case SW:
+        bot.pos.x -= 1;
+        bot.pos.y += 1;
+        break;
+    case W:
+        bot.pos.x -= 1;
+        break;
+    case NW:
+        bot.pos.y -= 1;
+        bot.pos.x -= 1;
+        break;
+    default:
+        return;
+    }
+}
 

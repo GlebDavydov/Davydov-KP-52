@@ -49,6 +49,8 @@
 			<Add library="sfml-system" />
 			<Add directory="C:/Program Files (x86)/CodeBlocks/sfml/lib" />
 		</Linker>
+		<Unit filename="bf.cpp" />
+		<Unit filename="bf.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="main.h" />
 		<Extensions>
