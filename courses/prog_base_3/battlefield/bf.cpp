@@ -10,12 +10,18 @@
 
 using namespace std;
 
-cell check_walkable(land bf[n][m], int px, int py, battle_robot* team, int rcount){
+cell check_walkable(land bf[n][m], int px, int py, battle_robot* team, int rcount, int tm){
     if(bf[px][py] == WALL){
         return REST;
     } else for(int i = 0; i < rcount; i ++){
-        if(team[i].pos.x == px && team[i].pos.y == py)
-            return BOT;
+        if(team[i].pos.x == px && team[i].pos.y == py){
+            if(team[i].tm == tm){
+                return BOT_ALLY;
+            }
+            else{
+                return BOT_ENEMY;
+            }
+        }
     }
     return FREE;
 }
@@ -106,7 +112,7 @@ string pathFind( const int & xStart, const int & yStart,
     {
         for(x=0;x<n;x++)
         {
-            if(check_walkable(bf, x, y, bot, TS) == FREE){
+            if(check_walkable(bf, x, y, bot, TS, BLUE) == FREE){
                 map[x][y] = 0;
             }else  map[x][y] = 1;
             closed_nodes_map[x][y] =0;

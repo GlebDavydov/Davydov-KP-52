@@ -30,7 +30,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     window.clear(Color::Black);
     Texture bfbg,
     grass, stone,
-    allowed, restricted, pers, that,
+    allowed, restricted, pers, enemy, that,
     bn, bne, be, bse, bs, bsw, bw, bnw;
 
     //Initial sprites&textures&etc load
@@ -39,6 +39,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     stone.loadFromFile("obst.png");
     allowed.loadFromFile("allowed.png");
     restricted.loadFromFile("restricted.png");
+    enemy.loadFromFile("enemy.png");
     pers.loadFromFile("personel.png");
     bn.loadFromFile("bot_n.png");
     bne.loadFromFile("bot_ne.png");
@@ -74,10 +75,12 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     nextturn.setColor(Color::White);
     nextturn.setString("END TURN");
     nextturn.setPosition(1136, 638);
+    int curr_faction = RED;
     for(int i = 0; i < TS; i++){
         bot[i] = *(new battle_robot());
         bot[i].pos.x = i*2 + 1;
         bot[i].pos.y = i%2 + 1;
+        bot[i].tm = curr_faction+i%2;
     }
     for(int i = 0; i < n*m; i++){
         bfsprite[i/n][i%m].setPosition(433+30*(i/n), 133+30*(i%m));
@@ -208,7 +211,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
                         xcoord = ((int)Mouse::getPosition(window).x-433)/30;
                         ycoord = ((int)Mouse::getPosition(window).y-133)/30;
-                        cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
+                        cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS, curr_faction);
                         if(c == FREE){
 
                             std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
@@ -231,9 +234,11 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                                 mouseCurrSprite.setTexture(restricted);
                                 //!@todo special texture for insuff AP
                             }
-                        }else if (c == BOT){
+                        }else if (c == BOT_ALLY){
                             mouseCurrSprite.setTexture(pers);
-                        }else {
+                        }else if(c == BOT_ENEMY){
+                            mouseCurrSprite.setTexture(enemy);
+                        }else{
                             mouseCurrSprite.setTexture(restricted);
                         }
                         mouseCurrSprite.setPosition(433+30*xcoord, 133+30*ycoord);
@@ -248,13 +253,15 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                         xcoord = ((int)Mouse::getPosition(window).x-433)/30;
                         ycoord = ((int)Mouse::getPosition(window).y-133)/30;
                         cell c;
-                        c = check_walkable(battlefield, xcoord, ycoord, bot, TS);
-                        if(c == BOT){
+                        c = check_walkable(battlefield, xcoord, ycoord, bot, TS, curr_faction);
+                        if(c == BOT_ALLY){
                             for(int i = 0; i < TS; i++){
                                 if(bot[i].pos.x == xcoord && bot[i].pos.y == ycoord)
                                     selected = i;
                             }
-                        } else if (c==FREE){
+                        }else if(c == BOT_ENEMY){
+                            //!@todo
+                        }else if (c==FREE){
                                 std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
                                 root_to_direction(route, seq);
                             if(walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq) <= bot[selected].currAp){
@@ -263,15 +270,21 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             }//!@todo message if insuff AP
                         }
                     }else if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
-                        //!@todo team switch
                         for(int i = 0; i < TS; i++){
                             bot[i].currAp = bot[i].maxAp;
+                        }
+                        curr_faction = (++curr_faction)%2;
+                        for(int i = 0; i < TS; i++){
+                            if(bot[i].tm == curr_faction){
+                                selected = i;
+                                break;
+                            }
                         }
                     }} else if(event.mouseButton.button == Mouse::Right){
                         if(IntRect(433, 133, 450, 450).contains(Mouse::getPosition(window))){
                             xcoord = ((int)Mouse::getPosition(window).x-433)/30;
                             ycoord = ((int)Mouse::getPosition(window).y-133)/30;
-                            cell c;
+                            //cell c;
                             bot_turn(bot[selected], xcoord, ycoord);
                         }
                     }
