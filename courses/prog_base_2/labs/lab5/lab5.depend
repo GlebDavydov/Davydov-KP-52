@@ -1,0 +1,241 @@
+# depslib dependency file v1.0
+1465020559 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\database.c
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	"teahers.h"
+	"database.h"
+
+1464991500 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\teahers.h
+
+1465005276 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\database.h
+	"sqlite3.h"
+	"teahers.h"
+
+1460798695 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\sqlite3.h
+	<stdarg.h>
+
+1461534192 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\socket.c
+	<winsock2.h>
+	"socket.h"
+
+1461534148 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\socket.h
+
+1460798695 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\sqlite3.c
+	<vxWorks.h>
+	<pthread.h>
+	"mingw.h"
+	"_mingw.h"
+	<stdarg.h>
+	"config.h"
+	<stdint.h>
+	<inttypes.h>
+	<intrin.h>
+	<cmnintrin.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	<stddef.h>
+	<TargetConditionals.h>
+	<ctype.h>
+	<time.h>
+	<sys/sysctl.h>
+	<malloc/malloc.h>
+	<libkern/OSAtomic.h>
+	<malloc.h>
+	<pthread.h>
+	"windows.h"
+	<sys/cygwin.h>
+	<errno.h>
+	<process.h>
+	<math.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<fcntl.h>
+	<unistd.h>
+	<sys/time.h>
+	<errno.h>
+	<sys/mman.h>
+	<sys/ioctl.h>
+	<sys/file.h>
+	<sys/param.h>
+	<semaphore.h>
+	<limits.h>
+	<sys/mount.h>
+	<utime.h>
+	<sys/dcmd_blk.h>
+	<sys/statvfs.h>
+	<dlfcn.h>
+	<tcl.h>
+	"sqlite3rtree.h"
+	<unicode/utypes.h>
+	<unicode/uregex.h>
+	<unicode/ustring.h>
+	<unicode/ucol.h>
+	<unicode/ubrk.h>
+	<unicode/utf16.h>
+	<ctype.h>
+	<math.h>
+
+1464991561 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\teachers_list.c
+	<stdlib.h>
+	<string.h>
+	"teahers.h"
+
+1465000405 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\xmlprocess.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	<libxml/parser.h>
+	<libxml/tree.h>
+	"teahers.h"
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\parser.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+	<libxml/hash.h>
+	<libxml/valid.h>
+	<libxml/entities.h>
+	<libxml/xmlerror.h>
+	<libxml/xmlstring.h>
+	<libxml/encoding.h>
+	<libxml/xmlIO.h>
+	<libxml/globals.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlversion.h
+	<libxml/xmlexports.h>
+	<ansidecl.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlexports.h
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\tree.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/xmlstring.h>
+	<libxml/xmlregexp.h>
+	<libxml/xmlmemory.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlstring.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlregexp.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\dict.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlmemory.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/threads.h>
+	<libxml/globals.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\threads.h
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\globals.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xmlerror.h>
+	<libxml/SAX.h>
+	<libxml/SAX2.h>
+	<libxml/xmlmemory.h>
+	<libxml/threads.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlerror.h
+	<libxml/parser.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\sax.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xlink.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\sax2.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\hash.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/dict.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\valid.h
+	<libxml/xmlversion.h>
+	<libxml/xmlerror.h>
+	<libxml/tree.h>
+	<libxml/list.h>
+	<libxml/xmlautomata.h>
+	<libxml/xmlregexp.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\list.h
+	<libxml/xmlversion.h>
+
+1459586049 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlautomata.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/xmlregexp.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\entities.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1459586048 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\encoding.h
+	<libxml/xmlversion.h>
+	<iconv.h>
+	<unicode/ucnv.h>
+	<libxml/tree.h>
+
+1459586001 c:\users\Глеб\downloads\iconv-1.9.2.win32\iconv-1.9.2.win32\include\iconv.h
+	"iconv.h"
+	<stddef.h>
+	<errno.h>
+
+1459586050 c:\users\Глеб\downloads\libxml2-2.7.8.win32\libxml2-2.7.8.win32\include\libxml\xmlio.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/encoding.h>
+
+1465031404 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\server.c
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<string.h>
+	<ctype.h>
+	<time.h>
+	"server.h"
+
+1464443438 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\server.h
+	"teahers.h"
+	"socket.h"
+	"database.h"
+
+1464979732 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\main.c
+	<stdio.h>
+	<stdlib.h>
+	"database.h"
+	"server.h"
+
+1460798695 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_2\labs\lab5\sqlite3ext.h
+	"sqlite3.h"
+
