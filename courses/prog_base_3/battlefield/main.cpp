@@ -18,7 +18,10 @@ void draw_everything(RenderWindow &window, land battlefield[n][m], Sprite bfspri
 Sprite selectedSprite, Sprite botsprite[TS], battle_robot bot[TS], int selected);
 
 void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
-                Texture *gunicons, Sprite stats, Sprite icon, Sprite wp1, Sprite wp2, Text hp, Text ap);
+Texture *gunicons, Sprite stats, Sprite icon, Sprite wp1, Sprite wp2, Text hp, Text ap);
+
+void shoot(RenderWindow &window, land battlefield, Sprite *bfsprite, battle_robot *bot, Sprite *botsprite,
+int selected, int targx, int targy, Weapon *wp, int shotmode);
 
 Weapon *claw = new Weapon(MELEE, 30, 1, 0, 1.0, 0.67, 0, 0.25, 0);
 Weapon *hammer = new Weapon(MELEE, 45, 1, 0, 1.0, 0.9, 0, 0.33, 0);
@@ -101,12 +104,15 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     Sprite botsprite[TS];
     Sprite mystats, enemystats, myicon, enemyicon, mywp1, mywp2, hiswp1, hiswp2;
     Sprite selectedSprite;
+    Sprite selectedGun;
     selectedSprite.setTexture(that);
     Vector2i localPosition;
 
     //objects preparing
     int selected = 0;
     int moves = 0;
+    int aim_status = 0;
+    Weapon *theGun = NULL;
     battle_robot bot[TS];
     direction seq[225] = {NODIR};
     tdist.setCharacterSize(20);
@@ -200,6 +206,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
             draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
 
                 //polling events
+            if(!aim_status){
                 switch(event.type){
                 case Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape){
@@ -248,7 +255,6 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                                 }
                             }
                             draw_stats(window, curr, icon, gunicon, enemystats, enemyicon, hiswp1, hiswp2, hishp, hisap);
-
                         }else{
                             mouseCurrSprite.setTexture(restricted);
                         }
@@ -259,7 +265,17 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                 }
                 case Event::MouseButtonPressed:{
                     if(event.mouseButton.button == Mouse::Left){
-                        if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
+                        if(IntRect(1093+95, 191+53, 32, 32).contains(Mouse::getPosition(window))){
+                            aim_status = 1;
+                            theGun = bot[selected].gun1;
+                            selectedGun.setPosition(1093+95, 191+53);
+                            selectedGun.setTexture(allowed);
+                        }else if(IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
+                            aim_status = 1;
+                            theGun = bot[selected].gun2;
+                            selectedGun.setPosition(1093+131, 191+53);
+                            selectedGun.setTexture(allowed);
+                        }else if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
                             for(int i = 0; i < TS; i++){
                                 bot[i].currAp = bot[i].maxAp;
                             }
@@ -283,8 +299,10 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                                     selected = i;
                             }
                         }else if(c == BOT_ENEMY){
-
-                            //!@todo
+                            aim_status = 1;
+                            theGun = bot[selected].gun1;
+                            selectedGun.setPosition(1093+95, 191+53);
+                            selectedGun.setTexture(allowed);
                         }else if (c==FREE){
                                 std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
                                 root_to_direction(route, seq);
@@ -309,6 +327,133 @@ int DLL_EXPORT battlefield(RenderWindow& window){
             //window.setView(view);
             window.draw(nextturn);
             window.display();
+            } else {
+                window.draw(selectedGun);
+                switch(event.type){
+                case Event::KeyPressed:
+                    if (event.key.code == sf::Keyboard::Escape){
+                    return 0;
+                    }
+                    break;
+                case Event::MouseMoved:{
+                    xcoord = ((int)Mouse::getPosition(window).x)/32;
+                    ycoord = ((int)Mouse::getPosition(window).y)/32;
+                    if(xcoord < 0 || xcoord > m || ycoord < 0 || ycoord > n)
+                        break;
+                    cell c = check_walkable(battlefield, xcoord, ycoord, bot, TS, curr_faction);
+                    mouseCurrSprite.setTexture(restricted);
+                    if(c == FREE || c == BOT_ENEMY){
+                        if(eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord) <= theGun->radius){
+                            mouseCurrSprite.setTexture(enemy);
+                            direction dir = belongs_to_sector(bot[selected], xcoord, ycoord);
+                            int diff = abs(dir - bot[selected].dir);
+                            if(diff != 4)
+                                diff %= 4;
+                            int ap;
+                            if(aim_status == 1 || theGun->burst == 0){
+                                ap = diff + (int)(theGun->apPerStrike * (double)bot[selected].maxAp);
+                            } else {
+                                ap = diff + (int)(theGun->apPerBurst * (double)bot[selected].maxAp);
+                            }
+                            char str[10];
+                            sprintf(str, "%d", ap);
+                            tdist.setString(str);
+                            tdist.setPosition(5 + 32*xcoord, 37 + 32 *ycoord);
+                            window.draw(tdist);
+                        }
+                        battle_robot curr;
+                        for(int i = 0; i < TS; i++){
+                            if(bot[i].pos.x == xcoord && bot[i].pos.y == ycoord){
+                                curr = bot[i];
+                                break;
+                            }
+                        }
+                        if(c == BOT_ENEMY)
+                            draw_stats(window, curr, icon, gunicon, enemystats, enemyicon, hiswp1, hiswp2, hishp, hisap);
+                    }else if (c == BOT_ALLY){
+                        mouseCurrSprite.setTexture(pers);
+                    }
+                    mouseCurrSprite.setPosition(32*xcoord, 32*ycoord);
+                    window.draw(mouseCurrSprite);
+                    break;
+                    }
+                    case Event::MouseButtonPressed:{
+                    if(event.mouseButton.button == Mouse::Left){
+                        if(IntRect(1093+95, 191+53, 32, 32).contains(Mouse::getPosition(window))){
+                            if(theGun == bot[selected].gun1){
+                                if(aim_status == 2){
+                                    aim_status = 0;
+                                } else {
+                                    aim_status = 2;
+                                    selectedGun.setTexture(that);
+                                }
+                            } else {
+                                aim_status = 1;
+                                theGun = bot[selected].gun1;
+                                selectedGun.setPosition(1093+95, 191+53);
+                                selectedGun.setTexture(allowed);
+                            }
+                        }else if(IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
+                            if(theGun == bot[selected].gun2){
+                                if(aim_status == 2){
+                                    aim_status = 0;
+                                } else {
+                                    aim_status = 2;
+                                    selectedGun.setTexture(that);
+                                }
+                            } else {
+                                aim_status = 1;
+                                theGun = bot[selected].gun2;
+                                selectedGun.setPosition(1093+131, 191+53);
+                                selectedGun.setTexture(allowed);
+                            }
+                        }/*else if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
+                            for(int i = 0; i < TS; i++){
+                                bot[i].currAp = bot[i].maxAp;
+                            }
+                            curr_faction = (++curr_faction)%2;
+                            for(int i = 0; i < TS; i++){
+                                if(bot[i].tm == curr_faction){
+                                    selected = i;
+                                    break;
+                                }
+                            }
+                        } else {
+                        xcoord = ((int)Mouse::getPosition(window).x)/32;
+                        ycoord = ((int)Mouse::getPosition(window).y)/32;
+                        if(xcoord < 0 || xcoord > m || ycoord < 0 || ycoord > n)
+                            break;
+                        cell c;
+                        c = check_walkable(battlefield, xcoord, ycoord, bot, TS, curr_faction);
+                        if(c == BOT_ALLY){
+                            for(int i = 0; i < TS; i++){
+                                if(bot[i].pos.x == xcoord && bot[i].pos.y == ycoord)
+                                    selected = i;
+                            }
+                        }else if(c == BOT_ENEMY){
+                            aim_status = (aim_status+1)%3;
+                            theGun = bot[selected].gun1;
+                        }else if (c==FREE){
+                                std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
+                                root_to_direction(route, seq);
+                            if(walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq) <= bot[selected].currAp){
+                                bot[selected].currAp -= walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
+                                moves = 1;
+                            }//!@todo message if insuff AP
+                        }
+                    }*/
+                    } else if(event.mouseButton.button == Mouse::Right){
+                        aim_status = 0;
+                    }
+                    break;
+                }
+                default:
+                    break;
+                }
+            //window.setView(view);
+            window.draw(nextturn);
+            window.display();
+            }
         }
     }
     return 1;
@@ -474,3 +619,7 @@ void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
     window.draw(hp);
 }
 
+void shoot(RenderWindow &window, land battlefield, Sprite *bfsprite, battle_robot *bot, Sprite *botsprite,
+int selected, int targx, int targy, Weapon *wp, int shotmode){
+
+}
