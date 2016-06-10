@@ -4,6 +4,16 @@
 
 #include "shooting.h"
 
+int round(float fx){
+    int ix;
+    if(fx < 0){
+        ix = floor(fx - 0.5);
+    }else{
+        ix = floor(fx + 0.5);
+    }
+    return ix;
+}
+
 int eucl_dist_count(int xs, int ys, int xd, int yd){
     int dx = xd - xs;
     int dy = yd - ys;
@@ -11,19 +21,18 @@ int eucl_dist_count(int xs, int ys, int xd, int yd){
 }
 
 position track(land bf[n][m], int xs, int ys, int xd, int yd, battle_robot bot[TS], int tm){
-    int cx = xs;
-    int cy = ys;
-    float dx = (float)(xd - xs);
-    float dy = (float)(yd - ys);
-    cx += (int)ceil(dx/sqrt(dx*dx + dy*dy));
-    cy += (int)ceil(dy/sqrt(dx*dx + dy*dy));
-    while(cx != xd || cy != yd){
-    cx += (int)ceil(dx/sqrt(dx*dx + dy*dy));
-    cy += (int)ceil(dy/sqrt(dx*dx + dy*dy));
-        if((cx == xd && cy == yd) || check_walkable(bf, cx, cy, bot, TS, tm) != FREE){
+    double cx = (double)xs;
+    double cy = (double)ys;
+    double dx = (double)(xd - xs);
+    double dy = (double)(yd - ys);
+    while(round(cx) != xd || round(cy) != yd){
+        cx += dx/sqrt(dx*dx + dy*dy);
+        cy += dy/sqrt(dx*dx + dy*dy);
+        printf("\nx %.2f, y %.2f", cx, cy);
+        if((round(cx) == xd && round(cy) == yd) || check_walkable(bf, round(cx), round(cy), bot, TS, tm) != FREE){
             position newPos = *(new position());
-            newPos.x = cx;
-            newPos.y = cy;
+            newPos.x = round(cx);
+            newPos.y = round(cy);
             return newPos;
         }
     }

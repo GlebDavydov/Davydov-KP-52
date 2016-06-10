@@ -199,14 +199,14 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                         }else if (c == BOT_ALLY){
                             mouseCurrSprite.setTexture(pers);
                         }else if(c == BOT_ENEMY){
-                            mouseCurrSprite.setTexture(enemy);
-                            /*mouseCurrSprite.setTexture(restricted);
+                            //mouseCurrSprite.setTexture(enemy);
+                            mouseCurrSprite.setTexture(restricted);
                             position p = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, bot, curr_faction);
                             char str[10];
                             sprintf(str, "XX");
                             tdist.setString(str);
                             tdist.setPosition(5 + 32*p.x, 5 + 32 *p.y);
-                            window.draw(tdist);*/
+                            window.draw(tdist);
                         }else{
                             mouseCurrSprite.setTexture(restricted);
                         }
