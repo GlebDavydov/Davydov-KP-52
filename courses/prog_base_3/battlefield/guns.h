@@ -28,6 +28,7 @@ class Weapon{
         double apPerStrike,
         double apPerBurst){
             this->type = type;
+            this->damage = damage;
             this->radius = radius;
             this->burst = burst;
             this->accuracy = accuracy;

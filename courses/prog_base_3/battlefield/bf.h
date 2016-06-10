@@ -76,25 +76,25 @@ class battle_robot{
             this->rm = rm;
             this->gun1 = gun1;
             this->gun2 = gun2;
-            switch(m){
+            switch(rm){
             case TANK: //slow but brutal, heavy fire support at any distance
-                maxAp = 44;
+                maxAp = 88;
                 armor = 25;
                 maxhp = 150;
             break;
             case CHARGER: //fast but unused to long distances
-                maxAp = 60;
+                maxAp = 120;
                 armor = 6;
                 maxhp = 140;
             break;
             case SEEKER: //performs best at long distances
-                maxAp = 52;
+                maxAp = 104;
                 armor = 20;
                 maxhp = 100;
             break;
             case TROOPER: //useful in any case
             default:
-                maxAp = 56;
+                maxAp = 112;
                 armor = 12;
                 maxhp = 125;
             break;
