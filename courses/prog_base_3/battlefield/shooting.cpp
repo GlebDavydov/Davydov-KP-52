@@ -4,7 +4,7 @@
 
 #include "shooting.h"
 
-int round(float fx){
+int my_round(double fx){
     int ix;
     if(fx < 0){
         ix = floor(fx - 0.5);
@@ -25,14 +25,13 @@ position track(land bf[n][m], int xs, int ys, int xd, int yd, battle_robot bot[T
     double cy = (double)ys;
     double dx = (double)(xd - xs);
     double dy = (double)(yd - ys);
-    while(round(cx) != xd || round(cy) != yd){
+    while(my_round(cx) != xd || my_round(cy) != yd){
         cx += dx/sqrt(dx*dx + dy*dy);
         cy += dy/sqrt(dx*dx + dy*dy);
-        printf("\nx %.2f, y %.2f", cx, cy);
-        if((round(cx) == xd && round(cy) == yd) || check_walkable(bf, round(cx), round(cy), bot, TS, tm) != FREE){
+        if((my_round(cx) == xd && my_round(cy) == yd) || check_walkable(bf, my_round(cx), my_round(cy), bot, TS, tm) != FREE){
             position newPos = *(new position());
-            newPos.x = round(cx);
-            newPos.y = round(cy);
+            newPos.x = my_round(cx);
+            newPos.y = my_round(cy);
             return newPos;
         }
     }
@@ -42,7 +41,40 @@ position track(land bf[n][m], int xs, int ys, int xd, int yd, battle_robot bot[T
     return newPos;
 }
 
-position chooseRandom(int x, int y, float deriv);
-void destroyRobot(land bf[n][m], battle_robot bot[TS], int botnumber);
-float accuracy_count(int x, int y, Weapon *gun);
-int damage_count(battle_robot &bot, Weapon *gun);
+position chooseRandom(land bf[n][m], int x, int y, double acc){
+    int d = my_round(1/acc);
+    position pos = *(new position());
+    do{pos.x += rand() % (2*d+1) - d;}while(pos.x < 0 || pos.x > n);
+    do{pos.y += rand() % (2*d+1) - d;}while(pos.y < 0 || pos.y > m);
+    return pos;
+}
+
+/*void destroyRobot(land bf[n][m], battle_robot bot[TS], int botnumber){
+
+}*/
+
+double accuracy_count(int distance, Weapon *gun){
+    return log(distance) * gun->accuracy;
+}
+
+int damage_count(battle_robot &bot, Weapon *gun, int distance){
+    if(gun->type == FLAMER){
+        return my_round((double)(1.0 + (rand() % 201 - 100)/300.0) * gun->damage);
+    }
+    double pierce;
+    if(gun->type == ART || gun->type == MELEE){
+        pierce = (1.0 + (rand() % 201 - 100)/500.0) * gun->pierce;
+    } else if(gun->type == PROJ){
+        pierce = (1.0 + (rand() % 201 - 100)/500.0) * gun->pierce * log10(distance);
+    }
+    if(pierce < 0)
+            pierce = -pierce;
+    if(gun->damage * pierce > bot.armor){
+        return my_round((double)(1.0 + (rand() % 201 - 100)/300.0) * gun->damage);
+    } else {
+        double tdm =  (1.0 + (rand() % 201 - 100)/300.0) * gun->damage;
+        double mlt = (6*pierce)/bot.armor;
+        tdm *= mlt;
+        return my_round(tdm);
+    }
+}

@@ -9,10 +9,16 @@
 //#include "view.h"
 #include "shooting.h"
 
+//!MYSPRITE COORDS:
+//!ENEMYSPRITE COORDS:
+
 using namespace sf;
 
 void draw_everything(RenderWindow &window, land battlefield[n][m], Sprite bfsprite[n][m],
 Sprite selectedSprite, Sprite botsprite[TS], battle_robot bot[TS], int selected);
+
+void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
+                Texture *gunicons, Sprite stats, Sprite icon, Sprite wp1, Sprite wp2, Text hp, Text ap);
 
 Weapon *claw = new Weapon(MELEE, 30, 1, 0, 1.0, 0.67, 0, 0.25, 0);
 Weapon *hammer = new Weapon(MELEE, 45, 1, 0, 1.0, 0.9, 0, 0.33, 0);
@@ -25,11 +31,13 @@ Weapon *plasma = new Weapon(PROJ, 35, 24, 2, 0.96, 0.67, 0, 0.35, 0.55);
 Weapon *cannon = new Weapon(PROJ, 45, 32, 0, 0.98, 0.85, 0.2, 0.4, 0);
 Weapon *flamer = new Weapon(FLAMER, 30, 8, 0, 0, 1, 0, 0.25, 0);
 
+enum guns{CLAW = 0, HAMMER, MORTAR, MLRS, MISSILE, MINIGUN, LASER, PLASMA, CANNON, FLAMETHROWER};
+
 int DLL_EXPORT battlefield(RenderWindow& window){
     Clock clock;
      land battlefield[n][m] = {GRSS};
      for(int i = 0; i < n*m; i++){
-        if(i/n == 0 ||i%m == 0)
+        if(i/n == 0 || i%m == 0)
             battlefield[i/n][i%m] = WALL;
      }
         /*{WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL},//1
@@ -52,7 +60,9 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     Texture bfbg,
     grass, stone,
     allowed, restricted, pers, enemy, that,
-    botblue, botred;
+    botblue, botred,
+    mybot, icon[4]; //!0=seeker 1=trooper 2=charger 3=tank
+    Texture gunicon[10];
 
     //Initial sprites&textures&etc load
     botblue.loadFromFile("textures/botblue.png");
@@ -65,15 +75,31 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     enemy.loadFromFile("textures/enemy.png");
     pers.loadFromFile("textures/personel.png");
     that.loadFromFile("textures/chosen.png");
+    mybot.loadFromFile("textures/mystats.png");
+    for(int i = 0; i < 4; i++){
+        icon[i].loadFromFile("textures/icons.png", IntRect(64*i, 0, 64, 64));
+    }
+    gunicon[CLAW].loadFromFile("textures/guns/claw.png");
+    gunicon[HAMMER].loadFromFile("textures/guns/hammer.png");
+    gunicon[MORTAR].loadFromFile("textures/guns/mortar.png");
+    gunicon[MLRS].loadFromFile("textures/guns/mlrs.png");
+    gunicon[MISSILE].loadFromFile("textures/guns/missile.png");
+    gunicon[MINIGUN].loadFromFile("textures/guns/minigun.png");
+    gunicon[LASER].loadFromFile("textures/guns/laser.png");
+    gunicon[PLASMA].loadFromFile("textures/guns/plasmagun.png");
+    gunicon[CANNON].loadFromFile("textures/guns/cannon.png");
+    gunicon[FLAMETHROWER].loadFromFile("textures/guns/flamethrower.png");
     Sprite bfback(bfbg);
     Sprite mouseCurrSprite;
     bfback.setPosition(0,0);
     Sprite bfsprite[n][m];
     Text nextturn; //!@todo button
     Text tdist;
+    Text myhp, myap, hishp, hisap;
     Font font;
     font.loadFromFile("arial.ttf");
     Sprite botsprite[TS];
+    Sprite mystats, enemystats, myicon, enemyicon, mywp1, mywp2, hiswp1, hiswp2;
     Sprite selectedSprite;
     selectedSprite.setTexture(that);
     Vector2i localPosition;
@@ -86,6 +112,19 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     tdist.setCharacterSize(20);
     tdist.setColor(Color::Magenta);
     tdist.setFont(font);
+
+    mystats.setTexture(mybot); mystats.setPosition(1093, 191);
+    myicon.setPosition(1093+15, 191+15);
+    myhp.setCharacterSize(12); myhp.setColor(Color::Red); myhp.setFont(font); myhp.setPosition(1093+127, 191+17);
+    myap.setCharacterSize(12); myap.setColor(Color::Green); myap.setFont(font); myap.setPosition(1093+127, 191+36);
+    mywp1.setPosition(1093+95, 191+53); mywp2.setPosition(1093+131, 191+53);
+
+    enemystats.setTexture(mybot); enemystats.setPosition(554, 15);
+    enemyicon.setPosition(554+15, 15+15);
+    hishp.setCharacterSize(12); hishp.setColor(Color::Red); hishp.setFont(font); hishp.setPosition(554+127, 15+17);
+    hisap.setCharacterSize(12); hisap.setColor(Color::Green); hisap.setFont(font); hisap.setPosition(554+127, 15+36);
+    hiswp1.setPosition(554+95, 15+53); hiswp2.setPosition(554+131, 15+53);
+
     nextturn.setCharacterSize(30);
     nextturn.setFont(font);
     nextturn.setColor(Color::White);
@@ -140,6 +179,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
             Sleep(100); //!temp plug until the animation is rdy
 
             draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+            draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
             window.draw(nextturn);
             window.display();
         }
@@ -157,7 +197,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
 
             nextturn.setColor(Color::White);
             draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
-
+            draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
 
                 //polling events
                 switch(event.type){
@@ -199,14 +239,16 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                         }else if (c == BOT_ALLY){
                             mouseCurrSprite.setTexture(pers);
                         }else if(c == BOT_ENEMY){
-                            //mouseCurrSprite.setTexture(enemy);
-                            mouseCurrSprite.setTexture(restricted);
-                            position p = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, bot, curr_faction);
-                            char str[10];
-                            sprintf(str, "XX");
-                            tdist.setString(str);
-                            tdist.setPosition(5 + 32*p.x, 5 + 32 *p.y);
-                            window.draw(tdist);
+                            mouseCurrSprite.setTexture(enemy);
+                            battle_robot curr;
+                            for(int i = 0; i < TS; i++){
+                                if(bot[i].pos.x == xcoord && bot[i].pos.y == ycoord){
+                                    curr = bot[i];
+                                    break;
+                                }
+                            }
+                            draw_stats(window, curr, icon, gunicon, enemystats, enemyicon, hiswp1, hiswp2, hishp, hisap);
+
                         }else{
                             mouseCurrSprite.setTexture(restricted);
                         }
@@ -358,5 +400,77 @@ Sprite selectedSprite, Sprite botsprite[TS], battle_robot bot[TS], int selected)
         selectedSprite.setPosition( 32*bot[i].pos.x, 32 * bot[i].pos.y);
     }
     window.draw(selectedSprite);
+}
+
+void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
+                Texture *gunicons, Sprite stats, Sprite icon, Sprite wp1,Sprite wp2, Text hp, Text ap){
+    switch(bot.rm){
+        case SEEKER:
+        icon.setTexture(icons[0]);
+        break;
+        case CHARGER:
+        icon.setTexture(icons[2]);
+        break;
+        case TANK:
+        icon.setTexture(icons[3]);
+        break;
+        default:
+        case TROOPER:
+        icon.setTexture(icons[1]);
+        break;
+    }
+    if(bot.gun1 == claw){
+        wp1.setTexture(gunicons[CLAW]);
+    }else if(bot.gun1 == hammer){
+        wp1.setTexture(gunicons[HAMMER]);
+    } else if(bot.gun1 == mortar){
+        wp1.setTexture(gunicons[MORTAR]);
+    } else if(bot.gun1 == mlrs){
+        wp1.setTexture(gunicons[MLRS]);
+    } else if(bot.gun1 == missile){
+        wp1.setTexture(gunicons[MISSILE]);
+    } else if(bot.gun1 == minigun){
+        wp1.setTexture(gunicons[MINIGUN]);
+    } else if(bot.gun1 == laser){
+        wp1.setTexture(gunicons[LASER]);
+    } else if(bot.gun1 == plasma){
+        wp1.setTexture(gunicons[PLASMA]);
+    } else if(bot.gun1 == cannon){
+        wp1.setTexture(gunicons[CANNON]);
+    } else if(bot.gun1 == flamer){
+        wp1.setTexture(gunicons[FLAMETHROWER]);
+    }
+    if(bot.gun2 == claw){
+        wp2.setTexture(gunicons[CLAW]);
+    }else if(bot.gun2 == hammer){
+        wp2.setTexture(gunicons[HAMMER]);
+    } else if(bot.gun2 == mortar){
+        wp2.setTexture(gunicons[MORTAR]);
+    } else if(bot.gun2 == mlrs){
+        wp2.setTexture(gunicons[MLRS]);
+    } else if(bot.gun2 == missile){
+        wp2.setTexture(gunicons[MISSILE]);
+    } else if(bot.gun2 == minigun){
+        wp2.setTexture(gunicons[MINIGUN]);
+    } else if(bot.gun2 == laser){
+        wp2.setTexture(gunicons[LASER]);
+    } else if(bot.gun2 == plasma){
+        wp2.setTexture(gunicons[PLASMA]);
+    } else if(bot.gun2 == cannon){
+        wp2.setTexture(gunicons[CANNON]);
+    } else if(bot.gun2 == flamer){
+        wp2.setTexture(gunicons[FLAMETHROWER]);
+    }
+    char buff[20];
+    sprintf(buff, "%d / %d", bot.currAp, bot.maxAp);
+    ap.setString(buff);
+    sprintf(buff, "%d / %d", bot.hp, bot.maxhp);
+    hp.setString(buff);
+    window.draw(stats);
+    window.draw(icon);
+    window.draw(wp1);
+    window.draw(wp2);
+    window.draw(ap);
+    window.draw(hp);
 }
 

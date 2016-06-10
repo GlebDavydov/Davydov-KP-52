@@ -35,6 +35,7 @@ class battle_robot{
         int maxAp;
         int currAp;
         int hp;
+        int maxhp;
         int armor;
         Weapon *gun1;
         Weapon *gun2;
@@ -48,6 +49,7 @@ class battle_robot{
             maxAp = 112;
             currAp = 112;
             armor = 12;
+            maxhp = 125;
             hp = 125;
             this->gun1 = NULL;
             this->gun2 = NULL;
@@ -61,6 +63,7 @@ class battle_robot{
             maxAp = 112;
             currAp = 112;
             armor = 12;
+            maxhp = 125;
             hp = 125;
             this->gun1 = gun1;
             this->gun2 = gun2;
@@ -77,25 +80,26 @@ class battle_robot{
             case TANK: //slow but brutal, heavy fire support at any distance
                 maxAp = 44;
                 armor = 25;
-                hp = 150;
+                maxhp = 150;
             break;
             case CHARGER: //fast but unused to long distances
                 maxAp = 60;
                 armor = 6;
-                hp = 140;
+                maxhp = 140;
             break;
             case SEEKER: //performs best at long distances
                 maxAp = 52;
                 armor = 20;
-                hp = 100;
+                maxhp = 100;
             break;
             case TROOPER: //useful in any case
             default:
                 maxAp = 56;
                 armor = 12;
-                hp = 125;
+                maxhp = 125;
             break;
             }
+            hp = maxhp;
             currAp = maxAp;
             dir = S;
             pos.x = 0;

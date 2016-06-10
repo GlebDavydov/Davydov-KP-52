@@ -9,24 +9,24 @@ typedef enum guntype{MELEE, ART, FLAMER, PROJ}guntype;
 class Weapon{
     public:
     guntype type;
-    float damage; //average
-    float radius; //maximal
+    double damage; //average
+    double radius; //maximal
     int burst; //number of successive strikes
-    float accuracy; //the chance of miss = accuracy*log2(distance)
-    float pierce; //the percentage of damage guaranteed to pas the armor and chance to deliver additional damage
+    double accuracy; //the chance of miss = accuracy*log2(distance)
+    double pierce; //the percentage of damage guaranteed to pas the armor and chance to deliver additional damage
     //is not affected by distance for artillery and always 1 for flamethrower
-    float splash; //the amount of damage distributer over the nearby points
-    float apPerStrike;
-    float apPerBurst;
+    double splash; //the amount of damage distributer over the nearby points
+    double apPerStrike;
+    double apPerBurst;
     Weapon(guntype type,
-        float damage,
-        float radius,
+        double damage,
+        double radius,
         int burst,
-        float accuracy,
-        float pierce,
-        float splash,
-        float apPerStrike,
-        float apPerBurst){
+        double accuracy,
+        double pierce,
+        double splash,
+        double apPerStrike,
+        double apPerBurst){
             this->type = type;
             this->radius = radius;
             this->burst = burst;
