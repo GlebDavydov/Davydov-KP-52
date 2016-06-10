@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1464689328 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\main.cpp
+1465554586 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\main.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	<stdio.h>
@@ -7,6 +7,7 @@
 	<string.h>
 	"main.h"
 	"bf.h"
+	"shooting.h"
 
 1459448199 c:\program files (x86)\codeblocks\sfml\include\sfml\graphics.hpp
 	<SFML/Window.hpp>
@@ -390,7 +391,7 @@
 	<SFML/Graphics.hpp>
 	<windows.h>
 
-1464851370 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.cpp
+1465555293 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.cpp
 	<windows.h>
 	<iomanip>
 	<queue>
@@ -399,5 +400,20 @@
 	<ctime>
 	"bf.h"
 
-1464851329 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.h
+1465550403 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.h
+	"guns.h"
+
+1465510017 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\view.h
+	<SFML/Graphics.hpp>
+
+1465551947 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\guns.h
+
+1465554010 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\shooting.h
+	"bf.h"
+
+1465555903 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\shooting.cpp
+	<windows.h>
+	<SFML/Graphics.hpp>
+	<math.h>
+	"shooting.h"
 

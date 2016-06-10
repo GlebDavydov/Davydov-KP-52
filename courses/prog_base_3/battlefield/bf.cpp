@@ -357,17 +357,17 @@ void bot_turn(battle_robot &bot, int x, int y){
 
 direction belongs_to_sector(battle_robot &bot, int x, int y){
     double angle = atan((double)(y - bot.pos.y)/(x - bot.pos.x));
-    if(angle >= -PI/2.0 && angle < -3.0*PI/8.0)
-            return N;
-    if(angle <= PI/2.0 && angle > 3.0*PI/8.0)
-            return S;
-    if(x > bot.pos.x){
+    if(x >= bot.pos.x){
         if(angle >= PI/8.0 && angle < 3.0*PI/8.0)
             return SE;
         if(angle >= -PI/8.0 && angle <= PI/8.0)
             return E;
         if(angle >= -3.0*PI/8.0 && angle < -PI/8.0)
             return NE;
+        if(angle >= -PI/2.0 && angle < -3.0*PI/8.0)
+            return N;
+        if(angle <= PI/2.0 && angle > 3.0*PI/8.0)
+            return S;
     } else {
         if(angle >= PI/8.0 && angle < 3.0*PI/8.0)
             return NW;
@@ -375,6 +375,10 @@ direction belongs_to_sector(battle_robot &bot, int x, int y){
             return W;
         if(angle >= -3.0*PI/8.0 && angle < -PI/8.0)
             return SW;
+        if(angle >= -PI/2.0 && angle < -3.0*PI/8.0)
+            return S;
+        if(angle <= PI/2.0 && angle > 3.0*PI/8.0)
+            return N;
     }
     return NODIR;
 }

@@ -1,20 +1,22 @@
 #ifndef BF_H_INCLUDED
 #define BF_H_INCLUDED
 
+#include "guns.h"
+
 #define DC 4 //"D"istance "C"onstant
 
-#define TS 5 //"T"eam "S"ize
+#define TS 6 //"T"eam "S"ize
 
-#define RDP 1000 //"R"obot "D"is"p"osition
-
-#define n 15
-#define m 15
+#define n 25
+#define m 25
 
 enum faction{RED, BLUE};
 
 typedef enum direction{NODIR = 0, N = 1, NE, E, SE, S, SW, W, NW}direction;
 
 typedef enum cell{REST = 0, FREE, BOT_ALLY, BOT_ENEMY}cell;
+
+typedef enum model{TANK, CHARGER, SEEKER, TROOPER}model;
 
 typedef enum land_type_s{
     GRSS = 1,
@@ -26,16 +28,75 @@ typedef struct position{
     int y;
 }position;
 
+
 class battle_robot{
     public:
+        int destroyed;
         int maxAp;
         int currAp;
+        int hp;
+        int armor;
+        Weapon *gun1;
+        Weapon *gun2;
+        model rm;
         direction dir;
         position pos;
         int tm;
         battle_robot(){
-            maxAp = 100;
-            currAp = 100;
+            destroyed = 0;
+            rm = TROOPER;
+            maxAp = 112;
+            currAp = 112;
+            armor = 12;
+            hp = 125;
+            this->gun1 = NULL;
+            this->gun2 = NULL;
+            dir = S;
+            pos.x = 0;
+            pos.y = 0;
+        }
+        battle_robot(Weapon *gun1, Weapon *gun2){
+            destroyed = 0;
+            rm = TROOPER;
+            maxAp = 112;
+            currAp = 112;
+            armor = 12;
+            hp = 125;
+            this->gun1 = gun1;
+            this->gun2 = gun2;
+            dir = S;
+            pos.x = 0;
+            pos.y = 0;
+        }
+        battle_robot(model rm, Weapon *gun1, Weapon *gun2){
+            destroyed = 0;
+            this->rm = rm;
+            this->gun1 = gun1;
+            this->gun2 = gun2;
+            switch(m){
+            case TANK: //slow but brutal, heavy fire support at any distance
+                maxAp = 44;
+                armor = 25;
+                hp = 150;
+            break;
+            case CHARGER: //fast but unused to long distances
+                maxAp = 60;
+                armor = 6;
+                hp = 140;
+            break;
+            case SEEKER: //performs best at long distances
+                maxAp = 52;
+                armor = 20;
+                hp = 100;
+            break;
+            case TROOPER: //useful in any case
+            default:
+                maxAp = 56;
+                armor = 12;
+                hp = 125;
+            break;
+            }
+            currAp = maxAp;
             dir = S;
             pos.x = 0;
             pos.y = 0;
