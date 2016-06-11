@@ -344,7 +344,7 @@ void bot_walk(battle_robot &bot, int count, direction *sequence){
 }
 
 
-void bot_turn(battle_robot &bot, int x, int y){
+int bot_turn(battle_robot &bot, int x, int y){
     direction dir = belongs_to_sector(bot, x, y);
     int diff = abs(dir - bot.dir);
     if(diff != 4)
@@ -352,7 +352,9 @@ void bot_turn(battle_robot &bot, int x, int y){
     if(dir != NODIR && diff <= bot.currAp){
         bot.dir = dir;
         bot.currAp -= diff;
-    }//!@todo message if insuff AP
+        return 1;
+    }
+    return 0;
 }
 
 direction belongs_to_sector(battle_robot &bot, int x, int y){

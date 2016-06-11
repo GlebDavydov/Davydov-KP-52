@@ -16,17 +16,19 @@ using namespace sf;
 //enum message_type{ALERT, WIN, LOOSE};
 
     Texture bfbg,
-    grass, stone,
+    grass, stone, ruin,
     allowed, restricted, pers, enemy, that,
     botblue, botred,
     mybot, icon[4]; //!0=seeker 1=trooper 2=charger 3=tank
     Texture gunicon[10];
     Texture punch, bang, flares, firing, badabum, spell;
+    Texture mapframe, maptmp;
 
 
     Sprite bfback;
     Sprite botsprite[TS];
     Sprite mystats, enemystats, myicon, enemyicon, mywp1, mywp2, hiswp1, hiswp2;
+    Sprite frame, tmp;
     Sprite selectedSprite;
     Sprite selectedGun;
     Sprite strike;
@@ -38,7 +40,7 @@ using namespace sf;
     Sprite shell;
     Sprite mouseCurrSprite;
     Sprite bfsprite[n][m];
-    Text nextturn; //!@todo button
+    Text nextturn;
     Text tdist;
     Text myhp, myap, hishp, hisap;
     Font font;
@@ -46,6 +48,7 @@ using namespace sf;
 void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int shifty);
 
 void draw_everything(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected, int shiftx, int shifty);
+
 
 //void draw_gui(RenderWindow &window);
 
@@ -55,7 +58,9 @@ void animation_explode(RenderWindow &window, int px, int py, land battlefield[n]
 void animation_destroyed(RenderWindow &window, int px, int py, land battlefield[n][m], battle_robot bot[TS], int selected);
 void animation_flames(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
 void animation_smallbangs(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
-//void message_show(RenderWindow &window, char* msg, int message_type);
+void message_show(RenderWindow &window, char* msg, int messageType);
+
+void draw_minimap(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
 
 void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
 Texture *gunicons, Sprite stats, Sprite boticon, Sprite wp1, Sprite wp2, Text hp, Text ap);
@@ -87,6 +92,12 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         if(i/n == 0 || i%m == 0)
             battlefield[i/n][i%m] = WALL;
      }
+     for(int i = 0; i < n; i++){
+        battlefield[i][m-1] = WALL;
+        battlefield[n-1][i] = WALL;
+     }
+     for(int i = 20; i < 25; i++)
+        battlefield[i][i] = WALL;
         /*{WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL},//1
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//2
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//3
@@ -175,7 +186,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                 moves = 0;
             if(seq[moves - 1] == NODIR)
                 moves = 0;
-            Sleep(100); //!temp plug until the animation is rdy
+            Sleep(100);
             draw_everything(window, battlefield, bot, selected, shiftx, shifty);
             draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
             window.draw(nextturn);
@@ -296,7 +307,13 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             if(walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq) <= bot[selected].currAp){
                                 bot[selected].currAp -= walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
                                 moves = 1;
-                            }//!@todo message if insuff AP
+                            }else{
+                                window.draw(nextturn);
+                                message_show(window, "INSUFFICIENT AP!", 0);
+                            }
+                        } else {
+                            window.draw(nextturn);
+                            message_show(window, "UNWALKABLE TERRAIN", 0);
                         }
                     }} else if(event.mouseButton.button == Mouse::Right){
                         xcoord = ((int)Mouse::getPosition(window).x - shiftx)/32;
@@ -304,7 +321,9 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                         if(xcoord < 0 || xcoord >= m || ycoord < 0 || ycoord >= n)
                             break;
                         //cell c;
-                        bot_turn(bot[selected], xcoord, ycoord);
+                        if(!bot_turn(bot[selected], xcoord, ycoord)){
+                            message_show(window, "INSUFFICIENT AP!", 0);
+                        }
                     }
                     break;
                 }
@@ -434,6 +453,12 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             break;
                         }
                         shoot(window, battlefield, bot, selected, xcoord, ycoord, theGun, aim_status);
+                        if(bot[selected].destroyed){
+                            for(int i = 0; i < TS; i++){
+                                if(bot[i].tm == curr_faction && !bot[i].destroyed)
+                                    selected = i;
+                            }
+                        }
                         int fc1 = 0;
                         int fc2 = 0;
                         for(int i = 0; i < TS; i++){
@@ -446,7 +471,13 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             }
                         }
                         if(!fc1 || !fc2){
-                            //!@todo message & record
+                            if(!fc1 && !fc2){
+                                message_show(window,"DRAW. IMPOSSIBLE!", 1);
+                            } else if(!fc2){
+                                message_show(window,"RED WINS! CONGRATS!", 1);
+                            }else{
+                                message_show(window,"BLUE WINS! CONGRATS!", 1);
+                            }
                             window.clear(Color::Black);
                             return 1;
                         }
@@ -569,13 +600,13 @@ void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
 void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int selected, int targx, int targy, Weapon *wp, int shotmode){
 
     if(eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, targx, targy) > wp->radius){
-        //!@todo message;
+        message_show(window, "NOT IN RANGE", 0);
         return;
     }
     position pos = *(new position());
     pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, targx, targy, bot);
     if((pos.x != targx || pos.y != targy) && wp->type != ART){
-        //!@todo message;
+        message_show(window, "TRAJECTORY BLOCKED", 0);
         return;
     }
     direction dir = belongs_to_sector(bot[selected], targx, targy);
@@ -589,8 +620,8 @@ void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int 
         ap = diff + (int)(wp->apPerBurst * (double)bot[selected].maxAp);
     }
     if(ap > bot[selected].currAp){
-        bot_turn(bot[selected], targx, targy);
-        //!@todo message;
+        if(bot_turn(bot[selected], targx, targy));
+        message_show(window, "INSUFFICIENT AP!", 0);
         return;
     } else {
         ap -= diff;
@@ -616,7 +647,8 @@ void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int 
             }
         }
         if(battlefield[targx][targy] == WALL){
-            battlefield[targx][targy] = GRSS;
+            battlefield[pos.x][pos.y] = RUIN;
+            bfsprite[pos.x][pos.y].setTexture(ruin);
         }
         return;
     }else{
@@ -724,15 +756,21 @@ void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int 
                     }
 
                     if(battlefield[pos.x][pos.y] == WALL){
-                        battlefield[pos.x][pos.y] = GRSS;
+                        battlefield[pos.x][pos.y] = RUIN;
+                        bfsprite[pos.x][pos.y].setTexture(ruin);
                     }
                 }
                 return;
             } else {
+                if(wp->type == ART){
+                    pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, targx, targy, bot);
+                    if(pos.x != targx || pos.y != targy)
+                        acc *= 0.75;
+                }
                 pos = chooseRandom(battlefield, targx, targy, acc);
-                if(wp->type != ART)
+                if(wp->type != ART){
                     pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y, bot);
-
+                }
                 animation_explode(window, pos.x, pos.y, battlefield, bot, selected);
 
                 for(int j = 0; j < TS; j++){
@@ -783,7 +821,8 @@ void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int 
                         }
                     }
                     if(battlefield[pos.x][pos.y] == WALL){
-                        battlefield[pos.x][pos.y] = GRSS;
+                        battlefield[pos.x][pos.y] = RUIN;
+                        bfsprite[pos.x][pos.y].setTexture(ruin);
                     }
                 }
             }
@@ -796,6 +835,7 @@ void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int s
     botred.loadFromFile("textures/botred.png");
     bfbg.loadFromFile("bfbg.jpg");
     grass.loadFromFile("textures/land_grass.png");
+    ruin.loadFromFile("textures/land_ruin.png");
     stone.loadFromFile("textures/wall_brick.png");
     allowed.loadFromFile("textures/allowed.png");
     restricted.loadFromFile("textures/restricted.png");
@@ -822,6 +862,8 @@ void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int s
     firing.loadFromFile("textures/firing.png");
     badabum.loadFromFile("textures/BombExploding.png");
     spell.loadFromFile("textures/shell.png");
+    mapframe.loadFromFile("textures/mapframe.png");
+    maptmp.loadFromFile("textures/maptext.png");
     bfback.setTexture(bfbg);
 
     bfback.setPosition(0,0);
@@ -852,12 +894,18 @@ void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int s
     nextturn.setString("END TURN");
     nextturn.setPosition(1136, 638);
 
+    frame.setTexture(mapframe);
+    frame.setPosition(0, 471);
+    tmp.setTexture(maptmp);
+
     for(int i = 0; i < n*m; i++){
         bfsprite[i/n][i%m].setPosition(shiftx+32*(i/n), shifty+32*(i%m));
         switch(battlefield[i/n][i%m]){
         case WALL:
             bfsprite[i/n][i%m].setTexture(stone);
             break;
+        case RUIN:
+            bfsprite[i/n][i%m].setTexture(ruin);
         case GRSS:
         default:
             bfsprite[i/n][i%m].setTexture(grass);
@@ -940,6 +988,7 @@ void draw_everything(RenderWindow &window, land battlefield[n][m], battle_robot 
     if(i == selected)
         selectedSprite.setPosition( 32*bot[i].pos.x + shiftx, 32 * bot[i].pos.y + shifty);
     }
+    draw_minimap(window, battlefield, bot, selected);
     window.draw(selectedSprite);
 }
 
@@ -1104,4 +1153,72 @@ void animation_smallbangs(RenderWindow &window, land battlefield[n][m], battle_r
             window.draw(smallbang[i]);
         window.display();
     }
+}
+
+void draw_minimap(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected){
+    window.draw(frame);
+    for(int i = 0; i < n*m; i++){
+        if(battlefield[i/n][i%m] < WALL){
+            tmp.setTextureRect(IntRect(32, 4, 4, 4));
+        }else{
+            tmp.setTextureRect(IntRect(36, 4, 4, 4));
+        }
+        tmp.setPosition(20 + (i/n)*4, 490+(i%m)*4);
+        window.draw(tmp);
+    }
+    for(int i = 0; i < TS; i++){
+        int dirmult;
+        switch(bot[i].dir){
+        case NE:
+            dirmult = 7;
+            break;
+        case N:
+            dirmult = 6;
+            break;
+        case NW:
+            dirmult = 5;
+            break;
+        case W:
+            dirmult = 4;
+            break;
+        case SW:
+            dirmult = 3;
+            break;
+        case S:
+            dirmult = 2;
+            break;
+        case SE:
+            dirmult = 1;
+            break;
+        case E:
+        default:
+            dirmult = 0;
+        break;
+        }
+        if(i == selected){
+            tmp.setTextureRect(IntRect(dirmult*4 + 32, 0, 4, 4));
+        }else if(bot[i].tm == RED){
+            tmp.setTextureRect(IntRect(dirmult*4, 0, 4, 4));
+        }else{
+            tmp.setTextureRect(IntRect(dirmult*4, 4, 4, 4));
+        }
+    tmp.setPosition(20 + bot[i].pos.x * 4, 490 + bot[i].pos.y *4);
+    window.draw(tmp);
+    }
+}
+
+void message_show(RenderWindow &window, char *message, int messageType){
+    Text txt;
+    txt.setCharacterSize(48);
+    txt.setFont(font);
+    if(messageType){
+        txt.setColor(Color::Green);
+    } else {
+        txt.setColor(Color::Red);
+    }
+    txt.setPosition(539, 360);
+    txt.setString(message);
+    window.draw(txt);
+    window.display();
+    Sleep(667);
 }
