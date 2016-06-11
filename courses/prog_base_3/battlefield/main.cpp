@@ -157,7 +157,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     nextturn.setPosition(1136, 638);
     int curr_faction = RED;
     for(int i = 0; i < TS; i++){
-        bot[i] = *(new battle_robot(CHARGER, flamer, minigun));
+        bot[i] = *(new battle_robot(SEEKER, flamer, cannon));
         bot[i].pos.x = i*2 + 1;
         bot[i].pos.y = i%2 + 1;
         bot[i].tm = curr_faction+i%2;
@@ -824,8 +824,8 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                             }
                         }
                     }
+                    flc++;
                 }
-                flc++;
             }
 
             {
@@ -857,6 +857,25 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                     pos = chooseRandom(battlefield, targx, targy, acc);
                     if(wp->type != ART)
                         pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y, bot);
+
+                    {
+                        window.display();
+                        window.clear(Color::Black);
+                        double cf;
+                        clock.restart();
+                        explosion.setPosition(32*pos.x, 32*pos.y);
+                        for(cf = 0; cf <= 5; ){
+                        float time = clock.getElapsedTime().asMicroseconds();
+                        clock.restart();
+                        time = time/800;
+                        cf += 0.005*time;
+                        explosion.setTextureRect(IntRect(32*((int)cf%5), 0, 32, 32));
+                        draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                        window.draw(explosion);
+                        window.display();
+                        }
+                    }
+
                     for(int j = 0; j < TS; j++){
                         if(bot[j].pos.x == pos.x && bot[j].pos.y == pos.y){
                             int dmg = damage_count(bot[j], wp, eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y));
@@ -869,14 +888,19 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                         }
                     }
                     if(wp->splash > 0){
+                        for(int i = 0; i < 9; i++){
+                            smallbang[i].setPosition(pos.x, pos.y);
+                        }
                         int cx;
                         int cy;
-                        for(int u = -1; u < 1; u++){
-                            for(int v = -1; v < 1; v++){
+                        int flc = 0;
+                        for(int u = -1; u <= 1; u++){
+                            for(int v = -1; v <= 1; v++){
                                 if(!u && !v)
                                     continue;
                                 cx = pos.x + v;
-                                cy = pos.y + v;
+                                cy = pos.y + u;
+                                smallbang[flc].setPosition(32*cx, 32*cy);
                                 for(int j = 0; j < TS && cx >= 0 && cx < n && cy >= 0 && cy < m; j++){
                                     if(bot[j].pos.x == cx && bot[j].pos.y == cy){
                                         bot[j].hp -= wp->splash*damage_count(bot[j], wp, 1);
@@ -887,9 +911,30 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                                         }
                                     }
                                 }
+                            flc++;
                             }
                         }
+
+                        {
+                        window.display();
+                        window.clear(Color::Black);
+                        double cf;
+                        clock.restart();
+                        for(cf = 2; cf >= 0; ){
+                        float time = clock.getElapsedTime().asMicroseconds();
+                        clock.restart();
+                        time = time/800;
+                        cf -= 0.005*time;
+                        for(int i = 0; i < 9; i++)
+                            smallbang[i].setTextureRect(IntRect(32*(5-(int)cf%2), 0, 32, 32));
+                        draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                        for(int i = 0; i < 9; i++)
+                            window.draw(smallbang[i]);
+                        window.display();
+                        }
                     }
+                    }
+
                     if(battlefield[pos.x][pos.y] == WALL){
                         battlefield[pos.x][pos.y] = GRSS;
                     }
@@ -899,6 +944,25 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                 pos = chooseRandom(battlefield, targx, targy, acc);
                 if(wp->type != ART)
                     pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y, bot);
+
+                    {
+                        window.display();
+                        window.clear(Color::Black);
+                        double cf;
+                        clock.restart();
+                        explosion.setPosition(32*pos.x, 32*pos.y);
+                        for(cf = 0; cf <= 5; ){
+                            float time = clock.getElapsedTime().asMicroseconds();
+                            clock.restart();
+                            time = time/800;
+                            cf += 0.005*time;
+                            explosion.setTextureRect(IntRect(32*((int)cf%5), 0, 32, 32));
+                            draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                            window.draw(explosion);
+                            window.display();
+                        }
+                    }
+
                 for(int j = 0; j < TS; j++){
                     if(bot[j].pos.x == pos.x && bot[j].pos.y == pos.y){
                         int dmg = damage_count(bot[j], wp, eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y));
@@ -911,14 +975,19 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                     }
                 }
                 if(wp->splash > 0){
+                    for(int i = 0; i < 9; i++){
+                        smallbang[i].setPosition(pos.x, pos.y);
+                    }
                     int cx;
                     int cy;
-                    for(int u = -1; u < 1; u++){
-                        for(int v = -1; v < 1; v++){
+                    int flc = 0;
+                    for(int u = -1; u <= 1; u++){
+                        for(int v = -1; v <= 1; v++){
                             if(!u && !v)
                                 continue;
                             cx = pos.x + v;
-                            cy = pos.y + v;
+                            cy = pos.y + u;
+                            smallbang[flc].setPosition(32*cx, 32*cy);
                             for(int j = 0; j < TS && cx >= 0 && cx < n && cy >= 0 && cy < m; j++){
                                 if(bot[j].pos.x == cx && bot[j].pos.y == cy){
                                     bot[j].hp -= wp->splash*damage_count(bot[j], wp, 1);
@@ -929,9 +998,29 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                                     }
                                 }
                             }
+                        flc++;
+                        }
+                    }
+                    {
+                        window.display();
+                        window.clear(Color::Black);
+                        double cf;
+                        clock.restart();
+                        for(cf = 2; cf >= 0; ){
+                        float time = clock.getElapsedTime().asMicroseconds();
+                        clock.restart();
+                        time = time/800;
+                        cf -= 0.005*time;
+                        for(int i = 0; i < 9; i++)
+                            smallbang[i].setTextureRect(IntRect(32*(5-(int)cf%2), 0, 32, 32));
+                        draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                        for(int i = 0; i < 9; i++)
+                            window.draw(smallbang[i]);
+                        window.display();
                         }
                     }
                 }
+
                 if(battlefield[pos.x][pos.y] == WALL){
                     battlefield[pos.x][pos.y] = GRSS;
                 }
