@@ -418,3 +418,14 @@
 	<math.h>
 	"shooting.h"
 
+1465637011 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\drawings.cpp
+	"drawings.h"
+
+1465636850 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\drawings.h
+	<windows.h>
+	<SFML/Graphics.hpp>
+	<stdio.h>
+	<iostream>
+	<string.h>
+	"bf.h"
+
