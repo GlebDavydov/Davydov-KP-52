@@ -29,7 +29,7 @@ Weapon *hammer = new Weapon(MELEE, 45.0, 1, 0, 1.0, 0.9, 0, 0.33, 0);
 Weapon *mortar = new Weapon(ART, 35.0, 16, 0, 0.94, 0.4, 0.33, 0.35, 0);
 Weapon *mlrs = new Weapon(ART, 40.0, 32, 3, 0.92, 0.4, 0.25, 0.25, 0.55);
 Weapon *missile = new Weapon(ART, 60.0, 28, 0, 0.99, 0.67, 0, 0.55, 0.0);
-Weapon *minigun = new Weapon(PROJ, 20.0, 20, 4, 0.9, 0.75, 0, 0.2, 0.45);
+Weapon *minigun = new Weapon(PROJ, 20.0, 20, 4, 0.9, 0.85, 0, 0.2, 0.45);
 Weapon *laser = new Weapon(PROJ, 25.0, 100, 0, 0.99, 0.95, 0, 0.35, 0);
 Weapon *plasma = new Weapon(PROJ, 35.0, 24, 2, 0.96, 0.67, 0, 0.35, 0.55);
 Weapon *cannon = new Weapon(PROJ, 45.0, 32, 0, 0.98, 0.85, 0.2, 0.4, 0);
@@ -720,14 +720,26 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                     bot[i].destroyed = 1;
                     bot[i].pos.x = -1;
                     bot[i].pos.y = -1;
+                    window.display();
+                    window.clear(Color::Black);
+                    double cf;
+                    destruction.setPosition(32*targx, 32*targy-32);
+                    for(cf = 7; cf <= 12; ){
+                    float time = clock.getElapsedTime().asMicroseconds();
+                    clock.restart();
+                    time = time/800;
+                    cf += 0.005*time;
+                    destruction.setTextureRect(IntRect(32*(int)cf, 0, 32, 64));
+                    draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                    window.draw(destruction);
+                    window.display();
+                    }
                 }
-                //!@todo animation;
                 return;
             }
         }
         if(battlefield[targx][targy] == WALL){
             battlefield[targx][targy] = GRSS;
-            //!@todo ruins&animation;
         }
         return;
     }else{
@@ -819,6 +831,20 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                                         bot[k].destroyed = 1;
                                         bot[k].pos.x = -1;
                                         bot[k].pos.y = -1;
+                                        window.display();
+                                        window.clear(Color::Black);
+                                        double cf;
+                                        destruction.setPosition(32*cx, 32*cy-32);
+                                        for(cf = 7; cf <= 12; ){
+                                        float time = clock.getElapsedTime().asMicroseconds();
+                                        clock.restart();
+                                        time = time/800;
+                                        cf += 0.005*time;
+                                        destruction.setTextureRect(IntRect(32*(int)cf, 0, 32, 64));
+                                        draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                                        window.draw(destruction);
+                                        window.display();
+                                        }
                                     }
                                 }
                             }
@@ -884,6 +910,20 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                                 bot[j].destroyed = 1;
                                 bot[j].pos.x = -1;
                                 bot[j].pos.y = -1;
+                                window.display();
+                                window.clear(Color::Black);
+                                double cf;
+                                destruction.setPosition(32*pos.x, 32*pos.y-32);
+                                for(cf = 7; cf <= 12; ){
+                                float time = clock.getElapsedTime().asMicroseconds();
+                                clock.restart();
+                                time = time/800;
+                                cf += 0.005*time;
+                                destruction.setTextureRect(IntRect(32*(int)cf, 0, 32, 64));
+                                draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                                window.draw(destruction);
+                                window.display();
+                                }
                             }
                         }
                     }
@@ -908,6 +948,20 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                                             bot[j].destroyed = 1;
                                             bot[j].pos.x = -1;
                                             bot[j].pos.y = -1;
+                                            window.display();
+                                            window.clear(Color::Black);
+                                            double cf;
+                                            destruction.setPosition(32*cx, 32+32*cy);
+                                            for(cf = 7; cf <= 12; ){
+                                            float time = clock.getElapsedTime().asMicroseconds();
+                                            clock.restart();
+                                            time = time/800;
+                                            cf += 0.005*time;
+                                            destruction.setTextureRect(IntRect(32*(int)cf, 0, 32, 64));
+                                            draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                                            window.draw(destruction);
+                                            window.display();
+                                            }
                                         }
                                     }
                                 }
@@ -971,6 +1025,20 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                             bot[j].destroyed = 1;
                             bot[j].pos.x = -1;
                             bot[j].pos.y = -1;
+                            window.display();
+                            window.clear(Color::Black);
+                            double cf;
+                            destruction.setPosition(32*pos.x, 32*pos.y-32);
+                            for(cf = 7; cf <= 12; ){
+                            float time = clock.getElapsedTime().asMicroseconds();
+                            clock.restart();
+                            time = time/800;
+                            cf += 0.005*time;
+                            destruction.setTextureRect(IntRect(32*(int)cf, 0, 32, 64));
+                            draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                            window.draw(destruction);
+                            window.display();
+                            }
                         }
                     }
                 }
@@ -995,6 +1063,20 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                                         bot[j].destroyed = 1;
                                         bot[j].pos.x = -1;
                                         bot[j].pos.y = -1;
+                                        window.display();
+                                        window.clear(Color::Black);
+                                        double cf;
+                                        destruction.setPosition(32*cx, 32*cy-32);
+                                        for(cf = 7; cf <= 12; ){
+                                        float time = clock.getElapsedTime().asMicroseconds();
+                                        clock.restart();
+                                        time = time/800;
+                                        cf += 0.005*time;
+                                        destruction.setTextureRect(IntRect(32*(int)cf, 0, 32, 64));
+                                        draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                                        window.draw(destruction);
+                                        window.display();
+                                        }
                                     }
                                 }
                             }
