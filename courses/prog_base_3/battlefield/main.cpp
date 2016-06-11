@@ -78,8 +78,8 @@ static int shiftx;
 static int shifty;
 
 int DLL_EXPORT battlefield(RenderWindow& window){
-    shiftx = 16;
-    shifty = 16;
+    shiftx = 48;
+    shifty = 48;
     Clock clock;
     srand(time(NULL));
      land battlefield[n][m] = {GRSS};
@@ -131,18 +131,42 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         }
     }
 
-    //view.reset(FloatRect(0, 0, screen_width, screen_height));
-    //view.setCenter(screen_width/2, screen_height/2);
-
     //Main loop
     while(window.isOpen()){
-        //float time = clock.getElapsedTime().asMicroseconds();
-        //clock.restart();
-        //time = time/800;
         int xcoord;
         int ycoord;
         Event event;
-        nextturn.setColor(Color::Red);
+        nextturn.setColor(Color::White);
+        float time = clock.getElapsedTime().asMicroseconds();
+            clock.restart();
+            time = time/200;
+
+        //map shift
+        if(Mouse::getPosition(window).x < 16 || Mouse::getPosition(window).y < 16 || Mouse::getPosition(window).x > 1366 - 16 || Mouse::getPosition(window).y > 768 - 16){
+                window.clear(Color::Black);
+                window.draw(bfback);
+                if(Mouse::getPosition(window).x > 1366 - 16){
+                    if(shiftx > -(64 + 32*n - 1366))
+                        shiftx -= 0.025 * time;
+                }
+                if(Mouse::getPosition(window).x < 16){
+                    if(shiftx < 48)
+                        shiftx += 0.025 * time;
+                }
+                if(Mouse::getPosition(window).y > 768 - 16){
+                    if(shifty > -(64 + 32*m - 768))
+                        shifty -= 0.025 * time;
+                }
+                if(Mouse::getPosition(window).y < 16){
+                    if(shifty < 48)
+                        shifty += 0.025 * time;
+                }
+                draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+                draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
+                window.draw(nextturn);
+                window.display();
+            }
+
 
         while(moves){
             bot_walk(bot[selected], moves - 1, seq);
@@ -157,21 +181,16 @@ int DLL_EXPORT battlefield(RenderWindow& window){
             window.draw(nextturn);
             window.display();
         }
-        /*localPosition = Mouse::getPosition(window);
-        xcoord = ((int)Mouse::getPosition(window).x)/32;
-        ycoord = ((int)Mouse::getPosition(window).y)/32;
-        if (localPosition.x < 32) { view.move(-0.2*time, 0); }
-		if (localPosition.x > window.getSize().x-32) { view.move(0.2*time, 0); }
-		if (localPosition.y > window.getSize().y-32) { view.move(0, 0.2*time); }
-		if (localPosition.y < 32) {  view.move(0, -0.2*time); }*/
+
         while(window.pollEvent(event)){
             //initial drawing
+
             window.clear(Color::Black);
             window.draw(bfback);
-
             nextturn.setColor(Color::White);
             draw_everything(window, battlefield, bot, selected, shiftx, shifty);
             draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
+
 
                 //polling events
             if(!aim_status){

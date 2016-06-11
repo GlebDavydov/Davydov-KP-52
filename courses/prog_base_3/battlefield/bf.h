@@ -7,8 +7,8 @@
 
 #define TS 6 //"T"eam "S"ize
 
-#define n 25
-#define m 25
+#define n 64
+#define m 64
 
 enum faction{RED, BLUE};
 
