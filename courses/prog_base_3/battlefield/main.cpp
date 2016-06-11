@@ -21,7 +21,8 @@ void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
 Texture *gunicons, Sprite stats, Sprite icon, Sprite wp1, Sprite wp2, Text hp, Text ap);
 
 void shoot(RenderWindow &window, land battlefield[n][m], Sprite bfsprite[n][m], battle_robot *bot, Sprite *botsprite,
-int selected, int targx, int targy, Weapon *wp, int shotmode);
+int selected, int targx, int targy, Weapon *wp, int shotmode,
+Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite flames[36], Sprite smallbang[9], Sprite shell, Sprite selectedSprite);
 
 Weapon *claw = new Weapon(MELEE, 30.0, 1, 0, 1.0, 0.67, 0, 0.25, 0);
 Weapon *hammer = new Weapon(MELEE, 45.0, 1, 0, 1.0, 0.9, 0, 0.33, 0);
@@ -33,6 +34,8 @@ Weapon *laser = new Weapon(PROJ, 25.0, 100, 0, 0.99, 0.95, 0, 0.35, 0);
 Weapon *plasma = new Weapon(PROJ, 35.0, 24, 2, 0.96, 0.67, 0, 0.35, 0.55);
 Weapon *cannon = new Weapon(PROJ, 45.0, 32, 0, 0.98, 0.85, 0.2, 0.4, 0);
 Weapon *flamer = new Weapon(FLAMER, 30.0, 8, 0, 0, 1, 0, 0.25, 0);
+
+Sprite bfback;
 
 enum guns{CLAW = 0, HAMMER, MORTAR, MLRS, MISSILE, MINIGUN, LASER, PLASMA, CANNON, FLAMETHROWER};
 
@@ -67,6 +70,8 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     botblue, botred,
     mybot, icon[4]; //!0=seeker 1=trooper 2=charger 3=tank
     Texture gunicon[10];
+    Texture punch, bang, flares, firing, badabum, spell;
+
 
     //Initial sprites&textures&etc load
     botblue.loadFromFile("textures/botblue.png");
@@ -93,7 +98,13 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     gunicon[PLASMA].loadFromFile("textures/guns/plasmagun.png");
     gunicon[CANNON].loadFromFile("textures/guns/cannon.png");
     gunicon[FLAMETHROWER].loadFromFile("textures/guns/flamethrower.png");
-    Sprite bfback(bfbg);
+    punch.loadFromFile("textures/strike.png");
+    bang.loadFromFile("textures/bang1.png");
+    flares.loadFromFile("textures/flames.png");
+    firing.loadFromFile("textures/firing.png");
+    badabum.loadFromFile("textures/BombExploding.png");
+    spell.loadFromFile("textures/shell");
+    bfback.setTexture(bfbg);
     Sprite mouseCurrSprite;
     bfback.setPosition(0,0);
     Sprite bfsprite[n][m];
@@ -106,6 +117,13 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     Sprite mystats, enemystats, myicon, enemyicon, mywp1, mywp2, hiswp1, hiswp2;
     Sprite selectedSprite;
     Sprite selectedGun;
+    Sprite strike;
+    Sprite shooting;
+    Sprite explosion;
+    Sprite destruction;
+    Sprite flames[36];
+    Sprite smallbang[9];
+    Sprite shell;
     selectedSprite.setTexture(that);
     Vector2i localPosition;
 
@@ -139,7 +157,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     nextturn.setPosition(1136, 638);
     int curr_faction = RED;
     for(int i = 0; i < TS; i++){
-        bot[i] = *(new battle_robot(TANK, minigun, flamer));
+        bot[i] = *(new battle_robot(TANK, hammer, flamer));
         bot[i].pos.x = i*2 + 1;
         bot[i].pos.y = i%2 + 1;
         bot[i].tm = curr_faction+i%2;
@@ -161,6 +179,17 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         }
     }
 
+    strike.setTexture(punch);
+    shooting.setTexture(firing);
+    explosion.setTexture(bang);
+    destruction.setTexture(badabum);
+    for(int i = 0; i < 36; i++){
+        flames[i].setTexture(flares);
+    }
+    for(int i = 0; i < 9; i++){
+        smallbang[i].setTexture(bang);
+    }
+    shell.setTexture(spell);
     //view.reset(FloatRect(0, 0, screen_width, screen_height));
     //view.setCenter(screen_width/2, screen_height/2);
 
@@ -175,8 +204,6 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         nextturn.setColor(Color::Red);
 
         while(moves){
-            window.clear(Color::Black);
-            window.draw(bfback);
             bot_walk(bot[selected], moves - 1, seq);
             moves++;
             if(moves > 255)
@@ -425,7 +452,8 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                         if(c == BOT_ALLY){
                             break;
                         }
-                        shoot(window, battlefield, bfsprite, bot, botsprite, selected, xcoord, ycoord, theGun, aim_status);
+                        shoot(window, battlefield, bfsprite, bot, botsprite, selected, xcoord, ycoord, theGun, aim_status,
+                              strike, shooting, explosion, destruction, flames, smallbang, shell, selectedSprite);
                         int fc1 = 0;
                         int fc2 = 0;
                         for(int i = 0; i < TS; i++){
@@ -487,6 +515,8 @@ extern "C" DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 
 void draw_everything(RenderWindow &window, land battlefield[n][m], Sprite bfsprite[n][m],
 Sprite selectedSprite, Sprite botsprite[TS], battle_robot bot[TS], int selected){
+    window.clear(Color::Black);
+    window.draw(bfback);
     for(int i = 0; i < n*m; i++){
         window.draw(bfsprite[i/n][i%m]);
     }
@@ -621,7 +651,10 @@ void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
 }
 
 void shoot(RenderWindow &window, land battlefield[n][m], Sprite bfsprite[n][m], battle_robot *bot, Sprite *botsprite,
-int selected, int targx, int targy, Weapon *wp, int shotmode){
+int selected, int targx, int targy, Weapon *wp, int shotmode,
+Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite flames[36], Sprite smallbang[9], Sprite shell, Sprite selectedSprite){
+    Clock clock;
+
     if(eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, targx, targy) > wp->radius){
         //!@todo message;
         return;
@@ -652,11 +685,29 @@ int selected, int targx, int targy, Weapon *wp, int shotmode){
         bot[selected].currAp -= ap;
     }
     if(wp->type == MELEE){
+
+        {
+            window.display();
+            window.clear(Color::Black);
+            strike.setPosition(32 * targx, 32 * targy);
+            double cf;
+            clock.restart();
+            for(cf = 2; cf >= 0; cf--){
+                float time = clock.getElapsedTime().asMicroseconds();
+                clock.restart();
+                time = time/800;
+                cf += 0.0005*time;
+                strike.setTextureRect(IntRect(32*(int)cf, 0, 32, 32));
+                draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                window.draw(strike);
+                window.display();
+            }
+        }
+
         battle_robot curr;
         for(int i = 0; i < TS; i++){
             if(bot[i].pos.x == targx && bot[i].pos.y == targy){
                 int dmg = damage_count(curr, wp, 1);
-                printf("\ndamage %d", dmg);
                 bot[i].hp -= dmg;
                 if(bot[i].hp <= 0){
                     bot[i].destroyed = 1;
@@ -672,49 +723,87 @@ int selected, int targx, int targy, Weapon *wp, int shotmode){
             //!@todo ruins&animation;
         }
         return;
-    }else if(wp->type == FLAMER){
-        int cx;
-        int cy;
-        for(int i = -2; i <= 2; i++){
-            for(int j = -2; j <= 2; j++){
-                cx = targx + j;
-                cy = targy + i;
-                if(cx >= 0 && cx < n && cy >= 0 && cy < m){
-                    if((rand()%10) - 4 >= 0){
-                        printf("\nx %d, y %d", cx, cy);
-                        //!@todo animation;
-                        for(int k = 0; k < TS; k++){
-                            if(bot[k].pos.x == cx && bot[k].pos.y == cy){
-                                printf("\nx %d, y %d", pos.x, pos.y);
-                                int dmg = damage_count(bot[k], wp, 1);
-                                printf("\ndamage %d", dmg);
-                                bot[k].hp -= dmg;
-                                if(bot[k].hp <= 0){
-                                    bot[k].destroyed = 1;
-                                    bot[k].pos.x = -1;
-                                    bot[k].pos.y = -1;
+    }else{
+        if(wp->type == FLAMER){
+            int cx;
+            int cy;
+            for(int i = -2; i <= 2; i++){
+                for(int j = -2; j <= 2; j++){
+                    cx = targx + j;
+                    cy = targy + i;
+                    if(cx >= 0 && cx < n && cy >= 0 && cy < m){
+                        if((rand()%10) - 4 >= 0){
+                            //!@todo animation;
+                            for(int k = 0; k < TS; k++){
+                                if(bot[k].pos.x == cx && bot[k].pos.y == cy){
+                                    int dmg = damage_count(bot[k], wp, 1);
+                                    bot[k].hp -= dmg;
+                                    if(bot[k].hp <= 0){
+                                        bot[k].destroyed = 1;
+                                        bot[k].pos.x = -1;
+                                        bot[k].pos.y = -1;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        return;
-    } else {
-        double acc;
-        acc = accuracy_count(eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, targx, targy), wp);
-        if(shotmode == 2 && wp->burst != 0){
+            return;
+        } else {
+            double acc;
+            acc = accuracy_count(eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, targx, targy), wp);
+            if(shotmode == 2 && wp->burst != 0){
             acc *= 0.75;
-            for(int i = 0; i < wp->burst; i++){
-                //pos = chooseRandom(battlefield, targx, targy, acc);
+                for(int i = 0; i < wp->burst; i++){
+                    pos = chooseRandom(battlefield, targx, targy, acc);
+                    if(wp->type != ART)
+                        pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y, bot);
+                    for(int j = 0; j < TS; j++){
+                        if(bot[j].pos.x == pos.x && bot[j].pos.y == pos.y){
+                            int dmg = damage_count(bot[j], wp, eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y));
+                            bot[j].hp -= dmg;
+                            if(bot[j].hp <= 0){
+                                bot[j].destroyed = 1;
+                                bot[j].pos.x = -1;
+                                bot[j].pos.y = -1;
+                            }
+                        }
+                    }
+                    if(wp->splash > 0){
+                        int cx;
+                        int cy;
+                        for(int u = -1; u < 1; u++){
+                            for(int v = -1; v < 1; v++){
+                                if(!u && !v)
+                                    continue;
+                                cx = pos.x + v;
+                                cy = pos.y + v;
+                                for(int j = 0; j < TS && cx >= 0 && cx < n && cy >= 0 && cy < m; j++){
+                                    if(bot[j].pos.x == cx && bot[j].pos.y == cy){
+                                        bot[j].hp -= wp->splash*damage_count(bot[j], wp, 1);
+                                        if(bot[j].hp <= 0){
+                                            bot[j].destroyed = 1;
+                                            bot[j].pos.x = -1;
+                                            bot[j].pos.y = -1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(battlefield[pos.x][pos.y] == WALL){
+                        battlefield[pos.x][pos.y] = GRSS;
+                    }
+                }
+                return;
+            } else {
+                pos = chooseRandom(battlefield, targx, targy, acc);
                 if(wp->type != ART)
                     pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y, bot);
-                printf("\nx %d, y %d", pos.x, pos.y);
                 for(int j = 0; j < TS; j++){
                     if(bot[j].pos.x == pos.x && bot[j].pos.y == pos.y){
                         int dmg = damage_count(bot[j], wp, eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y));
-                        printf("\ndamage %d", dmg);
                         bot[j].hp -= dmg;
                         if(bot[j].hp <= 0){
                             bot[j].destroyed = 1;
@@ -724,7 +813,6 @@ int selected, int targx, int targy, Weapon *wp, int shotmode){
                     }
                 }
                 if(wp->splash > 0){
-                    printf("\nsplash is possible!");
                     int cx;
                     int cy;
                     for(int u = -1; u < 1; u++){
@@ -733,9 +821,8 @@ int selected, int targx, int targy, Weapon *wp, int shotmode){
                                 continue;
                             cx = pos.x + v;
                             cy = pos.y + v;
-                            for(int j = 0; j < TS; j++){
+                            for(int j = 0; j < TS && cx >= 0 && cx < n && cy >= 0 && cy < m; j++){
                                 if(bot[j].pos.x == cx && bot[j].pos.y == cy){
-                                    printf("\nsplash!");
                                     bot[j].hp -= wp->splash*damage_count(bot[j], wp, 1);
                                     if(bot[j].hp <= 0){
                                         bot[j].destroyed = 1;
@@ -750,53 +837,8 @@ int selected, int targx, int targy, Weapon *wp, int shotmode){
                 if(battlefield[pos.x][pos.y] == WALL){
                     battlefield[pos.x][pos.y] = GRSS;
                 }
+                return;
             }
-            return;
-        } else {
-            pos = chooseRandom(battlefield, targx, targy, acc);
-            if(wp->type != ART)
-                pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y, bot);
-            printf("\nx %d, y %d", pos.x, pos.y);
-            for(int j = 0; j < TS; j++){
-                if(bot[j].pos.x == pos.x && bot[j].pos.y == pos.y){
-                    int dmg = damage_count(bot[j], wp, eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y));
-                    printf("\ndamage %d", dmg);
-                    bot[j].hp -= dmg;
-                    if(bot[j].hp <= 0){
-                        bot[j].destroyed = 1;
-                        bot[j].pos.x = -1;
-                        bot[j].pos.y = -1;
-                    }
-                }
-            }
-            if(wp->splash > 0){
-                printf("\nsplash is possible!");
-                int cx;
-                int cy;
-                for(int u = -1; u < 1; u++){
-                    for(int v = -1; v < 1; v++){
-                        if(!u && !v)
-                            continue;
-                        cx = pos.x + v;
-                        cy = pos.y + v;
-                        for(int j = 0; j < TS; j++){
-                            if(bot[j].pos.x == cx && bot[j].pos.y == cy){
-                                printf("\nsplash!");
-                                bot[j].hp -= wp->splash*damage_count(bot[j], wp, 1);
-                                if(bot[j].hp <= 0){
-                                    bot[j].destroyed = 1;
-                                    bot[j].pos.x = -1;
-                                    bot[j].pos.y = -1;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if(battlefield[pos.x][pos.y] == WALL){
-                    battlefield[pos.x][pos.y] = GRSS;
-            }
-            return;
         }
     }
 }

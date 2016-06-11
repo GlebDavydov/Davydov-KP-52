@@ -43,7 +43,6 @@ position track(land bf[n][m], int xs, int ys, int xd, int yd, battle_robot bot[T
 }
 
 position chooseRandom(land bf[n][m], int x, int y, double acc){
-    printf("\naccuracy: %.2f", acc);
     int d = floor(1/acc);
     position pos = *(new position());
     pos.x = x;
