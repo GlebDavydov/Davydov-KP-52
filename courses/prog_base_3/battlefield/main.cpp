@@ -157,7 +157,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     nextturn.setPosition(1136, 638);
     int curr_faction = RED;
     for(int i = 0; i < TS; i++){
-        bot[i] = *(new battle_robot(TANK, hammer, flamer));
+        bot[i] = *(new battle_robot(CHARGER, hammer, minigun));
         bot[i].pos.x = i*2 + 1;
         bot[i].pos.y = i%2 + 1;
         bot[i].tm = curr_faction+i%2;
@@ -450,6 +450,13 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                         cell c;
                         c = check_walkable(battlefield, xcoord, ycoord, bot, TS, curr_faction);
                         if(c == BOT_ALLY){
+                            aim_status = 0;
+                            for(int i = 0; i < TS; i++){
+                                if(bot[i].pos.x == xcoord && bot[i].pos.y == ycoord){
+                                    selected = i;
+                                    break;
+                                }
+                            }
                             break;
                         }
                         shoot(window, battlefield, bfsprite, bot, botsprite, selected, xcoord, ycoord, theGun, aim_status,
@@ -692,11 +699,11 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
             strike.setPosition(32 * targx, 32 * targy);
             double cf;
             clock.restart();
-            for(cf = 2; cf >= 0; cf--){
+            for(cf = 2; cf >= 0; ){
                 float time = clock.getElapsedTime().asMicroseconds();
                 clock.restart();
                 time = time/800;
-                cf += 0.0005*time;
+                cf -= 0.005*time;
                 strike.setTextureRect(IntRect(32*(int)cf, 0, 32, 32));
                 draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
                 window.draw(strike);
@@ -724,6 +731,72 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
         }
         return;
     }else{
+
+        {
+            double curr;
+            int vs;
+            int hs;
+            switch(bot[selected].dir){
+            case N:
+                curr = 270.0;
+                vs = 0;
+                hs = 0;
+            break;
+            case NE:
+                curr = 315.0;
+                vs = -16;
+                hs = 32;
+            break;
+            case E:
+                curr = 0.0;
+                vs = 0;
+                hs = 32;
+                break;
+            case SE:
+                curr = 45.0;
+                vs = 32;
+                hs = 48;
+                break;
+            case SW:
+                curr = 135.0;
+                vs = 48;
+                hs = 0;
+                break;
+            case W:
+                curr = 180.0;
+                hs = 0;
+                vs = 32;
+                break;
+            case NW:
+                curr = 225.0;
+                vs = 0;
+                hs = -16;
+            break;
+            case S:
+            default:
+                curr = 90.0;
+                vs = 32;
+                hs = 32;
+                break;
+            }
+            shooting.setRotation(curr);
+            shooting.setPosition(32*bot[selected].pos.x + hs,32 * bot[selected].pos.y + vs);
+            window.display();
+            window.clear(Color::Black);
+            double cf;
+            clock.restart();
+            for(cf = 5; cf >= 0; ){
+                float time = clock.getElapsedTime().asMicroseconds();
+                clock.restart();
+                time = time/800;
+                cf -= 0.005*time;
+                shooting.setTextureRect(IntRect(32*((int)cf%2), 0, 32, 32));
+                draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                window.draw(shooting);
+                window.display();
+            }
+        }
+
         if(wp->type == FLAMER){
             int cx;
             int cy;
