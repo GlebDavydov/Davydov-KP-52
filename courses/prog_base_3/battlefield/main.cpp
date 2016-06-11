@@ -103,7 +103,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     flares.loadFromFile("textures/flames.png");
     firing.loadFromFile("textures/firing.png");
     badabum.loadFromFile("textures/BombExploding.png");
-    spell.loadFromFile("textures/shell");
+    spell.loadFromFile("textures/shell.png");
     bfback.setTexture(bfbg);
     Sprite mouseCurrSprite;
     bfback.setPosition(0,0);
@@ -121,7 +121,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     Sprite shooting;
     Sprite explosion;
     Sprite destruction;
-    Sprite flames[36];
+    Sprite flames[25];
     Sprite smallbang[9];
     Sprite shell;
     selectedSprite.setTexture(that);
@@ -157,7 +157,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     nextturn.setPosition(1136, 638);
     int curr_faction = RED;
     for(int i = 0; i < TS; i++){
-        bot[i] = *(new battle_robot(CHARGER, hammer, minigun));
+        bot[i] = *(new battle_robot(CHARGER, flamer, minigun));
         bot[i].pos.x = i*2 + 1;
         bot[i].pos.y = i%2 + 1;
         bot[i].tm = curr_faction+i%2;
@@ -183,7 +183,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     shooting.setTexture(firing);
     explosion.setTexture(bang);
     destruction.setTexture(badabum);
-    for(int i = 0; i < 36; i++){
+    for(int i = 0; i < 25; i++){
         flames[i].setTexture(flares);
     }
     for(int i = 0; i < 9; i++){
@@ -800,13 +800,17 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
         if(wp->type == FLAMER){
             int cx;
             int cy;
+            for(int i = 0; i < 25; i++){
+                flames[i].setPosition(targx * 32, targy * 32);
+            }
+            int flc = 0;
             for(int i = -2; i <= 2; i++){
                 for(int j = -2; j <= 2; j++){
                     cx = targx + j;
                     cy = targy + i;
                     if(cx >= 0 && cx < n && cy >= 0 && cy < m){
                         if((rand()%10) - 4 >= 0){
-                            //!@todo animation;
+                            flames[flc].setPosition(32*cx, 32*cy);
                             for(int k = 0; k < TS; k++){
                                 if(bot[k].pos.x == cx && bot[k].pos.y == cy){
                                     int dmg = damage_count(bot[k], wp, 1);
@@ -821,7 +825,28 @@ Sprite strike, Sprite shooting, Sprite explosion, Sprite destruction, Sprite fla
                         }
                     }
                 }
+                flc++;
             }
+
+            {
+                window.display();
+                window.clear(Color::Black);
+                double cf;
+                clock.restart();
+                for(cf = 25; cf >= 0; ){
+                float time = clock.getElapsedTime().asMicroseconds();
+                    clock.restart();
+                    time = time/800;
+                    cf -= 0.005*time;
+                    for(int i = 0; i < 25; i++)
+                        flames[i].setTextureRect(IntRect(32*((int)cf%5), 0, 32, 32));
+                    draw_everything(window, battlefield, bfsprite, selectedSprite, botsprite, bot, selected);
+                    for(int i = 0; i < 25; i++)
+                        window.draw(flames[i]);
+                    window.display();
+                }
+            }
+
             return;
         } else {
             double acc;
