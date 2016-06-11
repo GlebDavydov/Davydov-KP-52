@@ -63,6 +63,8 @@ void message_show(RenderWindow &window, char* msg, int messageType);
 
 void draw_minimap(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
 
+void camera_center(int px, int py);
+
 void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
 Texture *gunicons, Sprite stats, Sprite boticon, Sprite wp1, Sprite wp2, Text hp, Text ap);
 
@@ -184,7 +186,6 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                 }
                 draw_everything(window, battlefield, bot, selected, shiftx, shifty);
                 draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
-                window.draw(nextturn);
                 window.display();
             }
 
@@ -222,6 +223,9 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     }
                     break;
                 case Event::MouseMoved:{
+                    if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window))) ||  IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window))|| IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
+                        break;
+                    }
                     if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
                         nextturn.setColor(Color::Red);
                     }else {
@@ -273,7 +277,11 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                 }
                 case Event::MouseButtonPressed:{
                     if(event.mouseButton.button == Mouse::Left){
-                        if(IntRect(1093+95, 191+53, 32, 32).contains(Mouse::getPosition(window))){
+                        if(IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window))){
+                            camera_center(bot[selected].pos.x, bot[selected].pos.y);
+                        }else if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window)))){
+                            camera_center((Mouse::getPosition(window).x - 20)/4, (Mouse::getPosition(window).y - 490)/4);
+                        }else if(IntRect(1093+95, 191+53, 32, 32).contains(Mouse::getPosition(window))){
                             aim_status = 1;
                             theGun = bot[selected].gun1;
                             selectedGun.setPosition(1093+95, 191+53);
@@ -352,6 +360,9 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     }
                     break;
                 case Event::MouseMoved:
+                    if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window))) || IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window))|| IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
+                        break;
+                    }
                     if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
                         nextturn.setColor(Color::Red);
                     }else {
@@ -405,7 +416,11 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     break;
                     case Event::MouseButtonPressed:{
                     if(event.mouseButton.button == Mouse::Left){
-                        if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
+                        if(IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window))){
+                            camera_center(bot[selected].pos.x, bot[selected].pos.y);
+                        }else if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window)))){
+                            camera_center((Mouse::getPosition(window).x - 20)/4, (Mouse::getPosition(window).y - 490)/4);
+                        }else if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
                             aim_status = 0;
                             for(int i = 0; i < TS; i++){
                                 bot[i].currAp = bot[i].maxAp;
@@ -999,6 +1014,7 @@ void draw_everything(RenderWindow &window, land battlefield[n][m], battle_robot 
         selectedSprite.setPosition( 32*bot[i].pos.x + shiftx, 32 * bot[i].pos.y + shifty);
     }
     draw_minimap(window, battlefield, bot, selected);
+    window.draw(nextturn);
     window.draw(selectedSprite);
 }
 
@@ -1229,6 +1245,16 @@ void message_show(RenderWindow &window, char *message, int messageType){
     txt.setPosition(539, 360);
     txt.setString(message);
     window.draw(txt);
+    window.draw(nextturn);
     window.display();
-    Sleep(667);
+    Sleep(1500);
+}
+
+void camera_center(int px, int py){
+    shiftx = 48 - 32*px;
+    if(shiftx < -(64 + 32*n - 1366))
+        shiftx = -(63+32*n-1366);
+    shifty = 48 - 32*py;
+    if(shifty < -(64 + 32*n - 768))
+        shifty = -(63+32*n-768);
 }

@@ -411,7 +411,7 @@
 1465590165 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\shooting.h
 	"bf.h"
 
-1465606391 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\shooting.cpp
+1465667944 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\shooting.cpp
 	<windows.h>
 	<stdio.h>
 	<SFML/Graphics.hpp>
