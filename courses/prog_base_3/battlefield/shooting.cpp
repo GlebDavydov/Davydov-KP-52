@@ -43,10 +43,14 @@ position track(land bf[n][m], int xs, int ys, int xd, int yd, battle_robot bot[T
 }
 
 position chooseRandom(land bf[n][m], int x, int y, double acc){
-    int d = floor(1/acc);
     position pos = *(new position());
     pos.x = x;
     pos.y = y;
+    int chance = (1+my_round(1/acc));
+    if(!(rand() % chance)){
+        return pos;
+    }
+    int d = floor(1/acc);
     do{pos.x += rand() % (2*d+1) - d;}while(pos.x < 0 || pos.x > n);
     do{pos.y += rand() % (2*d+1) - d;}while(pos.y < 0 || pos.y > m);
     return pos;

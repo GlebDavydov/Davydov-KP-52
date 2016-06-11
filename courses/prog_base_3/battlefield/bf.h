@@ -80,7 +80,7 @@ class battle_robot{
             switch(rm){
             case TANK: //slow but brutal, heavy fire support at any distance
                 maxAp = 88;
-                armor = 25;
+                armor = 20;
                 maxhp = 150;
             break;
             case CHARGER: //fast but unused to long distances
@@ -90,7 +90,7 @@ class battle_robot{
             break;
             case SEEKER: //performs best at long distances
                 maxAp = 104;
-                armor = 20;
+                armor = 16;
                 maxhp = 100;
             break;
             case TROOPER: //useful in any case

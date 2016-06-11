@@ -69,14 +69,14 @@ Texture *gunicons, Sprite stats, Sprite boticon, Sprite wp1, Sprite wp2, Text hp
 void shoot(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS],
 int selected, int targx, int targy, Weapon *wp, int shotmode);
 
-Weapon *claw = new Weapon(MELEE, 30.0, 1, 0, 1.0, 0.67, 0, 0.25, 0);
+Weapon *claw = new Weapon(MELEE, 30.0, 1, 0, 1.0, 0.75, 0, 0.25, 0);
 Weapon *hammer = new Weapon(MELEE, 45.0, 1, 0, 1.0, 0.9, 0, 0.33, 0);
-Weapon *mortar = new Weapon(ART, 35.0, 16, 0, 0.94, 0.4, 0.33, 0.35, 0);
-Weapon *mlrs = new Weapon(ART, 40.0, 32, 3, 0.92, 0.4, 0.25, 0.25, 0.55);
-Weapon *missile = new Weapon(ART, 60.0, 28, 0, 0.99, 0.67, 0, 0.55, 0.0);
+Weapon *mortar = new Weapon(ART, 35.0, 16, 0, 0.94, 0.67, 0.33, 0.35, 0);
+Weapon *mlrs = new Weapon(ART, 40.0, 32, 3, 0.92, 0.67, 0.25, 0.25, 0.55);
+Weapon *missile = new Weapon(ART, 60.0, 28, 0, 0.99, 0.75, 0, 0.55, 0.0);
 Weapon *minigun = new Weapon(PROJ, 20.0, 20, 4, 0.9, 0.85, 0, 0.2, 0.45);
 Weapon *laser = new Weapon(PROJ, 25.0, 100, 0, 0.99, 0.95, 0, 0.35, 0);
-Weapon *plasma = new Weapon(PROJ, 35.0, 24, 2, 0.96, 0.67, 0, 0.35, 0.55);
+Weapon *plasma = new Weapon(PROJ, 35.0, 24, 2, 0.96, 0.75, 0, 0.35, 0.55);
 Weapon *cannon = new Weapon(PROJ, 45.0, 32, 0, 0.98, 0.85, 0.2, 0.33, 0);
 Weapon *flamer = new Weapon(FLAMER, 30.0, 8, 0, 0, 1, 0, 0.45, 0);
 
@@ -96,22 +96,6 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         } else
             battlefield[i/n][i%m] = WALL;
     }
-        /*{WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL},//1
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//2
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//3
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//4
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//5
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//6
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//7
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//8
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL,WALL,WALL,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//9
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//10
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//11
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//12
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//13
-        {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//14
-        {WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL}//15
-    };*/
     window.clear(Color::Black);
 
     //objects preparing
@@ -128,10 +112,38 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     //all graphics stuff preparing
     initSprites(battlefield, bot, shiftx, shifty);
 
+    bot[0] = *(new battle_robot(TROOPER, flamer, plasma));
+    bot[0].pos.x = 1;
+    bot[0].pos.y = 1;
+    bot[1] = *(new battle_robot(TROOPER, flamer, plasma));
+    bot[1].pos.x = n-2;
+    bot[1].pos.y = m-2;
+    bot[2] = *(new battle_robot(TROOPER, flamer, plasma));
+    bot[2].pos.x = 3;
+    bot[2].pos.y = 1;
+    bot[3] = *(new battle_robot(TROOPER, flamer, plasma));
+    bot[3].pos.x = n-4;
+    bot[3].pos.y = m-2;
+    bot[4] = *(new battle_robot(CHARGER, minigun, claw));
+    bot[4].pos.x = 5;
+    bot[4].pos.y = 1;
+    bot[5] = *(new battle_robot(CHARGER, minigun, claw));
+    bot[5].pos.x = n-6;
+    bot[5].pos.y = m-2;
+    bot[6] = *(new battle_robot(TANK, mortar, cannon));
+    bot[6].pos.x = 7;
+    bot[6].pos.y = 1;
+    bot[7] = *(new battle_robot(TANK, mortar, cannon));
+    bot[7].pos.x = n-8;
+    bot[7].pos.y = m-2;
+    bot[8] = *(new battle_robot(SEEKER, laser, mlrs));
+    bot[8].pos.x = 9;
+    bot[8].pos.y = 1;
+    bot[9] = *(new battle_robot(SEEKER, laser, mlrs));
+    bot[9].pos.x = n-10;
+    bot[9].pos.y = m-2;
+
     for(int i = 0; i < TS; i++){
-        bot[i] = *(new battle_robot(TROOPER, flamer, mlrs));
-        bot[i].pos.x = i*2 + 1;
-        bot[i].pos.y = i%2 + 1;
         bot[i].tm = curr_faction+i%2;
         if(i%2){
             botsprite[i].setTexture(botblue);
