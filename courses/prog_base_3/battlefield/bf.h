@@ -5,7 +5,7 @@
 
 #define DC 4 //"D"istance "C"onstant
 
-#define TS 6 //"T"eam "S"ize
+#define TS 10 //"T"eam "S"ize
 
 #define n 64
 #define m 64

@@ -24,6 +24,7 @@ using namespace sf;
     Texture punch, bang, flares, firing, badabum, spell;
     Texture mapframe, maptmp;
 
+    Image micromap;
 
     Sprite bfback;
     Sprite botsprite[TS];
@@ -87,17 +88,14 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     shifty = 48;
     Clock clock;
     srand(time(NULL));
-     land battlefield[n][m] = {GRSS};
-     for(int i = 0; i < n*m; i++){
-        if(i/n == 0 || i%m == 0)
+     land battlefield[n][m];
+    micromap.loadFromFile("textures/micromap.png");
+    for(int i = 0; i < n*m; i++){
+        if(micromap.getPixel(i/n, i%m) == Color::White){
+            battlefield[i/n][i%m] = GRSS;
+        } else
             battlefield[i/n][i%m] = WALL;
-     }
-     for(int i = 0; i < n; i++){
-        battlefield[i][m-1] = WALL;
-        battlefield[n-1][i] = WALL;
-     }
-     for(int i = 20; i < 25; i++)
-        battlefield[i][i] = WALL;
+    }
         /*{WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL},//1
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//2
         {WALL,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,GRSS,WALL},//3
