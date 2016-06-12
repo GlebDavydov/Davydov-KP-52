@@ -12,7 +12,7 @@ enum holdStatus{NOTHING, EXIT, BATTLE};
 
 int singleplayer_menu(RenderWindow &window, Sprite menu_back){
     battlefield bf = NULL;
-    HINSTANCE hLib = LoadLibrary("battlefield_a.dll");
+    HINSTANCE hLib = LoadLibrary("battle_ai_agressive.dll");
     if(!hLib)
         return 1;
     bf = (battlefield)GetProcAddress(hLib, "battlefield");

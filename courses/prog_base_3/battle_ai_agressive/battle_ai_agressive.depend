@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1465669490 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield_a\bf.cpp
+1465718497 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\bf.cpp
 	<windows.h>
 	<iomanip>
 	<queue>
@@ -8,17 +8,16 @@
 	<ctime>
 	"bf.h"
 
-1465669500 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield_a\bf.h
+1465669500 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\bf.h
 	"guns.h"
 
-1465718652 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield_a\main.cpp
+1465705913 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\guns.h
+
+1465669520 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\shooting.cpp
 	<windows.h>
-	<SFML/Graphics.hpp>
 	<stdio.h>
-	<iostream>
-	<string.h>
-	"main.h"
-	"bf.h"
+	<SFML/Graphics.hpp>
+	<math.h>
 	"shooting.h"
 
 1459448199 c:\program files (x86)\codeblocks\sfml\include\sfml\graphics.hpp
@@ -399,19 +398,21 @@
 	<string>
 	<vector>
 
-1460895323 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield_a\main.h
-	<SFML/Graphics.hpp>
-	<windows.h>
-
-1465705913 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield_a\guns.h
-
-1465669536 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield_a\shooting.h
+1465669536 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\shooting.h
 	"bf.h"
 
-1465669520 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield_a\shooting.cpp
+1465732610 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\main.cpp
 	<windows.h>
-	<stdio.h>
 	<SFML/Graphics.hpp>
+	<stdio.h>
+	<iostream>
+	<string.h>
 	<math.h>
+	"main.h"
+	"bf.h"
 	"shooting.h"
+
+1465711339 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\main.h
+	<SFML/Graphics.hpp>
+	<windows.h>
 
