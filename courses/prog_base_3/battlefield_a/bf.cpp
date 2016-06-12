@@ -10,7 +10,7 @@
 
 using namespace std;
 
-cell check_walkable(land bf[n][n], int px, int py, battle_robot* team, int rcount, int tm){
+cell check_walkable(land bf[n][m], int px, int py, battle_robot* team, int rcount, int tm){
     if(bf[px][py] == WALL){
         return REST;
     } else for(int i = 0; i < rcount; i ++){
@@ -26,10 +26,10 @@ cell check_walkable(land bf[n][n], int px, int py, battle_robot* team, int rcoun
     return FREE;
 }
 
-static int map[n][n];
-static int closed_nodes_map[n][n]; // map of closed (tried-out) nodes
-static int open_nodes_map[n][n]; // map of open (not-yet-tried) nodes
-static int dir_map[n][n]; // map of directions
+static int map[n][m];
+static int closed_nodes_map[n][m]; // map of closed (tried-out) nodes
+static int open_nodes_map[n][m]; // map of open (not-yet-tried) nodes
+static int dir_map[n][m]; // map of directions
 const int dir=8; // number of possible directions to go at any position
 // if dir==4
 //static int dx[dir]={1, 0, -1, 0};
@@ -97,7 +97,7 @@ bool operator<(const node & a, const node & b)
 // A-star algorithm.
 // The route returned is a string of direction digits.
 string pathFind( const int & xStart, const int & yStart,
-                 const int & xFinish, const int & yFinish, land bf[n][n], battle_robot *bot)
+                 const int & xFinish, const int & yFinish, land bf[n][m], battle_robot *bot)
 {
     static priority_queue<node> pq[2]; // list of open (not-yet-tried) nodes
     static int pqi; // pq index
@@ -108,7 +108,7 @@ string pathFind( const int & xStart, const int & yStart,
     pqi=0;
 
     // reset the node maps
-    for(y=0;y<n;y++)
+    for(y=0;y<m;y++)
     {
         for(x=0;x<n;x++)
         {
@@ -169,7 +169,7 @@ string pathFind( const int & xStart, const int & yStart,
         {
             xdx=x+dx[i]; ydy=y+dy[i];
 
-            if(!(xdx<0 || xdx>n-1 || ydy<0 || ydy>n-1 || map[xdx][ydy]==1
+            if(!(xdx<0 || xdx>n-1 || ydy<0 || ydy>m-1 || map[xdx][ydy]==1
                 || closed_nodes_map[xdx][ydy]==1))
             {
                 // generate a child node
@@ -344,7 +344,7 @@ void bot_walk(battle_robot &bot, int count, direction *sequence){
 }
 
 
-void bot_turn(battle_robot &bot, int x, int y){
+int bot_turn(battle_robot &bot, int x, int y){
     direction dir = belongs_to_sector(bot, x, y);
     int diff = abs(dir - bot.dir);
     if(diff != 4)
@@ -352,22 +352,24 @@ void bot_turn(battle_robot &bot, int x, int y){
     if(dir != NODIR && diff <= bot.currAp){
         bot.dir = dir;
         bot.currAp -= diff;
-    }//!@todo message if insuff AP
+        return 1;
+    }
+    return 0;
 }
 
 direction belongs_to_sector(battle_robot &bot, int x, int y){
     double angle = atan((double)(y - bot.pos.y)/(x - bot.pos.x));
-    if(angle >= -PI/2.0 && angle < -3.0*PI/8.0)
-            return N;
-    if(angle <= PI/2.0 && angle > 3.0*PI/8.0)
-            return S;
-    if(x > bot.pos.x){
+    if(x >= bot.pos.x){
         if(angle >= PI/8.0 && angle < 3.0*PI/8.0)
             return SE;
         if(angle >= -PI/8.0 && angle <= PI/8.0)
             return E;
         if(angle >= -3.0*PI/8.0 && angle < -PI/8.0)
             return NE;
+        if(angle >= -PI/2.0 && angle < -3.0*PI/8.0)
+            return N;
+        if(angle <= PI/2.0 && angle > 3.0*PI/8.0)
+            return S;
     } else {
         if(angle >= PI/8.0 && angle < 3.0*PI/8.0)
             return NW;
@@ -375,6 +377,10 @@ direction belongs_to_sector(battle_robot &bot, int x, int y){
             return W;
         if(angle >= -3.0*PI/8.0 && angle < -PI/8.0)
             return SW;
+        if(angle >= -PI/2.0 && angle < -3.0*PI/8.0)
+            return S;
+        if(angle <= PI/2.0 && angle > 3.0*PI/8.0)
+            return N;
     }
     return NODIR;
 }

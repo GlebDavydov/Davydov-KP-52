@@ -51,8 +51,11 @@
 		</Linker>
 		<Unit filename="bf.cpp" />
 		<Unit filename="bf.h" />
+		<Unit filename="guns.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="main.h" />
+		<Unit filename="shooting.cpp" />
+		<Unit filename="shooting.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

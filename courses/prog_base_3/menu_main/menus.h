@@ -7,4 +7,5 @@ int main_menu(void);
 int singleplayer_menu(sf::RenderWindow &window, sf::Sprite background);
 //int battlefield(sf::RenderWindow& window);
 
+
 #endif // MENUS_H_INCLUDED

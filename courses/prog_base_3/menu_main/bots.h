@@ -1,22 +1,11 @@
-#ifndef BF_H_INCLUDED
-#define BF_H_INCLUDED
-
-#include "guns.h"
-
-#define DC 4 //"D"istance "C"onstant
-
-#define TS 10 //"T"eam "S"ize
+#ifndef BOTS_H_INCLUDED
+#define BOTS_H_INCLUDED
 
 #define n 64
 #define m 64
 
-enum faction{RED, BLUE};
+#define TS 10
 
-typedef enum direction{NODIR = 0, N = 1, NE, E, SE, S, SW, W, NW}direction;
-
-typedef enum cell{REST = 0, FREE, BOT_ALLY, BOT_ENEMY}cell;
-
-typedef enum model{TANK, CHARGER, SEEKER, TROOPER}model;
 
 typedef enum land_type_s{
     GRSS = 1,
@@ -30,8 +19,50 @@ typedef struct position{
 }position;
 
 
+typedef enum guntype{MELEE, ART, FLAMER, PROJ}guntype;
+
+typedef enum model{TANK, CHARGER, SEEKER, TROOPER}model;
+
+typedef enum direction{NODIR = 0, N = 1, NE, E, SE, S, SW, W, NW}direction;
+
+enum faction{RED, BLUE};
+
+class Weapon{
+private:
+    guntype type;
+    double damage; //average
+    double radius; //maximal
+    int burst; //number of successive strikes
+    double accuracy; //the chance of miss = accuracy*log2(distance)
+    double pierce; //the percentage of damage guaranteed to pas the armor and chance to deliver additional damage
+    //is not affected by distance for artillery and always 1 for flamethrower
+    double splash; //the amount of damage distributer over the nearby points
+    double apPerStrike;
+    double apPerBurst;
+public:
+    Weapon(guntype type,
+        double damage,
+        double radius,
+        int burst,
+        double accuracy,
+        double pierce,
+        double splash,
+        double apPerStrike,
+        double apPerBurst){
+            this->type = type;
+            this->damage = damage;
+            this->radius = radius;
+            this->burst = burst;
+            this->accuracy = accuracy;
+            this->pierce = pierce;
+            this->splash = splash;
+            this->apPerStrike = apPerStrike;
+            this->apPerBurst = apPerBurst;
+        }
+};
+
 class battle_robot{
-    public:
+    private:
         int destroyed;
         int maxAp;
         int currAp;
@@ -44,6 +75,7 @@ class battle_robot{
         direction dir;
         position pos;
         int tm;
+    public:
         battle_robot(){
             destroyed = 0;
             rm = TROOPER;
@@ -108,15 +140,5 @@ class battle_robot{
         }
 };
 
-int walk_distance_count(direction dsourse, int sx, int sy, int dx, int dy, int count, direction *sequence);
-//int dijstra_distance_count(land bf, int px, int py, battle_robot *team, int rcount, battle_robot walker, direction *sequence);
-cell check_walkable(land bf[n][m], int px, int py, battle_robot* team, int rcount, int tm);
-std::string pathFind( const int & xStart, const int & yStart,
-                 const int & xFinish, const int & yFinish, land bf[n][m], battle_robot *bot);
-void root_to_direction(std::string &route, direction *sequence);
-void bot_walk(battle_robot &bot, int count, direction *sequence);
-int bot_turn(battle_robot &bot, int x, int y);
-direction belongs_to_sector(battle_robot &bot, int x, int y);
+#endif // BOTS_H_INCLUDED
 
-
-#endif // BF_H_INCLUDED
