@@ -3,6 +3,10 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "bf.h"
+
+
+
 #include <windows.h>
 
 /*  To use this exported function of dll, include this header
@@ -21,7 +25,7 @@ extern "C"
 {
 #endif
 
-int DLL_EXPORT battlefield(sf::RenderWindow& window, int stepMode);
+int DLL_EXPORT battlefield(sf::RenderWindow& window, int stepMode, blueprint botset[TS]);
 
 #ifdef __cplusplus
 }

@@ -28,8 +28,6 @@ using namespace sf;
     Texture nextturn_t;
     Texture nextturn_p;
 
-    Image micromap;
-
     Sprite bfback;
     Sprite botsprite[TS];
     Sprite mystats, enemystats, myicon, enemyicon, mywp1, mywp2, hiswp1, hiswp2;
@@ -67,7 +65,8 @@ typedef int(*step_callback)(RenderWindow &window, land battlefield[n][m], battle
 static int shiftx;
 static int shifty;
 
-int DLL_EXPORT battlefield(RenderWindow& window, int stepMode){shiftx = 48;
+int DLL_EXPORT battlefield(RenderWindow& window, int stepMode, blueprint botset[TS]){
+    shiftx = 48;
     shifty = 48;
     step_callback step = NULL;
     switch(stepMode){
@@ -89,14 +88,51 @@ int DLL_EXPORT battlefield(RenderWindow& window, int stepMode){shiftx = 48;
     shifty = 48;
     Clock clock;
     srand(time(NULL));
-     land battlefield[n][m];
+
+    Image micromap;
     micromap.loadFromFile("textures/micromap.png");
+    land battlefield[n][m];
+    battle_robot bot[TS];
+    for(int i = 0; i < TS; i++){
+        bot[i] = *(new battle_robot());
+        bot[i].pos.x = -1;
+        bot[i].pos.y = -1;
+        bot[i].destroyed = 1;
+    }
+    int rbc = 0;
+    int bbc = 0;
     for(int i = 0; i < n*m; i++){
         if(micromap.getPixel(i/n, i%m) == Color::White){
             battlefield[i/n][i%m] = GRSS;
-        } else
+        } else if(micromap.getPixel(i/n, i%m) == Color::Red){
+            battlefield[i/n][i%m] = GRSS;
+            if(rbc < TS/2){
+                bot[rbc*2] = *(new battle_robot(botset[rbc].mod, NULL, NULL));
+                gunChoose(botset[rbc].gun1, 0, bot[rbc*2]);
+                gunChoose(botset[rbc].gun2, 1, bot[rbc*2]);
+                bot[rbc*2].pos.x = i/n;
+                bot[rbc*2].pos.y = i%n;
+                rbc++;
+            }
+        } else if(micromap.getPixel(i/n, i%m) == Color::Blue){
+            battlefield[i/n][i%m] = GRSS;
+            if(bbc < TS/2){
+                Weapon *gun1;
+                Weapon *gun2;
+                bot[bbc*2 + 1] = *(new battle_robot(botset[bbc+TS/2].mod, gun1, gun2));
+                gunChoose(botset[bbc + TS/2].gun1, 0, bot[bbc*2+1]);
+                gunChoose(botset[bbc + TS/2].gun2, 1, bot[bbc*2+1]);
+                bot[bbc*2 + 1].pos.x = i/n;
+                bot[bbc*2 + 1].pos.y = i%n;
+                bot[bbc*2 + 1].dir = N;
+                bbc++;
+            }
+        } else{
             battlefield[i/n][i%m] = WALL;
+        }
     }
+
+
     window.clear(Color::Black);
 
     //objects preparing
@@ -104,7 +140,6 @@ int DLL_EXPORT battlefield(RenderWindow& window, int stepMode){shiftx = 48;
     int moves = 0;
     int aim_status = 0;
     Weapon *theGun = NULL;
-    battle_robot bot[TS];
     direction seq[225] = {NODIR};
     int curr_faction = RED;
 
@@ -113,36 +148,10 @@ int DLL_EXPORT battlefield(RenderWindow& window, int stepMode){shiftx = 48;
     //all graphics stuff preparing
     initSprites(battlefield, bot, shiftx, shifty);
 
-    bot[0] = *(new battle_robot(TROOPER, missile, plasma));
-    bot[0].pos.x = 1;
-    bot[0].pos.y = 1;
-    bot[1] = *(new battle_robot(CHARGER, hammer, flamer));
-    bot[1].pos.x = n-2;
-    bot[1].pos.y = m-2;
-    bot[2] = *(new battle_robot(TROOPER, minigun, plasma));
-    bot[2].pos.x = 3;
-    bot[2].pos.y = 1;
-    bot[3] = *(new battle_robot(CHARGER, hammer, flamer));
-    bot[3].pos.x = n-4;
-    bot[3].pos.y = m-2;
-    bot[4] = *(new battle_robot(TROOPER, missile, plasma));
-    bot[4].pos.x = 5;
-    bot[4].pos.y = 1;
-    bot[5] = *(new battle_robot(TANK, mlrs, plasma));
-    bot[5].pos.x = n-6;
-    bot[5].pos.y = m-2;
-    bot[6] = *(new battle_robot(TROOPER, minigun, plasma));
-    bot[6].pos.x = 7;
-    bot[6].pos.y = 1;
-    bot[7] = *(new battle_robot(TANK, mlrs, plasma));
-    bot[7].pos.x = n-8;
-    bot[7].pos.y = m-2;
-    bot[8] = *(new battle_robot(TROOPER, minigun, plasma));
-    bot[8].pos.x = 9;
-    bot[8].pos.y = 1;
-    bot[9] = *(new battle_robot(TANK, mlrs, plasma));
-    bot[9].pos.x = n-10;
-    bot[9].pos.y = m-2;
+    if(bbc == 0 || rbc == 0){
+        message_show(window, "NOWHERE TO PLACE!!!",0);
+        return 1;
+    }
 
     for(int i = 0; i < TS; i++){
         bot[i].tm = curr_faction+i%2;
@@ -1315,8 +1324,8 @@ int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot
                         int trc = 0;
                         if(tmp.x != bot[j].pos.x || tmp.y != bot[j].pos.y)
                             trc = 1;
-                        gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius > dist) && (gun1AP+turnValue < bot[selected].currAp));
-                        gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius > dist) && (gun2AP+turnValue < bot[selected].currAp));
+                        gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius >= dist) && (gun1AP+turnValue < bot[selected].currAp));
+                        gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius >= dist) && (gun2AP+turnValue < bot[selected].currAp));
                         if((gun1Reachable || gun2Reachable)&&(minHP == 0 || minHP > bot[j].hp)){
                             minHP = bot[j].hp;
                             b1.x = bot[j].pos.x;
@@ -1333,8 +1342,8 @@ int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot
                     int trc = 0;
                     if(tmp.x != b1.x || tmp.y != b1.y)
                         trc = 1;
-                    gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius > dist) && (gun1AP+turnValue < bot[selected].currAp));
-                    gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius > dist) && (gun2AP+turnValue < bot[selected].currAp));
+                    gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius >= dist) && (gun1AP+turnValue < bot[selected].currAp));
+                    gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius >= dist) && (gun2AP+turnValue < bot[selected].currAp));
                 }
                 if(minHP != 0 && (gun1Reachable || gun2Reachable)){
                 //most vulnerable found, destroy
@@ -1541,8 +1550,8 @@ int check_probable_damage(land battlefield[n][m], battle_robot bot[TS], int x, i
             int trc = 0;
             if(tmp.x != x || tmp.y != y)
                 trc = 1;
-            gun1Reachable = ((!trc || bot[i].gun1->type == ART) && (bot[i].gun1->radius > dist));
-            gun2Reachable = ((!trc || bot[i].gun2->type == ART) && (bot[i].gun2->radius > dist));
+            gun1Reachable = ((!trc || bot[i].gun1->type == ART) && (bot[i].gun1->radius >= dist));
+            gun2Reachable = ((!trc || bot[i].gun2->type == ART) && (bot[i].gun2->radius >= dist));
             if(gun1Reachable){
                 int gdmg = bot[i].gun1->damage;
                 if(bot[i].gun1->burst)
@@ -1712,8 +1721,8 @@ int ai_step_alert(RenderWindow &window, land battlefield[n][m], battle_robot bot
                         int trc = 0;
                         if(tmp.x != bot[j].pos.x || tmp.y != bot[j].pos.y)
                             trc = 1;
-                        gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius > dist) && (gun1AP+turnValue < bot[selected].currAp - (escapeAP + 4)));
-                        gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius > dist) && (gun2AP+turnValue < bot[selected].currAp - (escapeAP + 4)));
+                        gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius >= dist) && (gun1AP+turnValue < bot[selected].currAp - (escapeAP + 4)));
+                        gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius >= dist) && (gun2AP+turnValue < bot[selected].currAp - (escapeAP + 4)));
                         if((gun1Reachable || gun2Reachable)&&(minHP == 0 || minHP > bot[j].hp)){
                             minHP = bot[j].hp;
                             b1.x = bot[j].pos.x;
@@ -1730,8 +1739,8 @@ int ai_step_alert(RenderWindow &window, land battlefield[n][m], battle_robot bot
                     int trc = 0;
                     if(tmp.x != b1.x || tmp.y != b1.y)
                         trc = 1;
-                    gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius > dist) && (gun1AP+turnValue < bot[selected].currAp));
-                    gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius > dist) && (gun2AP+turnValue < bot[selected].currAp));
+                    gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius >= dist) && (gun1AP+turnValue < bot[selected].currAp));
+                    gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius >= dist) && (gun2AP+turnValue < bot[selected].currAp));
                 }
                 if(minHP != 0 && (gun1Reachable || gun2Reachable)){
                 //most vulnerable found, destroy
@@ -1842,4 +1851,74 @@ int ai_step_alert(RenderWindow &window, land battlefield[n][m], battle_robot bot
 int player_step(RenderWindow &window, land battlefield[n][m], battle_robot bot[10], int &currFaction){
     currFaction = ((currFaction+1)%2);
     return 0;
+}
+
+void gunChoose(int t, int c, battle_robot &bot){
+    if(c == 0){
+        switch(t){
+        case CLAW:
+            bot.gun1 = claw;
+            break;
+        case HAMMER:
+            bot.gun1 = hammer;
+            break;
+        case MORTAR:
+            bot.gun1 = mortar;
+            break;
+        case MLRS:
+            bot.gun1 = mlrs;
+            break;
+        case MISSILE:
+            bot.gun1 = missile;
+            break;
+        case MINIGUN:
+            bot.gun1 = minigun;
+            break;
+        case LASER:
+            bot.gun1 = laser;
+            break;
+        case CANNON:
+            bot.gun1 = cannon;
+            break;
+        case FLAMETHROWER:
+            bot.gun1 = flamer;
+            break;
+        default:
+            bot.gun1 = NULL;
+            break;
+        }
+    }else{
+        switch(t){
+        case CLAW:
+            bot.gun2 = claw;
+            break;
+        case HAMMER:
+            bot.gun2 = hammer;
+            break;
+        case MORTAR:
+            bot.gun2 = mortar;
+            break;
+        case MLRS:
+            bot.gun2 = mlrs;
+            break;
+        case MISSILE:
+            bot.gun2 = missile;
+            break;
+        case MINIGUN:
+            bot.gun2 = minigun;
+            break;
+        case LASER:
+            bot.gun2 = laser;
+            break;
+        case CANNON:
+            bot.gun2 = cannon;
+            break;
+        case FLAMETHROWER:
+            bot.gun2 = flamer;
+            break;
+        default:
+            bot.gun2 = NULL;
+            break;
+        }
+    }
 }

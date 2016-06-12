@@ -30,6 +30,14 @@ typedef struct position{
 }position;
 
 
+typedef struct blueprint{
+    model mod;
+    int gun1;
+    int gun2;
+}blueprint;
+
+
+
 class battle_robot{
     public:
         int destroyed;

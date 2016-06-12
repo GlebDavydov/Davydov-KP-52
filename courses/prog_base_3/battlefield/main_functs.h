@@ -46,4 +46,6 @@ int ai_step_dumb(RenderWindow &window, land battlefield[n][m], battle_robot[TS],
 int ai_step_alert(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int &currFaction);
 int player_step(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int &currFaction);
 
+void gunChoose(int t, int c, battle_robot &bot);
+
 #endif // MAIN_FUNCTS_H_INCLUDED
