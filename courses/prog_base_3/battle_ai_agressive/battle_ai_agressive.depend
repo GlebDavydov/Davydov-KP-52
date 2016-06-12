@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1465718497 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\bf.cpp
+1465741220 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\bf.cpp
 	<windows.h>
 	<iomanip>
 	<queue>
@@ -8,7 +8,7 @@
 	<ctime>
 	"bf.h"
 
-1465669500 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\bf.h
+1465741291 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\bf.h
 	"guns.h"
 
 1465705913 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\guns.h
@@ -401,7 +401,7 @@
 1465669536 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\shooting.h
 	"bf.h"
 
-1465732610 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\main.cpp
+1465739619 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battle_ai_agressive\main.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	<stdio.h>

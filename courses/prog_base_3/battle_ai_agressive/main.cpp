@@ -9,8 +9,7 @@
 #include "bf.h"
 //#include "view.h"
 #include "shooting.h"
-
-#define MAX_INT 0xfffe
+#include "main_functs.h"
 
 enum guns{CLAW = 0, HAMMER, MORTAR, MLRS, MISSILE, MINIGUN, LASER, PLASMA, CANNON, FLAMETHROWER};
 
@@ -49,30 +48,6 @@ using namespace sf;
     Text myhp, myap, hishp, hisap;
     Font font;
 
-void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int shifty);
-
-void draw_everything(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected, int shiftx, int shifty);
-
-
-//void draw_gui(RenderWindow &window);
-
-void animation_strike(RenderWindow &window, int px, int py, land battlefield[n][m], battle_robot bot[TS], int selected);
-void animation_shooting(RenderWindow &window, int px, int py, int selected, land battlefield[n][m], battle_robot bot[TS]);
-void animation_explode(RenderWindow &window, int px, int py, land battlefield[n][m], battle_robot bot[TS], int selected);
-void animation_destroyed(RenderWindow &window, int px, int py, land battlefield[n][m], battle_robot bot[TS], int selected);
-void animation_flames(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
-void animation_smallbangs(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
-void message_show(RenderWindow &window, char* msg, int messageType);
-
-void draw_minimap(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
-
-void camera_center(int px, int py);
-
-void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
-Texture *gunicons, Sprite stats, Sprite boticon, Sprite wp1, Sprite wp2, Text hp, Text ap);
-
-int shoot(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS],
-int selected, int targx, int targy, Weapon *wp, int shotmode);
 
 Weapon *claw = new Weapon(MELEE, 30.0, 1, 0, 1.0, 0.75, 0, 0.25, 0);
 Weapon *hammer = new Weapon(MELEE, 45.0, 1, 0, 1.0, 0.9, 0, 0.33, 0);
@@ -85,12 +60,10 @@ Weapon *plasma = new Weapon(PROJ, 35.0, 24, 2, 0.96, 0.75, 0, 0.35, 0.55);
 Weapon *cannon = new Weapon(PROJ, 45.0, 32, 0, 0.98, 0.85, 0.2, 0.33, 0);
 Weapon *flamer = new Weapon(FLAMER, 30.0, 8, 0, 0, 1, 0, 0.45, 0);
 
+typedef int(*step_callback)(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS]);
+
 static int shiftx;
 static int shifty;
-
-typedef int(*step_callback)(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS]);
-int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS]);
-int ai_step_dumb(RenderWindow &window, land battlefield[n][m], battle_robot[TS]);
 
 int DLL_EXPORT battlefield(RenderWindow& window){
     shiftx = 48;
@@ -234,7 +207,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window))) ||  IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window))|| IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
                         break;
                     }
-                    if(IntRect(1216, 638, 100, 30).contains(Mouse::getPosition(window))){
+                    if(IntRect(1136, 728, 100, 30).contains(Mouse::getPosition(window))){
                         nextturn.setColor(Color::Red);
                     }else {
                         xcoord = ((int)Mouse::getPosition(window).x - shiftx)/32;
@@ -299,7 +272,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             theGun = bot[selected].gun2;
                             selectedGun.setPosition(1093+131, 191+53);
                             selectedGun.setTexture(allowed);
-                        }else if(IntRect(1216, 638, 100, 30).contains(Mouse::getPosition(window))){
+                        }else if(IntRect(1136, 728, 100, 30).contains(Mouse::getPosition(window))){
                             for(int i = 0; i < TS; i++){
                                 bot[i].currAp = bot[i].maxAp;
                             }
@@ -309,6 +282,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             for(int i = 0; i < TS; i++){
                                 if(bot[i].tm == curr_faction && !bot[i].destroyed){
                                     selected = i;
+                                    camera_center(bot[i].pos.x, bot[i].pos.y);
                                     break;
                                 }
                             }
@@ -333,7 +307,6 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                                 std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
                                 root_to_direction(route, seq);
                             if(walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq) <= bot[selected].currAp){
-                                bot[selected].currAp -= walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
                                 moves = 1;
                             }else{
                                 window.draw(nextturn);
@@ -373,7 +346,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window))) || IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window))|| IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
                         break;
                     }
-                    if(IntRect(1216, 638, 100, 30).contains(Mouse::getPosition(window))){
+                    if(IntRect(1136, 728, 100, 30).contains(Mouse::getPosition(window))){
                         nextturn.setColor(Color::Red);
                     }else {
                     xcoord = ((int)Mouse::getPosition(window).x - shiftx)/32;
@@ -430,7 +403,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             camera_center(bot[selected].pos.x, bot[selected].pos.y);
                         }else if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window)))){
                             camera_center((Mouse::getPosition(window).x - 20)/4, (Mouse::getPosition(window).y - 490)/4);
-                        }else if(IntRect(1216, 638, 100, 30).contains(Mouse::getPosition(window))){
+                        }else if(IntRect(1136, 728, 100, 30).contains(Mouse::getPosition(window))){
                             aim_status = 0;
                             for(int i = 0; i < TS; i++){
                                 bot[i].currAp = bot[i].maxAp;
@@ -442,6 +415,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             for(int i = 0; i < TS; i++){
                                 if(bot[i].tm == curr_faction && !bot[i].destroyed){
                                     selected = i;
+                                camera_center(bot[i].pos.x, bot[i].pos.y);
                                     break;
                                 }
                             }
@@ -931,7 +905,7 @@ void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int s
     nextturn.setFont(font);
     nextturn.setColor(Color::White);
     nextturn.setString("END TURN");
-    nextturn.setPosition(1216, 638);
+    nextturn.setPosition(1136, 728);
 
     frame.setTexture(mapframe);
     frame.setPosition(0, 471);
@@ -1275,52 +1249,6 @@ void camera_center(int px, int py){
         shifty = -(63+32*n-768);
 }
 
-int bot_walk_advanced(battle_robot &bot, int count, direction *seq){
-
-//Why didn't I think of it earlier? gonna implement as normal walk in further versions
-
-    int diff = abs(bot.dir - seq[count]);
-    if(diff != 4)
-        diff %= 4;
-    if(bot.currAp < 4+diff)
-        return 1;
-    bot.currAp -= (4+diff);
-    bot.dir = seq[count];
-    switch(bot.dir){
-    case N:
-        bot.pos.y -= 1;
-        break;
-    case NE:
-        bot.pos.x += 1;
-        bot.pos.y -= 1;
-        break;
-    case E:
-        bot.pos.x += 1;
-        break;
-    case SE:
-        bot.pos.x += 1;
-        bot.pos.y += 1;
-        break;
-    case S:
-        bot.pos.y += 1;
-        break;
-    case SW:
-        bot.pos.x -= 1;
-        bot.pos.y += 1;
-        break;
-    case W:
-        bot.pos.x -= 1;
-        break;
-    case NW:
-        bot.pos.y -= 1;
-        bot.pos.x -= 1;
-        break;
-    default:
-        return 1;
-    }
-    return 0;
-}
-
 int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS]){
     shiftx = 0;
     shifty = 0;
@@ -1395,11 +1323,11 @@ int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot
                         int g1ap = gun1AP;
                         int g2ap = gun2AP;
                         int gun2Damage = bot[selected].gun2->damage;
-                        if(bot[selected].gun1->burst && bot[selected].gun1->apPerBurst + turnValue < bot[selected].currAp){
+                        if(bot[selected].gun1->burst && bot[selected].gun1->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
                             gun1Damage *= bot[selected].gun1->burst;
                             g1ap = bot[selected].gun1->apPerBurst * bot[selected].maxAp;
                         }
-                        if(bot[selected].gun2->burst && bot[selected].gun2->apPerBurst + turnValue < bot[selected].currAp){
+                        if(bot[selected].gun2->burst && bot[selected].gun2->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
                             gun2Damage *= bot[selected].gun2->burst;
                             g2ap = bot[selected].gun2->apPerBurst * bot[selected].maxAp;
                         }
@@ -1417,7 +1345,7 @@ int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot
                     }
                     if(gun1Reachable){
                         camera_center(b1.x, b1.y);
-                        if(bot[selected].gun1->burst && bot[selected].gun1->apPerBurst + 4 < bot[selected].currAp){
+                        if(bot[selected].gun1->burst && bot[selected].gun1->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
                             if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun1, 2));
                                 break;
                         } else {
@@ -1427,7 +1355,7 @@ int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot
                     }
                     if(gun2Reachable){
                         camera_center(b1.x, b1.y);
-                        if(bot[selected].gun2->burst && bot[selected].gun2->apPerBurst + 4 < bot[selected].currAp){
+                        if(bot[selected].gun2->burst && bot[selected].gun2->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
                             if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun2, 2));
                                 break;
                         } else {
@@ -1453,31 +1381,31 @@ int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot
                             }
                         }
                     }
+                    minDist = 0;
+                    position fp = *(new position());
+                    fp.x = -1;
+                    fp.y = -1;
                     for(int u  = 7; u>= -7; u--){
-                        int a = 0;
                         for(int v = 7; v >= -7; v--){
                             cp = track(battlefield, closeBot.pos.x+u, closeBot.pos.y+v, closeBot.pos.x, closeBot.pos.y, bot);
                             if(check_walkable(battlefield, closeBot.pos.x+u, closeBot.pos.y+v, bot, TS, BLUE) == FREE
                                && cp.x == closeBot.pos.x && cp.y == closeBot.pos.y){
-                                cp.x = closeBot.pos.x + u;
-                                cp.y = closeBot.pos.y + v;
-                                a = 1;
-                                break;
-                            } else {
-                                cp.x = -1;
-                                cp.y = -1;
+                                int cd = eucl_dist_count(closeBot.pos.x+u, closeBot.pos.y+v, bot[selected].pos.x, bot[selected].pos.y);
+                                if(minDist == 0 || cd < minDist){
+                                    minDist = cd;
+                                    fp.x = closeBot.pos.x + u;
+                                    fp.y = closeBot.pos.y + v;
+                                }
                             }
                         }
-                        if(a)
-                            break;
                     }
-                    if(cp.x != -1 && cp.y != -1){
-                        route = pathFind(bot[selected].pos.x, bot[selected].pos.y, cp.x, cp.y, battlefield, bot);
+                    if(fp.x != -1 && fp.y != -1){
+                        route = pathFind(bot[selected].pos.x, bot[selected].pos.y, fp.x, fp.y, battlefield, bot);
                         root_to_direction(route, seq);
                         moves = 1;
                         while(moves){
                             window.clear(Color::Black);
-                            if(bot_walk_advanced(bot[selected], moves - 1, seq))
+                            if(bot_walk(bot[selected], moves - 1, seq))
                                 break;
                             camera_center(bot[selected].pos.x, bot[selected].pos.y);
                             moves++;
@@ -1490,7 +1418,6 @@ int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot
                             Sleep(100);
                             draw_everything(window, battlefield, bot, selected, shiftx, shifty);
                             draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
-                            window.draw(nextturn);
                             window.display();
                         }
                     }
@@ -1557,7 +1484,7 @@ int ai_step_dumb(RenderWindow &window, land battlefield[n][m], battle_robot bot[
             }
             while(moves){
                 window.clear(Color::Black);
-                bot_walk_advanced(bot[selected], moves - 1, seq);
+                bot_walk(bot[selected], moves - 1, seq);
                 moves++;
                 if(moves > 255)
                     moves = 0;
@@ -1566,9 +1493,9 @@ int ai_step_dumb(RenderWindow &window, land battlefield[n][m], battle_robot bot[
                 Sleep(100);
                 draw_everything(window, battlefield, bot, selected, shiftx, shifty);
                 draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
-                window.draw(nextturn);
                 window.display();
             }
         }
     }
 }
+

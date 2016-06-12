@@ -307,8 +307,17 @@ int walk_distance_count(direction dsourse, int sx, int sy, int dx, int dy, int c
     return ddf + DC + walk_distance_count(newDir, newx, newy, dx, dy, newc, sequence);
 }
 
-void bot_walk(battle_robot &bot, int count, direction *sequence){
-    bot.dir = sequence[count];
+int bot_walk(battle_robot &bot, int count, direction *seq){
+
+//Why didn't I think of it earlier? gonna implement as normal walk in further versions
+
+    int diff = abs(bot.dir - seq[count]);
+    if(diff != 4)
+        diff %= 4;
+    if(bot.currAp < 4+diff)
+        return 1;
+    bot.currAp -= (4+diff);
+    bot.dir = seq[count];
     switch(bot.dir){
     case N:
         bot.pos.y -= 1;
@@ -339,9 +348,11 @@ void bot_walk(battle_robot &bot, int count, direction *sequence){
         bot.pos.x -= 1;
         break;
     default:
-        return;
+        return 1;
     }
+    return 0;
 }
+
 
 
 int bot_turn(battle_robot &bot, int x, int y){
