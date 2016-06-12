@@ -41,7 +41,7 @@ int selected, int targx, int targy, Weapon *wp, int shotmode);
 
 int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS]);
 int ai_step_dumb(RenderWindow &window, land battlefield[n][m], battle_robot[TS]);
-
+int ai_step_alert(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS]);
 
 
 #endif // MAIN_FUNCTS_H_INCLUDED
