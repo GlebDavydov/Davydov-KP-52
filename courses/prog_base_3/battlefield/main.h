@@ -21,7 +21,7 @@ extern "C"
 {
 #endif
 
-int DLL_EXPORT battlefield(sf::RenderWindow& window);
+int DLL_EXPORT battlefield(sf::RenderWindow& window, int stepMode);
 
 #ifdef __cplusplus
 }

@@ -54,6 +54,7 @@
 		<Unit filename="guns.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="main.h" />
+		<Unit filename="main_functs.h" />
 		<Unit filename="shooting.cpp" />
 		<Unit filename="shooting.h" />
 		<Extensions>

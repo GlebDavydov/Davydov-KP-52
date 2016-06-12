@@ -1,18 +1,19 @@
 #include <windows.h>
 #include <SFML/Graphics.hpp>
 
+#include "bots.h"
 #include "menus.h"
 
 using namespace sf;
 
 
-typedef int (*battlefield)(RenderWindow& window);
+typedef int (*battlefield)(RenderWindow& window, int step_mode);
 
 enum holdStatus{NOTHING, EXIT, BATTLE};
 
 int singleplayer_menu(RenderWindow &window, Sprite menu_back){
     battlefield bf = NULL;
-    HINSTANCE hLib = LoadLibrary("battle_ai_agressive.dll");
+    HINSTANCE hLib = LoadLibrary("battlefield.dll");
     if(!hLib)
         return 1;
     bf = (battlefield)GetProcAddress(hLib, "battlefield");
@@ -52,7 +53,7 @@ int singleplayer_menu(RenderWindow &window, Sprite menu_back){
                         case EXIT:
                             return 0;
                         case BATTLE:
-                            bf(window);
+                            bf(window, MP);
                             break;
                         default:
                             break;

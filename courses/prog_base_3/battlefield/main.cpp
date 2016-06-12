@@ -3,11 +3,13 @@
 #include <stdio.h>
 #include <iostream>
 #include <string.h>
+#include <math.h>
 
 #include "main.h"
 #include "bf.h"
 //#include "view.h"
 #include "shooting.h"
+#include "main_functs.h"
 
 enum guns{CLAW = 0, HAMMER, MORTAR, MLRS, MISSILE, MINIGUN, LASER, PLASMA, CANNON, FLAMETHROWER};
 
@@ -23,6 +25,8 @@ using namespace sf;
     Texture gunicon[10];
     Texture punch, bang, flares, firing, badabum, spell;
     Texture mapframe, maptmp;
+    Texture nextturn_t;
+    Texture nextturn_p;
 
     Image micromap;
 
@@ -41,35 +45,11 @@ using namespace sf;
     Sprite shell;
     Sprite mouseCurrSprite;
     Sprite bfsprite[n][m];
-    Text nextturn;
+    Sprite nextturn;
     Text tdist;
     Text myhp, myap, hishp, hisap;
     Font font;
 
-void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int shifty);
-
-void draw_everything(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected, int shiftx, int shifty);
-
-
-//void draw_gui(RenderWindow &window);
-
-void animation_strike(RenderWindow &window, int px, int py, land battlefield[n][m], battle_robot bot[TS], int selected);
-void animation_shooting(RenderWindow &window, int px, int py, int selected, land battlefield[n][m], battle_robot bot[TS]);
-void animation_explode(RenderWindow &window, int px, int py, land battlefield[n][m], battle_robot bot[TS], int selected);
-void animation_destroyed(RenderWindow &window, int px, int py, land battlefield[n][m], battle_robot bot[TS], int selected);
-void animation_flames(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
-void animation_smallbangs(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
-void message_show(RenderWindow &window, char* msg, int messageType);
-
-void draw_minimap(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int selected);
-
-void camera_center(int px, int py);
-
-void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
-Texture *gunicons, Sprite stats, Sprite boticon, Sprite wp1, Sprite wp2, Text hp, Text ap);
-
-void shoot(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS],
-int selected, int targx, int targy, Weapon *wp, int shotmode);
 
 Weapon *claw = new Weapon(MELEE, 30.0, 1, 0, 1.0, 0.75, 0, 0.25, 0);
 Weapon *hammer = new Weapon(MELEE, 45.0, 1, 0, 1.0, 0.9, 0, 0.33, 0);
@@ -82,10 +62,29 @@ Weapon *plasma = new Weapon(PROJ, 35.0, 24, 2, 0.96, 0.75, 0, 0.35, 0.55);
 Weapon *cannon = new Weapon(PROJ, 45.0, 32, 0, 0.98, 0.85, 0.2, 0.33, 0);
 Weapon *flamer = new Weapon(FLAMER, 30.0, 8, 0, 0, 1, 0, 0.45, 0);
 
+typedef int(*step_callback)(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int &currFaction);
+
 static int shiftx;
 static int shifty;
 
-int DLL_EXPORT battlefield(RenderWindow& window){
+int DLL_EXPORT battlefield(RenderWindow& window, int stepMode){shiftx = 48;
+    shifty = 48;
+    step_callback step = NULL;
+    switch(stepMode){
+    case MP:
+        step = player_step;
+        break;
+    case AI_DUMB:
+        step = ai_step_dumb;
+        break;
+    case AI_EVIL:
+        step = ai_step_agressive;
+        break;
+    case AI_SMART:
+    default:
+        step = ai_step_alert;
+        break;
+    }
     shiftx = 48;
     shifty = 48;
     Clock clock;
@@ -114,34 +113,34 @@ int DLL_EXPORT battlefield(RenderWindow& window){
     //all graphics stuff preparing
     initSprites(battlefield, bot, shiftx, shifty);
 
-    bot[0] = *(new battle_robot(TROOPER, flamer, plasma));
+    bot[0] = *(new battle_robot(TROOPER, missile, plasma));
     bot[0].pos.x = 1;
     bot[0].pos.y = 1;
-    bot[1] = *(new battle_robot(TROOPER, flamer, plasma));
+    bot[1] = *(new battle_robot(CHARGER, hammer, flamer));
     bot[1].pos.x = n-2;
     bot[1].pos.y = m-2;
-    bot[2] = *(new battle_robot(TROOPER, flamer, plasma));
+    bot[2] = *(new battle_robot(TROOPER, minigun, plasma));
     bot[2].pos.x = 3;
     bot[2].pos.y = 1;
-    bot[3] = *(new battle_robot(TROOPER, flamer, plasma));
+    bot[3] = *(new battle_robot(CHARGER, hammer, flamer));
     bot[3].pos.x = n-4;
     bot[3].pos.y = m-2;
-    bot[4] = *(new battle_robot(CHARGER, minigun, claw));
+    bot[4] = *(new battle_robot(TROOPER, missile, plasma));
     bot[4].pos.x = 5;
     bot[4].pos.y = 1;
-    bot[5] = *(new battle_robot(CHARGER, minigun, claw));
+    bot[5] = *(new battle_robot(TANK, mlrs, plasma));
     bot[5].pos.x = n-6;
     bot[5].pos.y = m-2;
-    bot[6] = *(new battle_robot(TANK, mortar, cannon));
+    bot[6] = *(new battle_robot(TROOPER, minigun, plasma));
     bot[6].pos.x = 7;
     bot[6].pos.y = 1;
-    bot[7] = *(new battle_robot(TANK, mortar, cannon));
+    bot[7] = *(new battle_robot(TANK, mlrs, plasma));
     bot[7].pos.x = n-8;
     bot[7].pos.y = m-2;
-    bot[8] = *(new battle_robot(SEEKER, laser, mlrs));
+    bot[8] = *(new battle_robot(TROOPER, minigun, plasma));
     bot[8].pos.x = 9;
     bot[8].pos.y = 1;
-    bot[9] = *(new battle_robot(SEEKER, laser, mlrs));
+    bot[9] = *(new battle_robot(TANK, mlrs, plasma));
     bot[9].pos.x = n-10;
     bot[9].pos.y = m-2;
 
@@ -159,7 +158,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
         int xcoord;
         int ycoord;
         Event event;
-        nextturn.setColor(Color::White);
+        nextturn.setTexture(nextturn_t);
         float time = clock.getElapsedTime().asMicroseconds();
             clock.restart();
             time = time/200;
@@ -209,7 +208,7 @@ int DLL_EXPORT battlefield(RenderWindow& window){
 
             window.clear(Color::Black);
             window.draw(bfback);
-            nextturn.setColor(Color::White);
+            nextturn.setTexture(nextturn_t);
             draw_everything(window, battlefield, bot, selected, shiftx, shifty);
             draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
 
@@ -223,11 +222,11 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     }
                     break;
                 case Event::MouseMoved:{
-                    if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window))) ||  IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window))|| IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
+                    if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window))) ||  IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window))|| IntRect(1093+95, 191+53, 32, 32).contains(Mouse::getPosition(window)) || IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
                         break;
                     }
-                    if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
-                        nextturn.setColor(Color::Red);
+                    if(IntRect(1136, 728, 100, 30).contains(Mouse::getPosition(window))){
+                        nextturn.setTexture(nextturn_p);
                     }else {
                         xcoord = ((int)Mouse::getPosition(window).x - shiftx)/32;
                         ycoord = ((int)Mouse::getPosition(window).y - shifty)/32;
@@ -291,14 +290,17 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             theGun = bot[selected].gun2;
                             selectedGun.setPosition(1093+131, 191+53);
                             selectedGun.setTexture(allowed);
-                        }else if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
+                        }else if(IntRect(1136, 728, 100, 30).contains(Mouse::getPosition(window))){
                             for(int i = 0; i < TS; i++){
                                 bot[i].currAp = bot[i].maxAp;
                             }
-                            curr_faction = (++curr_faction)%2;
+
+                            if(step(window, battlefield, bot, curr_faction))
+                                return 1;
                             for(int i = 0; i < TS; i++){
                                 if(bot[i].tm == curr_faction && !bot[i].destroyed){
                                     selected = i;
+                                    camera_center(bot[i].pos.x, bot[i].pos.y);
                                     break;
                                 }
                             }
@@ -323,7 +325,6 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                                 std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, battlefield, bot);
                                 root_to_direction(route, seq);
                             if(walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq) <= bot[selected].currAp){
-                                bot[selected].currAp -= walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, xcoord, ycoord, 0, seq);
                                 moves = 1;
                             }else{
                                 window.draw(nextturn);
@@ -360,11 +361,11 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                     }
                     break;
                 case Event::MouseMoved:
-                    if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window))) || IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window))|| IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
+                    if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window))) || IntRect(1093+15, 191+15, 63, 63).contains(Mouse::getPosition(window)) || IntRect(1093+95, 191+53, 32, 32).contains(Mouse::getPosition(window)) || IntRect(1093+131, 191+53, 32, 32).contains(Mouse::getPosition(window))){
                         break;
                     }
-                    if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
-                        nextturn.setColor(Color::Red);
+                    if(IntRect(1136, 728, 100, 30).contains(Mouse::getPosition(window))){
+                        nextturn.setTexture(nextturn_p);
                     }else {
                     xcoord = ((int)Mouse::getPosition(window).x - shiftx)/32;
                     ycoord = ((int)Mouse::getPosition(window).y - shifty)/32;
@@ -420,15 +421,19 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             camera_center(bot[selected].pos.x, bot[selected].pos.y);
                         }else if(IntRect(20, 490, 256, 256).contains((Mouse::getPosition(window)))){
                             camera_center((Mouse::getPosition(window).x - 20)/4, (Mouse::getPosition(window).y - 490)/4);
-                        }else if(IntRect(1136, 638, 100, 30).contains(Mouse::getPosition(window))){
+                        }else if(IntRect(1136, 728, 100, 30).contains(Mouse::getPosition(window))){
                             aim_status = 0;
                             for(int i = 0; i < TS; i++){
                                 bot[i].currAp = bot[i].maxAp;
                             }
-                            curr_faction = (++curr_faction)%2;
+                            window.display();
+                            if(step(window, battlefield, bot, curr_faction))
+                                return 1;
+
                             for(int i = 0; i < TS; i++){
                                 if(bot[i].tm == curr_faction && !bot[i].destroyed){
                                     selected = i;
+                                camera_center(bot[i].pos.x, bot[i].pos.y);
                                     break;
                                 }
                             }
@@ -499,9 +504,9 @@ int DLL_EXPORT battlefield(RenderWindow& window){
                             if(!fc1 && !fc2){
                                 message_show(window,"DRAW. IMPOSSIBLE!", 1);
                             } else if(!fc2){
-                                message_show(window,"RED WINS! CONGRATS!", 1);
+                                message_show(window,"YOU WIN! CONGRATS!", 1);
                             }else{
-                                message_show(window,"BLUE WINS! CONGRATS!", 1);
+                                message_show(window,"YOU LOOSE. PITY.", 0);
                             }
                             window.clear(Color::Black);
                             return 1;
@@ -622,17 +627,17 @@ void draw_stats(RenderWindow &window, battle_robot bot, Texture *icons,
     window.draw(hp);
 }
 
-void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int selected, int targx, int targy, Weapon *wp, int shotmode){
+int shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int selected, int targx, int targy, Weapon *wp, int shotmode){
 
     if(eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, targx, targy) > wp->radius){
         message_show(window, "NOT IN RANGE", 0);
-        return;
+        return 1;
     }
     position pos = *(new position());
     pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, targx, targy, bot);
     if((pos.x != targx || pos.y != targy) && wp->type != ART){
         message_show(window, "TRAJECTORY BLOCKED", 0);
-        return;
+        return 1;
     }
     direction dir = belongs_to_sector(bot[selected], targx, targy);
     int diff = abs(dir - bot[selected].dir);
@@ -647,7 +652,7 @@ void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int 
     if(ap > bot[selected].currAp){
         if(bot_turn(bot[selected], targx, targy));
         message_show(window, "INSUFFICIENT AP!", 0);
-        return;
+        return 1;
     } else {
         ap -= diff;
         bot_turn(bot[selected], targx, targy);
@@ -668,14 +673,14 @@ void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int 
                     bot[i].pos.y = -1;
                     animation_destroyed(window, targx, targy, battlefield, bot, selected);
                 }
-                return;
+                return 0;
             }
         }
         if(battlefield[targx][targy] == WALL){
             battlefield[pos.x][pos.y] = RUIN;
             bfsprite[pos.x][pos.y].setTexture(ruin);
         }
-        return;
+        return 0;
     }else{
 
         animation_shooting(window, targx, targy, selected, battlefield, bot);
@@ -719,7 +724,7 @@ void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int 
                 }
             }
 
-            return;
+            return 0;
         } else {
             double acc;
             acc = accuracy_count(eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, targx, targy), wp);
@@ -785,7 +790,7 @@ void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int 
                         bfsprite[pos.x][pos.y].setTexture(ruin);
                     }
                 }
-                return;
+                return 0;
             } else {
                 if(wp->type == ART){
                     pos = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, targx, targy, bot);
@@ -852,6 +857,7 @@ void shoot(RenderWindow &window, land battlefield[n][m], battle_robot *bot, int 
                 }
             }
         }
+        return 0;
     }
 
 void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int shifty){
@@ -889,6 +895,8 @@ void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int s
     spell.loadFromFile("textures/shell.png");
     mapframe.loadFromFile("textures/mapframe.png");
     maptmp.loadFromFile("textures/maptext.png");
+    nextturn_t.loadFromFile("textures/nextturn.png");
+    nextturn_p.loadFromFile("textures/nextturnpressed.png");
     bfback.setTexture(bfbg);
 
     bfback.setPosition(0,0);
@@ -913,11 +921,8 @@ void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int s
     hisap.setCharacterSize(12); hisap.setColor(Color::Green); hisap.setFont(font); hisap.setPosition(554+127, 15+36);
     hiswp1.setPosition(554+95, 15+53); hiswp2.setPosition(554+131, 15+53);
 
-    nextturn.setCharacterSize(30);
-    nextturn.setFont(font);
-    nextturn.setColor(Color::White);
-    nextturn.setString("END TURN");
-    nextturn.setPosition(1136, 638);
+    nextturn.setPosition(1136, 728);
+    nextturn.setTexture(nextturn_t);
 
     frame.setTexture(mapframe);
     frame.setPosition(0, 471);
@@ -1193,6 +1198,8 @@ void draw_minimap(RenderWindow &window, land battlefield[n][m], battle_robot bot
         window.draw(tmp);
     }
     for(int i = 0; i < TS; i++){
+        if(bot[i].destroyed)
+            continue;
         int dirmult;
         switch(bot[i].dir){
         case NE:
@@ -1251,10 +1258,588 @@ void message_show(RenderWindow &window, char *message, int messageType){
 }
 
 void camera_center(int px, int py){
-    shiftx = 48 - 32*px;
+    shiftx = 618- 32*px;
     if(shiftx < -(64 + 32*n - 1366))
         shiftx = -(63+32*n-1366);
-    shifty = 48 - 32*py;
+    if(shiftx > 48)
+        shiftx = 47;
+    shifty = 319 - 32*py;
     if(shifty < -(64 + 32*n - 768))
         shifty = -(63+32*n-768);
+    if(shifty > 48)
+        shifty = 47;
+}
+
+int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int &currFaction){
+    currFaction = ((currFaction+1)%2);
+    shiftx = 0;
+    shifty = 0;
+    window.clear(Color::Black);
+    int selected;
+    int moves = 0;
+    direction seq[255];
+    for(int i = 0; i < TS; i++){
+        if(bot[i].tm == currFaction && bot[i].destroyed == 0){
+            window.clear(Color::Black);
+            selected = i;
+            camera_center(bot[selected].pos.x, bot[selected].pos.y);
+            draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+            window.display();
+            position b1 = *(new position());
+            int minHP = 0;
+            int gun1Reachable = 0;
+            int gun2Reachable = 0;
+            int turnValue;
+            int minimalShotAP;
+            int gun1AP = bot[selected].gun1->apPerStrike * bot[selected].maxAp;
+            int gun2AP = bot[selected].gun2->apPerStrike * bot[selected].maxAp;
+            if(gun1AP > gun2AP){
+                minimalShotAP = gun2AP;
+            }else{
+                minimalShotAP = gun1AP;
+            }
+            while(bot[selected].currAp > minimalShotAP){
+
+                //finding most vulnerable target
+                for(int j  = 0; j < TS; j++){
+                    if(bot[j].tm == (currFaction+1)%2 && bot[j].destroyed == 0){
+                        gun1Reachable = 0;
+                        gun2Reachable = 0;
+                        int dist = eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, bot[j].pos.x, bot[j].pos.y);
+                        direction dir = belongs_to_sector(bot[selected], bot[j].pos.x, bot[j].pos.y);
+                        turnValue = abs(dir - bot[selected].dir);
+                        if(turnValue != 4)
+                            turnValue %= 4;
+                        position tmp = *(new position());
+                        tmp = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, bot[j].pos.x, bot[j].pos.y, bot);
+                        int trc = 0;
+                        if(tmp.x != bot[j].pos.x || tmp.y != bot[j].pos.y)
+                            trc = 1;
+                        gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius > dist) && (gun1AP+turnValue < bot[selected].currAp));
+                        gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius > dist) && (gun2AP+turnValue < bot[selected].currAp));
+                        if((gun1Reachable || gun2Reachable)&&(minHP == 0 || minHP > bot[j].hp)){
+                            minHP = bot[j].hp;
+                            b1.x = bot[j].pos.x;
+                            b1.y = bot[j].pos.y;
+                        }
+                    }
+                    int dist = eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, b1.x, b1.y);
+                    direction dir = belongs_to_sector(bot[selected], b1.x, b1.y);
+                    turnValue = abs(dir - bot[selected].dir);
+                    if(turnValue != 4)
+                        turnValue %= 4;
+                    position tmp = *(new position());
+                    tmp = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, b1.x, b1.y, bot);
+                    int trc = 0;
+                    if(tmp.x != b1.x || tmp.y != b1.y)
+                        trc = 1;
+                    gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius > dist) && (gun1AP+turnValue < bot[selected].currAp));
+                    gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius > dist) && (gun2AP+turnValue < bot[selected].currAp));
+                }
+                if(minHP != 0 && (gun1Reachable || gun2Reachable)){
+                //most vulnerable found, destroy
+                    window.clear(Color::Black);
+                    draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+                    if(gun1Reachable && gun2Reachable){
+                        int gun1Damage = bot[selected].gun1->damage;
+                        int g1ap = gun1AP;
+                        int g2ap = gun2AP;
+                        int gun2Damage = bot[selected].gun2->damage;
+                        if(bot[selected].gun1->burst && bot[selected].gun1->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
+                            gun1Damage *= bot[selected].gun1->burst;
+                            g1ap = bot[selected].gun1->apPerBurst * bot[selected].maxAp;
+                        }
+                        if(bot[selected].gun2->burst && bot[selected].gun2->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
+                            gun2Damage *= bot[selected].gun2->burst;
+                            g2ap = bot[selected].gun2->apPerBurst * bot[selected].maxAp;
+                        }
+                        if(gun1Damage > gun2Damage){
+                            gun2Reachable = 0;
+                        } else if(gun1Damage < gun2Damage){
+                            gun1Reachable = 0;
+                        } else {
+                            if(g1ap>g2ap){
+                                gun1Reachable = 0;
+                            }else{
+                                gun2Reachable = 0;
+                            }
+                        }
+                    }
+                    if(gun1Reachable){
+                        camera_center(b1.x, b1.y);
+                        if(bot[selected].gun1->burst && bot[selected].gun1->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
+                            if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun1, 2))
+                                break;
+                        } else {
+                            if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun1, 1))
+                                break;
+                        }
+                    }
+                    if(gun2Reachable){
+                        camera_center(b1.x, b1.y);
+                        if(bot[selected].gun2->burst && bot[selected].gun2->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
+                            if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun2, 2))
+                                break;
+                        } else {
+                            if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun2, 1))
+                                break;
+                        }
+                    }
+                }else{ //no target, moving to nearest enemy bot
+                    if(bot[selected].currAp < 4)
+                        break;
+                    int damnation = 7;
+                    if(bot[selected].gun1->type == MELEE || bot[selected].gun2->type == MELEE)
+                        damnation = 1;
+                    int minDist = 0;
+                    battle_robot closeBot;
+                    std::string route;
+                    position cp = *(new position());
+                    cp.x = -1;
+                    cp.y = -1;
+                    for(int j = 0; j < TS; j++){
+                        if(bot[j].tm == (currFaction+1)%2 && bot[j].destroyed == 0){
+                            int cd = eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, bot[j].pos.x, bot[j].pos.y);
+                            if(minDist == 0 || cd < minDist){
+                                minDist = cd;
+                                closeBot = bot[j];
+                            }
+                        }
+                    }
+                    minDist = 0;
+                    position fp = *(new position());
+                    fp.x = -1;
+                    fp.y = -1;
+                    for(int u  = damnation; u>= -1*damnation; u--){
+                        for(int v = damnation; v >= -1*damnation; v--){
+                            cp = track(battlefield, closeBot.pos.x+u, closeBot.pos.y+v, closeBot.pos.x, closeBot.pos.y, bot);
+                            if(check_walkable(battlefield, closeBot.pos.x+u, closeBot.pos.y+v, bot, TS, BLUE) == FREE
+                               && cp.x == closeBot.pos.x && cp.y == closeBot.pos.y){
+                                int cd = eucl_dist_count(closeBot.pos.x+u, closeBot.pos.y+v, bot[selected].pos.x, bot[selected].pos.y);
+                                if(minDist == 0 || cd < minDist){
+                                    minDist = cd;
+                                    fp.x = closeBot.pos.x + u;
+                                    fp.y = closeBot.pos.y + v;
+                                }
+                            }
+                        }
+                    }
+                    if(fp.x != -1 && fp.y != -1){
+                        route = pathFind(bot[selected].pos.x, bot[selected].pos.y, fp.x, fp.y, battlefield, bot);
+                        root_to_direction(route, seq);
+                        moves = 1;
+                        while(moves){
+                            window.clear(Color::Black);
+                            if(bot_walk(bot[selected], moves - 1, seq))
+                                break;
+                            camera_center(bot[selected].pos.x, bot[selected].pos.y);
+                            moves++;
+                            if(moves > 255)
+                                moves = 0;
+                            if(seq[moves - 1] == NODIR){
+                                moves = 0;
+                                break;
+                            }
+                            Sleep(100);
+                            draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+                            draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
+                            window.display();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    window.display();
+    currFaction = ((currFaction+1)%2);
+
+    int fc1 = 0;
+    int fc2 = 0;
+    for(int i = 0; i < TS; i++){
+        if(bot[i].destroyed == 0){
+            if(bot[i].tm == RED){
+                fc1++;
+            } else {
+                fc2++;
+            }
+        }
+    }
+    if(!fc1 || !fc2){
+        if(!fc1 && !fc2){
+                message_show(window,"DRAW. IMPOSSIBLE!", 1);
+        }else if(!fc2){
+            message_show(window,"YOU WIN! CONGRATS!", 1);
+        }else{
+            message_show(window,"YOU LOOSE. PITY.", 0);
+        }
+        window.clear(Color::Black);
+    return 1;
+    }
+    return 0;
+}
+
+int ai_step_dumb(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int &currFaction){
+    currFaction = ((currFaction+1)%2);
+    shiftx = 0;
+    shifty = 0;
+    position pos = *(new position());
+    pos.x = 0;
+    pos.y = 0;
+    window.clear(Color::Black);
+    int selected;
+    int moves = 0;
+    direction seq[255];
+    for(int i = 0; i < TS; i++){
+        if(bot[i].tm == currFaction && bot[i].destroyed == 0)
+            selected = i;
+    }
+    camera_center(bot[selected].pos.x, bot[selected].pos.y);
+    draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+    window.display();
+    for(int i = 0; i < TS; i++){
+        if(bot[i].tm == currFaction && bot[i].destroyed == 0){
+            selected = i;
+            do{
+                pos.x = bot[selected].pos.x + rand() % 17 - 8;
+                pos.y = bot[selected].pos.y + rand() % 17 - 8;
+            }while(pos.x < 0 || pos.x >= n || pos.y < 0 && pos.y >= m || check_walkable(battlefield, pos.x, pos.y, bot, TS, currFaction) != FREE);
+            std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y, battlefield, bot);
+                    root_to_direction(route, seq);
+            if(walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y, 0, seq) <= bot[selected].currAp){
+                    bot[selected].currAp -= walk_distance_count(bot[selected].dir, bot[selected].pos.x, bot[selected].pos.y, pos.x, pos.y, 0, seq);
+                    moves = 1;
+            }
+            while(moves){
+                window.clear(Color::Black);
+                bot_walk(bot[selected], moves - 1, seq);
+                moves++;
+                if(moves > 255)
+                    moves = 0;
+                if(seq[moves - 1] == NODIR)
+                    moves = 0;
+                Sleep(100);
+                draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+                draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
+                window.display();
+            }
+        }
+    }
+    currFaction = ((currFaction+1)%2);
+    return 0;
+}
+
+int check_probable_damage(land battlefield[n][m], battle_robot bot[TS], int x, int y){
+    int dmg = 0;
+    for(int i = 0; i < TS; i++){
+        if(bot[i].tm == RED && bot[i].destroyed == 0){
+            int gun1Reachable = 0;
+            int gun2Reachable = 0;
+            int dist = eucl_dist_count(x, y, bot[i].pos.x, bot[i].pos.y);
+            direction dir = belongs_to_sector(bot[i], x, y);
+            position tmp = *(new position());
+            tmp = track(battlefield, bot[i].pos.x, bot[i].pos.y, x, y, bot);
+            int trc = 0;
+            if(tmp.x != x || tmp.y != y)
+                trc = 1;
+            gun1Reachable = ((!trc || bot[i].gun1->type == ART) && (bot[i].gun1->radius > dist));
+            gun2Reachable = ((!trc || bot[i].gun2->type == ART) && (bot[i].gun2->radius > dist));
+            if(gun1Reachable){
+                int gdmg = bot[i].gun1->damage;
+                if(bot[i].gun1->burst)
+                    gdmg *= bot[i].gun1->burst;
+                dmg += gdmg;
+            }
+            if(gun2Reachable){
+                int gdmg = bot[i].gun2->damage;
+                if(bot[i].gun2->burst)
+                    gdmg *= 0.75*bot[i].gun2->burst;
+                dmg += gdmg;
+            }
+        }
+    }
+}
+
+int ai_step_alert(RenderWindow &window, land battlefield[n][m], battle_robot bot[TS], int &currFaction){
+    currFaction = ((currFaction+1)%2);
+    shiftx = 0;
+    shifty = 0;
+    window.clear(Color::Black);
+    int selected;
+    int moves = 0;
+    direction seq[255];
+    for(int i = 0; i < TS; i++){
+        if(bot[i].tm == currFaction && bot[i].destroyed == 0){
+            window.clear(Color::Black);
+            selected = i;
+            camera_center(bot[selected].pos.x, bot[selected].pos.y);
+            draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+            window.display();
+            position escapepos = *(new position());
+            position b1 = *(new position());
+            int escapeAP = 100000;
+            int minHP = 0;
+            int gun1Reachable = 0;
+            int gun2Reachable = 0;
+            int turnValue;
+            int minimalShotAP;
+            int gun1AP = bot[selected].gun1->apPerStrike * bot[selected].maxAp;
+            int gun2AP = bot[selected].gun2->apPerStrike * bot[selected].maxAp;
+            if(gun1AP > gun2AP){
+                minimalShotAP = gun2AP;
+            }else{
+                minimalShotAP = gun1AP;
+            }
+            position sp = *(new position());
+            sp.x = bot[selected].pos.x;
+            sp.y = bot[selected].pos.y;
+            int pdamage = check_probable_damage(battlefield, bot, sp.x, sp.y);
+
+            //check for possible damage to come & for AP required to hide
+
+            if(pdamage != 0){
+                int minDamage = pdamage;
+                position temppos = *(new position());
+                escapepos.x = sp.x;
+                escapepos.y = sp.y;
+                std::string route;
+                for(int i = 7; i <= -7; i ++){
+                    for(int j = 7; j <= -7; j++){
+                        int cd = check_probable_damage(battlefield, bot, sp.x + i, sp.y + j);
+                        if(cd < minDamage){
+                            escapepos.x = sp.x + i;
+                            escapepos.y = sp.y + i;
+                            route = pathFind(sp.x, sp.y, escapepos.x, escapepos.y, battlefield, bot);
+                            root_to_direction(route, seq);
+                            escapeAP = walk_distance_count(bot[selected].dir, sp.x, sp.y, escapepos.x, escapepos.y, 0, seq);
+                        }
+                    }
+                }
+                if(escapepos.x != sp.x || escapepos.x != sp.x){
+                    for(int i = 5; i <= -5; i++){
+                        for(int j = 5; j <= -5; j++){
+                            int cd = check_probable_damage(battlefield, bot, sp.x + i, sp.y + j);
+                            if(cd < minDamage){
+                                temppos.x = escapepos.x + i;
+                                temppos.y = escapepos.y + j;
+                                route = pathFind(sp.x, sp.y, escapepos.x + i, escapepos.y + j, battlefield, bot);
+                                root_to_direction(route, seq);
+                                escapeAP = walk_distance_count(bot[selected].dir, sp.x, sp.y, escapepos.x + i, escapepos.y + j, 0, seq);
+                            }
+                        }
+                    }
+                    escapepos.x = temppos.x;
+                    escapepos.y = temppos.y;
+                }
+                if(escapeAP == 100000){
+                    escapeAP = minimalShotAP;
+                    pdamage = 0;
+                }
+            }
+            if(pdamage == 0){
+                int damnation = 7;
+                if(bot[selected].gun1->type == MELEE || bot[selected].gun2->type == MELEE)
+                    damnation = 1;
+                int minDist = 0;
+                battle_robot closeBot;
+                std::string route;
+                position cp = *(new position());
+                cp.x = -1;
+                cp.y = -1;
+                for(int j = 0; j < TS; j++){
+                    if(bot[j].tm == (currFaction+1)%2 && bot[j].destroyed == 0){
+                        int cd = eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, bot[j].pos.x, bot[j].pos.y);
+                        if(minDist == 0 || cd < minDist){
+                            minDist = cd;
+                            closeBot = bot[j];
+                        }
+                    }
+                }
+                int minDamage = 100000;
+                position fp = *(new position());
+                fp.x = -1;
+                fp.y = -1;
+                for(int u  = damnation; u>= -damnation; u--){
+                    for(int v = damnation; v >= -damnation; v--){
+                        cp = track(battlefield, closeBot.pos.x+u, closeBot.pos.y+v, closeBot.pos.x, closeBot.pos.y, bot);
+                        if(check_walkable(battlefield, closeBot.pos.x+u, closeBot.pos.y+v, bot, TS, BLUE) == FREE
+                        && cp.x == closeBot.pos.x && cp.y == closeBot.pos.y){
+                            //choose least vulnerable position among those close to nearest bot
+                            int cd = check_probable_damage(battlefield, bot, closeBot.pos.x+u, closeBot.pos.y+v);
+                            if(cd < minDamage){
+                                minDamage = cd;
+                                fp.x = closeBot.pos.x + u;
+                                fp.y = closeBot.pos.y + v;
+                            }
+                        }
+                    }
+                }
+                if(fp.x != -1 && fp.y != -1){
+                    route = pathFind(bot[selected].pos.x, bot[selected].pos.y, fp.x, fp.y, battlefield, bot);
+                    root_to_direction(route, seq);
+                    moves = 1;
+                    while(moves){
+                        window.clear(Color::Black);
+                        if(bot_walk(bot[selected], moves - 1, seq))
+                            break;
+                        camera_center(bot[selected].pos.x, bot[selected].pos.y);
+                        moves++;
+                        if(moves > 255)
+                            moves = 0;
+                        if(seq[moves - 1] == NODIR){
+                            moves = 0;
+                            break;
+                        }
+                        Sleep(100);
+                        draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+                        draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
+                        window.display();
+                    }
+                }
+            }
+            while(bot[selected].currAp > escapeAP + 4){
+                //finding most vulnerable target
+                for(int j  = 0; j < TS; j++){
+                    if(bot[j].tm == (currFaction+1)%2 && bot[j].destroyed == 0){
+                        gun1Reachable = 0;
+                        gun2Reachable = 0;
+                        int dist = eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, bot[j].pos.x, bot[j].pos.y);
+                        direction dir = belongs_to_sector(bot[selected], bot[j].pos.x, bot[j].pos.y);
+                        turnValue = abs(dir - bot[selected].dir);
+                        if(turnValue != 4)
+                            turnValue %= 4;
+                        position tmp = *(new position());
+                        tmp = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, bot[j].pos.x, bot[j].pos.y, bot);
+                        int trc = 0;
+                        if(tmp.x != bot[j].pos.x || tmp.y != bot[j].pos.y)
+                            trc = 1;
+                        gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius > dist) && (gun1AP+turnValue < bot[selected].currAp - (escapeAP + 4)));
+                        gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius > dist) && (gun2AP+turnValue < bot[selected].currAp - (escapeAP + 4)));
+                        if((gun1Reachable || gun2Reachable)&&(minHP == 0 || minHP > bot[j].hp)){
+                            minHP = bot[j].hp;
+                            b1.x = bot[j].pos.x;
+                            b1.y = bot[j].pos.y;
+                        }
+                    }
+                    int dist = eucl_dist_count(bot[selected].pos.x, bot[selected].pos.y, b1.x, b1.y);
+                    direction dir = belongs_to_sector(bot[selected], b1.x, b1.y);
+                    turnValue = abs(dir - bot[selected].dir);
+                    if(turnValue != 4)
+                        turnValue %= 4;
+                    position tmp = *(new position());
+                    tmp = track(battlefield, bot[selected].pos.x, bot[selected].pos.y, b1.x, b1.y, bot);
+                    int trc = 0;
+                    if(tmp.x != b1.x || tmp.y != b1.y)
+                        trc = 1;
+                    gun1Reachable = ((!trc || bot[selected].gun1->type == ART) && (bot[selected].gun1->radius > dist) && (gun1AP+turnValue < bot[selected].currAp));
+                    gun2Reachable = ((!trc || bot[selected].gun2->type == ART) && (bot[selected].gun2->radius > dist) && (gun2AP+turnValue < bot[selected].currAp));
+                }
+                if(minHP != 0 && (gun1Reachable || gun2Reachable)){
+                //most vulnerable found, destroy
+                    window.clear(Color::Black);
+                    draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+                    if(gun1Reachable && gun2Reachable){
+                        int gun1Damage = bot[selected].gun1->damage;
+                        int g1ap = gun1AP;
+                        int g2ap = gun2AP;
+                        int gun2Damage = bot[selected].gun2->damage;
+                        if(bot[selected].gun1->burst && bot[selected].gun1->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
+                            gun1Damage *= bot[selected].gun1->burst;
+                            g1ap = bot[selected].gun1->apPerBurst * bot[selected].maxAp;
+                        }
+                        if(bot[selected].gun2->burst && bot[selected].gun2->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
+                            gun2Damage *= bot[selected].gun2->burst;
+                            g2ap = bot[selected].gun2->apPerBurst * bot[selected].maxAp;
+                        }
+                        if(gun1Damage > gun2Damage){
+                            gun2Reachable = 0;
+                        } else if(gun1Damage < gun2Damage){
+                            gun1Reachable = 0;
+                        } else {
+                            if(g1ap>g2ap){
+                                gun1Reachable = 0;
+                            }else{
+                                gun2Reachable = 0;
+                            }
+                        }
+                    }
+                    if(gun1Reachable){
+                        camera_center(b1.x, b1.y);
+                        if(bot[selected].gun1->burst && bot[selected].gun1->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
+                            if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun1, 2))
+                                break;
+                        } else {
+                            if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun1, 1))
+                                break;
+                        }
+                    }
+                    if(gun2Reachable){
+                        camera_center(b1.x, b1.y);
+                        if(bot[selected].gun2->burst && bot[selected].gun2->apPerBurst*bot[selected].maxAp + turnValue < bot[selected].currAp){
+                            if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun2, 2))
+                                break;
+                        } else {
+                            if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun2, 1))
+                                break;
+                        }
+                    }
+                }
+                else{
+                    break;
+                }
+            }
+            if(pdamage != 0){
+                std::string route = pathFind(bot[selected].pos.x, bot[selected].pos.y, escapepos.x, escapepos.y, battlefield, bot);
+                root_to_direction(route, seq);
+                moves = 1;
+                while(moves){
+                    window.clear(Color::Black);
+                    if(bot_walk(bot[selected], moves - 1, seq))
+                        break;
+                    camera_center(bot[selected].pos.x, bot[selected].pos.y);
+                    moves++;
+                    if(moves > 255)
+                        moves = 0;
+                    if(seq[moves - 1] == NODIR){
+                        moves = 0;
+                        break;
+                    }
+                    Sleep(100);
+                    draw_everything(window, battlefield, bot, selected, shiftx, shifty);
+                    draw_stats(window, bot[selected], icon, gunicon, mystats, myicon, mywp1, mywp2, myhp, myap);
+                    window.display();
+                }
+            }
+        }
+    }
+    currFaction = ((currFaction+1)%2);
+    window.display();
+
+    int fc1 = 0;
+    int fc2 = 0;
+    for(int i = 0; i < TS; i++){
+        if(bot[i].destroyed == 0){
+            if(bot[i].tm == currFaction){
+                fc1++;
+            } else {
+                fc2++;
+            }
+        }
+    }
+    if(!fc1 || !fc2){
+        if(!fc1 && !fc2){
+                message_show(window,"DRAW. IMPOSSIBLE!", 1);
+        }else if(!fc2){
+            message_show(window,"YOU WIN! CONGRATS!", 1);
+        }else{
+            message_show(window,"YOU LOOSE. PITY.", 0);
+        }
+        window.clear(Color::Black);
+    return 1;
+    }
+    return 0;
+}
+
+int player_step(RenderWindow &window, land battlefield[n][m], battle_robot bot[10], int &currFaction){
+    currFaction = ((currFaction+1)%2);
+    return 0;
 }

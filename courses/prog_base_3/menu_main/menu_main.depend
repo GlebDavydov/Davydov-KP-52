@@ -388,10 +388,11 @@
 	<SFML/Graphics.hpp>
 	"menus.h"
 
-1465718713 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\singleplayer_menu.cpp
+1465755976 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\singleplayer_menu.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
+	"bots.h"
 	"menus.h"
 
-1465708134 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\bots.h
+1465754406 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\bots.h
 

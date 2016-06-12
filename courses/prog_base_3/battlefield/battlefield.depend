@@ -391,7 +391,7 @@
 	<SFML/Graphics.hpp>
 	<windows.h>
 
-1465658412 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.cpp
+1465753205 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.cpp
 	<windows.h>
 	<iomanip>
 	<queue>
@@ -400,7 +400,7 @@
 	<ctime>
 	"bf.h"
 
-1465667941 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.h
+1465753247 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\bf.h
 	"guns.h"
 
 1465510017 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\battlefield\view.h
