@@ -13,6 +13,8 @@ void draw_bots(RenderWindow &window, blueprint *botset, Texture *icons, Texture 
 
 int battle_start(RenderWindow &window, Sprite background, int battlemode){
     HINSTANCE hLib = LoadLibrary("battlefield.dll");
+    if(!hLib)
+        return 1;
     battlefield bf = (battlefield)GetProcAddress(hLib, "battlefield");
     window.clear(Color::Black);
     blueprint botset[TS];
@@ -32,8 +34,6 @@ int battle_start(RenderWindow &window, Sprite background, int battlemode){
 
     Texture bot_t[4];
     Texture gun_t[10];
-
-    Text bt, gt1, gt2;
 
     for(int i = 0; i < 4; i++){
         bot_t[i].loadFromFile("textures/icons.png", IntRect(64*i, 0, 64, 64));

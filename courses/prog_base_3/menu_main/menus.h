@@ -6,6 +6,6 @@
 int main_menu(void);
 //int battlefield(sf::RenderWindow& window);
 int battle_start(sf::RenderWindow &window, sf::Sprite background, int battlemode);
-
+int ai_settings(sf::RenderWindow &window, sf::Sprite background, int &battlemode);
 
 #endif // MENUS_H_INCLUDED

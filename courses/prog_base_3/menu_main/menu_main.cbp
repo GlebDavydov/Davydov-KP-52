@@ -42,6 +42,7 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="main_menu.cpp" />
 		<Unit filename="menus.h" />
+		<Unit filename="settings_menu.cpp" />
 		<Unit filename="teamset.cpp" />
 		<Extensions>
 			<code_completion />
