@@ -403,7 +403,7 @@
 	"menus.h"
 	"bots.h"
 
-1465786526 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\settings_menu.cpp
+1465786870 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\settings_menu.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	"menus.h"
