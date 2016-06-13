@@ -1883,6 +1883,9 @@ void gunChoose(int t, int c, battle_robot &bot){
         case FLAMETHROWER:
             bot.gun1 = flamer;
             break;
+        case PLASMA:
+            bot.gun1 = plasma;
+            break;
         default:
             bot.gun1 = NULL;
             break;
@@ -1909,6 +1912,9 @@ void gunChoose(int t, int c, battle_robot &bot){
             break;
         case LASER:
             bot.gun2 = laser;
+            break;
+        case PLASMA:
+            bot.gun2 = plasma;
             break;
         case CANNON:
             bot.gun2 = cannon;
