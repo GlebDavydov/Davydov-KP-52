@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <SFML/Graphics.hpp>
 
+#include "bots.h"
 #include "menus.h"
 
 #define USW 1366
@@ -12,11 +13,11 @@ using namespace sf;
 
 int main_menu(void){
     Texture bckgrnd, ex_1, ex_2, singl_1, singl_2;
-    bckgrnd.loadFromFile("background.JPG");
-    ex_1.loadFromFile("EXIT_SMALL.PNG");
-    ex_2.loadFromFile("EXIT_BIG.PNG");
-    singl_1.loadFromFile("SP_SMALL.PNG");
-    singl_2.loadFromFile("SP_BIG.PNG");
+    bckgrnd.loadFromFile("textures/menu/background.JPG");
+    ex_1.loadFromFile("textures/menu/EXIT_SMALL.PNG");
+    ex_2.loadFromFile("textures/menu/EXIT_BIG.PNG");
+    singl_1.loadFromFile("textures/menu/SP_SMALL.PNG");
+    singl_2.loadFromFile("textures/menu/SP_BIG.PNG");
 
     Sprite menu_back(bckgrnd), menu_exit(ex_1), menu_singleplayer(singl_1);
 
@@ -51,7 +52,7 @@ int main_menu(void){
                             window.close();
                             break;
                         case SINLEPLAYER:
-                            singleplayer_menu(window, menu_back);
+                            battle_start(window, menu_back, MP);
                             break;
                         default:
                             break;

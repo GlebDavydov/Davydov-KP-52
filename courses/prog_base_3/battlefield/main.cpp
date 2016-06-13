@@ -873,7 +873,7 @@ void initSprites(land battlefield[n][m], battle_robot bot[TS], int shiftx, int s
 
     botblue.loadFromFile("textures/botblue.png");
     botred.loadFromFile("textures/botred.png");
-    bfbg.loadFromFile("bfbg.jpg");
+    bfbg.loadFromFile("textures/bfbg.jpg");
     grass.loadFromFile("textures/land_grass.png");
     ruin.loadFromFile("textures/land_ruin.png");
     stone.loadFromFile("textures/wall_brick.png");

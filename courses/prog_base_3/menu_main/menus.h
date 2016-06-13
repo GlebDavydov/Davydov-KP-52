@@ -4,8 +4,8 @@
 #include <SFML/Graphics.hpp>
 
 int main_menu(void);
-int singleplayer_menu(sf::RenderWindow &window, sf::Sprite background);
 //int battlefield(sf::RenderWindow& window);
+int battle_start(sf::RenderWindow &window, sf::Sprite background, int battlemode);
 
 
 #endif // MENUS_H_INCLUDED

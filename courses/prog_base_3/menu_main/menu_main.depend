@@ -2,7 +2,7 @@
 1460840845 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\main.cpp
 	"menus.h"
 
-1465709424 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\menus.h
+1465766112 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\menus.h
 	<SFML/Graphics.hpp>
 
 1459448199 c:\program files (x86)\codeblocks\sfml\include\sfml\graphics.hpp
@@ -383,9 +383,10 @@
 	<string>
 	<vector>
 
-1461598324 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\main_menu.cpp
+1465775642 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\main_menu.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
+	"bots.h"
 	"menus.h"
 
 1465755976 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\singleplayer_menu.cpp
@@ -394,5 +395,11 @@
 	"bots.h"
 	"menus.h"
 
-1465754406 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\bots.h
+1465767258 c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\bots.h
+
+1465774310 source:c:\users\Глеб\desktop\davydov-kp-52\courses\prog_base_3\menu_main\teamset.cpp
+	<windows.h>
+	<SFML/Graphics.hpp>
+	"menus.h"
+	"bots.h"
 
