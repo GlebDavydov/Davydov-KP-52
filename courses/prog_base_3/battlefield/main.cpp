@@ -1394,6 +1394,28 @@ int ai_step_agressive(RenderWindow &window, land battlefield[n][m], battle_robot
                                 break;
                         }
                     }
+                    int fc1 = 0;
+                    int fc2 = 0;
+                    for(int i = 0; i < TS; i++){
+                        if(bot[i].destroyed == 0){
+                            if(bot[i].tm == currFaction){
+                                fc1++;
+                            } else {
+                                fc2++;
+                            }
+                        }
+                    }
+                    if(!fc1 || !fc2){
+                        if(!fc1 && !fc2){
+                            message_show(window,"DRAW. IMPOSSIBLE!", 1);
+                        }else if(!fc2){
+                            message_show(window,"YOU WIN! CONGRATS!", 1);
+                        }else{
+                            message_show(window,"YOU LOOSE. PITY.", 0);
+                        }
+                        window.clear(Color::Black);
+                        return 1;
+                    }
                 }else{ //no target, moving to nearest enemy bot
                     if(bot[selected].currAp < 4)
                         break;
@@ -1790,6 +1812,28 @@ int ai_step_alert(RenderWindow &window, land battlefield[n][m], battle_robot bot
                             if(shoot(window, battlefield, bot, selected, b1.x, b1.y, bot[selected].gun2, 1))
                                 break;
                         }
+                    }
+                    int fc1 = 0;
+                    int fc2 = 0;
+                    for(int i = 0; i < TS; i++){
+                        if(bot[i].destroyed == 0){
+                            if(bot[i].tm == currFaction){
+                                fc1++;
+                            } else {
+                                fc2++;
+                            }
+                        }
+                    }
+                    if(!fc1 || !fc2){
+                        if(!fc1 && !fc2){
+                            message_show(window,"DRAW. IMPOSSIBLE!", 1);
+                        }else if(!fc2){
+                            message_show(window,"YOU WIN! CONGRATS!", 1);
+                        }else{
+                            message_show(window,"YOU LOOSE. PITY.", 0);
+                        }
+                        window.clear(Color::Black);
+                        return 1;
                     }
                 }
                 else{
